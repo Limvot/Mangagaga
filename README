@@ -1,0 +1,4 @@
+MangaApp - To be titled
+
+An Android app meant to be used for manga reading, powered by Lua scripts. Lua scripts define sources that can be websites, local directories, etc. These scripts are called by the main app in order to get lists of manga, their chapters, and their pages.
+
