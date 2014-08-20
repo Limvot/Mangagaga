@@ -11,6 +11,7 @@ import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.*;
 
 import java.io.StringReader;
+import android.content.Intent;
 
 
 public class HomeScreen extends Activity {
@@ -40,6 +41,9 @@ public class HomeScreen extends Activity {
 
         scriptView.append("\n");
         scriptView.append(res);
+
+        Intent sourceView = new Intent(this, SourceActivity.class);
+        startActivity(sourceView);
 
     }
 
