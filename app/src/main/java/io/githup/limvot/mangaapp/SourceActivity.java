@@ -11,14 +11,15 @@ import android.app.FragmentTransaction;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import java.util.Arrays;
 
 
 public class SourceActivity extends Activity implements ActionBar.TabListener {
@@ -132,22 +133,12 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return ScriptManager.getScriptManager().numSources();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return "KissManga".toUpperCase(l);
-                case 1:
-                    return "MangaHere".toUpperCase(l);
-                case 2:
-                    return "MangaPanda".toUpperCase(l);
-            }
-            return null;
+            return ScriptManager.getScriptManager().getScript(position).getName();
         }
     }
 
@@ -166,6 +157,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
          * number.
          */
         public static PlaceholderFragment newInstance(int sectionNumber) {
+            sectionNumber--; // Not zero indexed for some bizarre reason
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -182,13 +174,17 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
             View rootView = inflater.inflate(R.layout.fragment_source, container, false);
 
             TextView title = (TextView) rootView.findViewById(R.id.testSectionText);
-            title.setText("Woo set text" + getArguments().getInt(ARG_SECTION_NUMBER));
+            int sourceNumber = getArguments().getInt(ARG_SECTION_NUMBER);
+            title.setText("Woo set text" + sourceNumber);
 
             ListView chapterListView = (ListView) rootView.findViewById(R.id.chapterListView);
+            ScriptManager scriptManager = ScriptManager.getScriptManager();
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
+                    scriptManager.getScript(sourceNumber).getMangaList());
+            chapterListView.setAdapter(arrayAdapter);
 
             return rootView;
         }
-
     }
 
 }

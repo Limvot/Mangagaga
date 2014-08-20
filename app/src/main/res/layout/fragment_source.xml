@@ -27,6 +27,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/chapterListView"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/textView" />
+        android:layout_below="@+id/testSectionText" />
 
 </RelativeLayout>
