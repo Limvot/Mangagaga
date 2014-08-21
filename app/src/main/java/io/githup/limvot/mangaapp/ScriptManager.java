@@ -31,7 +31,14 @@ public class ScriptManager {
 
                 FileOutputStream fos = new FileOutputStream(newScript);
                 String program = "print 'Hello from Lua!!!!'\n" +
+                        "apiObj = 0\n" +
+                        "function init(apiObjIn)\n" +
+                        "   apiObj = apiObjIn\n" +
+                        "end\n" +
+                        "\n" +
                         "function getMangaList()\n" +
+                        "   apiObj:download('http://kissmanga.com/Manga/Bleach')\n" +
+                        "   apiObj:note()\n" +
                         "   daList = {}\n" +
                         "   daList[0] = 'Durarara'\n" +
                         "   daList[1] = 'One Piece'\n" +

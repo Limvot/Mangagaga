@@ -5,6 +5,7 @@ import android.util.Log;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.StringReader;
@@ -28,6 +29,8 @@ class Script {
 
         globals = JsePlatform.standardGlobals();
         globals.load(new StringReader(luaCode), name).call();
+        // Call init function which normally saves this APIObject
+        globals.get("init").call(CoerceJavaToLua.coerce(APIObject.getAPIObject()));
         luaGetMangaList = globals.get("getMangaList");
     }
 
