@@ -23,6 +23,12 @@ public class HomeScreen extends Activity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        // Set up the script manager
+        ScriptManager.createScriptManager(this);
+
+
         setContentView(R.layout.activity_home_screen);
         scriptView = (TextView) findViewById(R.id.script_box);
         scriptView.append("\n");

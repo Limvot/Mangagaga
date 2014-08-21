@@ -1,5 +1,14 @@
 package io.githup.limvot.mangaapp;
 
+import android.util.Log;
+
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.JsePlatform;
+
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,9 +19,16 @@ class Script {
     private String name;
     private String luaCode;
 
+    private Globals globals;
+    private LuaValue luaGetMangaList;
+
     public Script(String name, String luaCode) {
         this.name = name;
         this.luaCode = luaCode;
+
+        globals = JsePlatform.standardGlobals();
+        globals.load(new StringReader(luaCode), name).call();
+        luaGetMangaList = globals.get("getMangaList");
     }
 
     public String getName() {
@@ -20,11 +36,15 @@ class Script {
     }
 
     public List<String> getMangaList() {
-        String[] chapterList = new String[] { "One Piece" + name,
-                "Naruto" + name, "Bleach" + name,
-                "Belezebub" + name,
-                "History's Strongest Disciple Kinichi" + name};
-        return Arrays.asList(chapterList);
-    }
+        LuaValue result = luaGetMangaList.call();
+        LuaTable resTable = result.checktable();
 
+        ArrayList<String> mangaList = new ArrayList<String>();
+        Log.i("getMangaList", "Woooooo: " + resTable.length());
+        for (int i = 0; i <= resTable.length(); i++)
+            mangaList.add(resTable.get(i).toString());
+
+        return mangaList;
+
+    }
 }
