@@ -2,7 +2,6 @@ package io.githup.limvot.mangaapp;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -17,7 +16,7 @@ import android.content.Intent;
 public class HomeScreen extends Activity {
 
     TextView scriptView;
-    SourceDownloader downloader;
+    Utilities downloader;
 
 
 
@@ -40,7 +39,7 @@ public class HomeScreen extends Activity {
         LuaValue echoFun = globals.get("Echo");
         scriptView.append(echoFun.call(LuaValue.valueOf("Java String!")).toString());
 
-//        downloader = new SourceDownloader();
+//        downloader = new Utilities();
 //        downloader.SetSource("http://kissmanga.com/Manga/Naruto");
 //        String res = downloader.Download();
 //        Log.i("onCreate", res);

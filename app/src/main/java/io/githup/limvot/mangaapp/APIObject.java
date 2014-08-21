@@ -2,16 +2,14 @@ package io.githup.limvot.mangaapp;
 
 import android.util.Log;
 
-import org.luaj.vm2.LuaValue;
-
 /**
  * Created by nathan on 8/20/14.
  */
 public class APIObject {
     private static APIObject thisObj;
-    private static SourceDownloader downloader;
+    private static Utilities downloader;
     public APIObject() {
-        downloader = new SourceDownloader();
+        downloader = new Utilities();
     }
     public static APIObject getAPIObject() {
         if (thisObj == null)
@@ -23,8 +21,19 @@ public class APIObject {
         Log.i("Noting the thing", "Woo the thing");
     }
 
-    public static void download(String filePath) {
+    public static String download(String filePath) {
         downloader.SetSource(filePath);
-        downloader.Download();
+        return downloader.Download();
     }
+
+    public static String readFile(String absolutePath) {
+        Log.i("Reader: ", "Path is: " + absolutePath);
+        return Utilities.readFile(absolutePath);
+    }
+    public static String slice(String toSlice, int a, int b) {
+        Log.i("Slicer: ", toSlice);
+        return toSlice.substring(a,b);
+    }
+
+
 }

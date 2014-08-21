@@ -175,7 +175,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
 
             TextView title = (TextView) rootView.findViewById(R.id.testSectionText);
             int sourceNumber = getArguments().getInt(ARG_SECTION_NUMBER);
-            title.setText("Woo set text" + sourceNumber);
+            title.setText("Manga List");
 
             ListView chapterListView = (ListView) rootView.findViewById(R.id.chapterListView);
             ScriptManager scriptManager = ScriptManager.getScriptManager();

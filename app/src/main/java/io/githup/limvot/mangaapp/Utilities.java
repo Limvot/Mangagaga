@@ -14,7 +14,7 @@ import java.io.*;
 import java.util.concurrent.ExecutionException;
 
 
-public class SourceDownloader {
+public class Utilities {
 
     private String source;
 
@@ -30,7 +30,7 @@ public class SourceDownloader {
         }
 
     }
-    public SourceDownloader()
+    public Utilities()
     {
     }
 
@@ -64,6 +64,7 @@ public class SourceDownloader {
     public static String DownloadSource(String source)
     {
         String filename = "";
+        String resultingPath = "";
         URL sourceSite;
         if(!source.isEmpty())
         {
@@ -79,7 +80,8 @@ public class SourceDownloader {
                 Log.i("file", "File made!");
 
                 //Throws exception here!
-                FileWriter fw = new FileWriter(Environment.getExternalStorageDirectory() +"/"+ Environment.DIRECTORY_DOWNLOADS+"/"+filename);
+                resultingPath = Environment.getExternalStorageDirectory() +"/"+ Environment.DIRECTORY_DOWNLOADS+"/"+filename;
+                FileWriter fw = new FileWriter(resultingPath);
                 Log.i("DownloadSource", "Make file writer");
                 //----------
 
@@ -108,6 +110,20 @@ public class SourceDownloader {
             }
         }
 
-        return filename;
+        return resultingPath;
+    }
+
+    public static String readFile(String absolutePath) {
+        String fileString = "";
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(absolutePath)));
+            StringBuilder sb = new StringBuilder();
+            for (String line = reader.readLine(); line != null; line = reader.readLine())
+                sb.append(line).append("\n");
+            fileString = sb.toString();
+        } catch (Exception e) {
+            Log.e("Script", e.toString());
+        }
+        return fileString;
     }
 }

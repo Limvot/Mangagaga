@@ -37,12 +37,18 @@ public class ScriptManager {
                         "end\n" +
                         "\n" +
                         "function getMangaList()\n" +
-                        "   apiObj:download('http://kissmanga.com/Manga/Bleach')\n" +
+                        "   path = apiObj:download('http://kissmanga.com/MangaList')\n" +
+                        "   pageSource = apiObj:readFile(path)\n" +
                         "   apiObj:note()\n" +
                         "   daList = {}\n" +
-                        "   daList[0] = 'Durarara'\n" +
-                        "   daList[1] = 'One Piece'\n" +
-                        "   daList[2] = 'Bleach'\n" +
+                        "   beginning, ending = string.find(pageSource, '<a href=\"/Manga/.-\">')\n" +
+                        "   index = 0\n" +
+                        "   while ending do\n" +
+                        "       aManga = string.sub(pageSource, beginning, ending)\n" +
+                        "       daList[index] = string.sub(aManga, 17, -3)\n" +
+                        "       index = index + 1\n" +
+                        "       beginning, ending = string.find(pageSource, '<a href=\"/Manga/%w+\">', ending+1)\n" +
+                        "   end" +
                         "   return daList\n" +
                         "end";
                 fos.write(program.getBytes());
@@ -54,17 +60,7 @@ public class ScriptManager {
 
 
         for (File script : scriptDir.listFiles()) {
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(script)));
-                StringBuilder sb = new StringBuilder();
-                for (String line = reader.readLine(); line != null; line = reader.readLine())
-                    sb.append(line).append("\n");
-                String scriptString = sb.toString();
-
-                scriptList.add(new Script(script.getName(), scriptString));
-            } catch (Exception e) {
-                Log.e("Script", e.toString());
-            }
+            scriptList.add(new Script(script.getName(), Utilities.readFile(script.getAbsolutePath())));
         }
     }
 
