@@ -23,6 +23,10 @@
             android:name=".SourceActivity"
             android:label="@string/title_activity_source" >
         </activity>
+        <activity
+            android:name=".ChapterActivity"
+            android:label="@string/title_activity_chapter" >
+        </activity>
     </application>
 
 </manifest>

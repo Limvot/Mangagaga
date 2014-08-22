@@ -16,7 +16,8 @@ import java.util.ArrayList;
 public class ScriptManager {
     static ScriptManager scriptManager;
 
-    ArrayList<Script> scriptList;
+    private ArrayList<Script> scriptList;
+    private int currentSource;
 
     public ScriptManager(Context ctx) {
         scriptList = new ArrayList<Script>();
@@ -39,18 +40,43 @@ public class ScriptManager {
                         "function getMangaList()\n" +
                         "   path = apiObj:download('http://kissmanga.com/MangaList')\n" +
                         "   pageSource = apiObj:readFile(path)\n" +
-                        "   apiObj:note()\n" +
+                        "   apiObj:note('LuaScript downloaded (for manga): ' .. path)\n" +
                         "   daList = {}\n" +
-                        "   beginning, ending = string.find(pageSource, '<a href=\"/Manga/.-\">')\n" +
+                        "   regex = '<a href=\"/Manga/(.-)\">(.-)</a>'\n" +
+                        "   apiObj:note('Manga Regex: ' .. regex)\n" +
+                        "   beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex)\n" +
                         "   index = 0\n" +
                         "   while ending do\n" +
-                        "       aManga = string.sub(pageSource, beginning, ending)\n" +
-                        "       daList[index] = string.sub(aManga, 17, -3)\n" +
+                        "       print('URL: ' .. mangaURL .. ', Title: ' .. mangaTitle)\n" +
+                        "       daList[index] = {title = mangaTitle, url = mangaURL}\n" +
+                        "       beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex, ending+1)\n" +
                         "       index = index + 1\n" +
-                        "       beginning, ending = string.find(pageSource, '<a href=\"/Manga/%w+\">', ending+1)\n" +
-                        "   end" +
+                        "   end\n" +
+                        "   daList['numManga'] = index\n" +
                         "   return daList\n" +
-                        "end";
+                        "end\n" +
+                        "\n" +
+                        "\n" +
+                        "function getMangaChapterList(manga)\n" +
+                        "   chapterURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url']\n" +
+                        "   apiObj:note('Manga Path: ' .. chapterURL)\n" +
+                        "   path = apiObj:download(chapterURL)\n" +
+                        "   pageSource = apiObj:readFile(path)\n" +
+                        "   apiObj:note('LuaScript downloaded (for chapter): ' .. path)\n" +
+                        "   daList = {}\n" +
+                        "   regex = '<a href=\"/Manga/' .. manga['url'] .. '/(.-)\">(.-)</a>'" +
+                        "   apiObj:note('Chapter Regex: ' .. regex)\n" +
+                        "   beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)\n" +
+                        "   index = 0\n" +
+                        "   while ending do\n" +
+                        "       print('Chapter URL: ' .. chapterURL .. ', Chapter Title: ' .. chapterTitle)\n" +
+                        "       daList[index] = {title = chapterTitle, url = chapterURL}\n" +
+                        "       beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex, ending+1)\n" +
+                        "       index = index + 1\n" +
+                        "   end\n" +
+                        "   daList['numChapters'] = index\n" +
+                        "   return daList\n" +
+                        "end\n";
                 fos.write(program.getBytes());
                 fos.close();
             } catch (Exception e) {
@@ -80,4 +106,6 @@ public class ScriptManager {
             return scriptList.get(position);
         return null;
     }
+    public void setCurrentSource(int num) { currentSource = num; }
+    public Script getCurrentSource() { return getScript(currentSource); }
 }

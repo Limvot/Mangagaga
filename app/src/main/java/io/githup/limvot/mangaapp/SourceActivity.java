@@ -8,14 +8,17 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -174,14 +177,27 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
             View rootView = inflater.inflate(R.layout.fragment_source, container, false);
 
             TextView title = (TextView) rootView.findViewById(R.id.testSectionText);
-            int sourceNumber = getArguments().getInt(ARG_SECTION_NUMBER);
+            final int sourceNumber = getArguments().getInt(ARG_SECTION_NUMBER);
+            
             title.setText("Manga List");
 
-            ListView chapterListView = (ListView) rootView.findViewById(R.id.chapterListView);
-            ScriptManager scriptManager = ScriptManager.getScriptManager();
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
+            final ListView mangaListView = (ListView) rootView.findViewById(R.id.mangaListView);
+            final ScriptManager scriptManager = ScriptManager.getScriptManager();
+
+            ArrayAdapter<Manga> arrayAdapter = new ArrayAdapter<Manga>(getActivity(), android.R.layout.simple_list_item_1,
                     scriptManager.getScript(sourceNumber).getMangaList());
-            chapterListView.setAdapter(arrayAdapter);
+            mangaListView.setAdapter(arrayAdapter);
+
+            mangaListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Log.i("onItemClick", mangaListView.getItemAtPosition(i).toString());
+                    Intent chapterView = new Intent(getActivity(), ChapterActivity.class);
+                    scriptManager.setCurrentSource(sourceNumber);
+                    scriptManager.getScript(sourceNumber).setCurrentManga((Manga) mangaListView.getItemAtPosition(i));
+                    startActivity(chapterView);
+                }
+            });
 
             return rootView;
         }

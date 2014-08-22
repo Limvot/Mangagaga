@@ -17,8 +17,8 @@ public class APIObject {
         return thisObj;
     }
 
-    public static void note() {
-        Log.i("Noting the thing", "Woo the thing");
+    public static void note(String theNote) {
+        Log.i("Noting the thing", theNote);
     }
 
     public static String download(String filePath) {

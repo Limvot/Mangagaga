@@ -1,0 +1,61 @@
+package io.githup.limvot.mangaapp;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+
+public class ChapterActivity extends Activity {
+
+    private TextView title;
+    private TextView description;
+    private ListView chapterListView;
+
+    private Script currentSource;
+    private Manga  currentManga;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chapter);
+
+        title = (TextView) findViewById(R.id.mangaTitleTextView);
+        description = (TextView) findViewById(R.id.mangaDescriptionTextView);
+
+        currentSource = ScriptManager.getScriptManager().getCurrentSource();
+        currentManga = currentSource.getCurrentManga();
+
+        title.setText(currentManga.toString());
+
+        chapterListView = (ListView) findViewById(R.id.mangaChapterListView);
+
+        ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,
+                currentSource.getMangaChapterList(currentManga));
+        chapterListView.setAdapter(arrayAdapter);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.chapter, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}
