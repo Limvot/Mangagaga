@@ -6,5 +6,9 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_source">SourceActivity</string>
     <string name="title_activity_chapter">ChapterActivity</string>
+    <string name="title_activity_image_viewer">ImageViewerActivity</string>
+    <string name="forward_button">Next</string>
+    <string name="back_button">Back</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

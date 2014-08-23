@@ -1,10 +1,13 @@
 package io.githup.limvot.mangaapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -37,6 +40,15 @@ public class ChapterActivity extends Activity {
         ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,
                 currentSource.getMangaChapterList(currentManga));
         chapterListView.setAdapter(arrayAdapter);
+
+        chapterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i("onItemClick", chapterListView.getItemAtPosition(i).toString());
+                Intent chapterView = new Intent(ChapterActivity.this, ImageViewerActivity.class);
+                startActivity(chapterView);
+            }
+        });
     }
 
 

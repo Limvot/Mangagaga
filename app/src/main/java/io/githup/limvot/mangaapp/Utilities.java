@@ -70,29 +70,26 @@ public class Utilities {
         {
             try {
                 sourceSite = new URL(source);
-                Log.i("DownloadSource", "Make URL object!");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(sourceSite.openStream()));
-                Log.i("DownloadSource", "Open Source Reader!");
-                filename = source.substring((source.lastIndexOf('/') + 1)) + ".html";
-                Log.i("filename", filename);
-                new File(Environment.DIRECTORY_DOWNLOADS,filename);
-                Log.i("path", Environment.DIRECTORY_DOWNLOADS);
-                Log.i("file", "File made!");
+                if(source.contains(".jpeg") || source.contains(".png") || source.contains(".zip"))
+                {
+                    filename = source.substring((source.lastIndexOf('/')+1));
+                }
+                else
+                {
+                    filename = source.substring((source.lastIndexOf('/') + 1)) + ".html";
+                }
 
-                //Throws exception here!
+                new File(Environment.DIRECTORY_DOWNLOADS,filename);
+
                 resultingPath = Environment.getExternalStorageDirectory() +"/"+ Environment.DIRECTORY_DOWNLOADS+"/"+filename;
                 FileWriter fw = new FileWriter(resultingPath);
-                Log.i("DownloadSource", "Make file writer");
-                //----------
-
                 BufferedWriter writer = new BufferedWriter(fw);
-                Log.i("DownloadSource", "Make buffered writer!");
 
                 String input;
                 while ((input = reader.readLine()) != null) {
                         writer.write(input);
                 }
-                Log.i("DownloadSource", "Finished Writing File!");
 
                 reader.close();
                 writer.close();
