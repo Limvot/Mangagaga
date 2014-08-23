@@ -170,19 +170,10 @@ public class ImageViewerActivity extends Activity {
         Script source = ScriptManager.getScriptManager().getCurrentSource();
         imagepath = source.downloadPage();
         Log.i("Display image!", imagepath);
-        //R.drawable.ic_launcher
-        //ImageManager im = ImageManager.getImageManager();
+        ImageManager im = ImageManager.getImageManager();
 
         ImageView contentview = (ImageView) findViewById(R.id.fullscreen_content);
-        //Bitmap page = im.getNext(imagepath);
-        //contentview.setImageBitmap(page);
-        try {
-            Drawable icon = getPackageManager().getApplicationIcon("io.githup.limvot.mangaapp");
-            contentview.setImageDrawable(icon);
-        }
-        catch (PackageManager.NameNotFoundException e)
-        {
-            Log.e("displayImage", "ICON NOT LOADED!!!!");
-        }
+        Bitmap page = im.getNext(imagepath);
+        contentview.setImageBitmap(page);
     }
 }
