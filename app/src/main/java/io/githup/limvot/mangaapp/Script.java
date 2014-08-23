@@ -26,8 +26,11 @@ class Script {
     private LuaValue luaGetMangaListPreviousPage;
     private LuaValue luaGetMangaListNextPage;
     private LuaValue luaGetMangaChapterList;
+    private LuaValue luaGetMangaChapterPage;
 
     private Manga currentManga;
+    private Chapter currentChapter;
+    private int currentPage;
 
     public Script(String name, String luaCode) {
         this.name = name;
@@ -43,6 +46,7 @@ class Script {
         luaGetMangaListPreviousPage = globals.get("getMangaListPreviousPage");
         luaGetMangaListNextPage = globals.get("getMangaListNextPage");
         luaGetMangaChapterList = globals.get("getMangaChapterList");
+        luaGetMangaChapterPage = globals.get("getMangaChapterPage");
     }
 
     public String getName() {
@@ -66,8 +70,8 @@ class Script {
         return mangaList;
     }
 
-    public List<Chapter> getMangaChapterList(Manga manga) {
-        LuaValue result = luaGetMangaChapterList.call(manga.getTable());
+    public List<Chapter> getMangaChapterList() {
+        LuaValue result = luaGetMangaChapterList.call(currentManga.getTable());
         LuaTable resTable = result.checktable();
 
         ArrayList<Chapter> mangaChapterList = new ArrayList<Chapter>();
@@ -78,6 +82,17 @@ class Script {
         return mangaChapterList;
     }
 
+    public String downloadPage() {
+        Log.i("Downloading Page!", "doing that page");
+        return luaGetMangaChapterPage.call(currentManga.getTable(), currentChapter.getTable(), LuaValue.valueOf(currentPage)).toString();
+    }
+
     public void setCurrentManga(Manga curr) { currentManga = curr; }
     public Manga getCurrentManga() { return currentManga; }
+
+    public void setCurrentChapter(Chapter curr) { currentChapter = curr; }
+    public Chapter getCurrentChapter() { return currentChapter; }
+
+    public void setCurrentPage(int page) { currentPage = page; }
+    public int getCurrentPage() { return currentPage; }
 }

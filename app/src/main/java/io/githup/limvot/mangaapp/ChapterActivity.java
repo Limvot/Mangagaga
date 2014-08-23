@@ -20,7 +20,6 @@ public class ChapterActivity extends Activity {
     private ListView chapterListView;
 
     private Script currentSource;
-    private Manga  currentManga;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,20 +30,20 @@ public class ChapterActivity extends Activity {
         description = (TextView) findViewById(R.id.mangaDescriptionTextView);
 
         currentSource = ScriptManager.getScriptManager().getCurrentSource();
-        currentManga = currentSource.getCurrentManga();
 
-        title.setText(currentManga.toString());
+        title.setText(currentSource.getCurrentManga().toString());
 
         chapterListView = (ListView) findViewById(R.id.mangaChapterListView);
-
         ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,
-                currentSource.getMangaChapterList(currentManga));
+                currentSource.getMangaChapterList());
         chapterListView.setAdapter(arrayAdapter);
 
         chapterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.i("onItemClick", chapterListView.getItemAtPosition(i).toString());
+                currentSource.setCurrentChapter((Chapter) chapterListView.getItemAtPosition(i));
+                currentSource.setCurrentPage(0);
                 Intent chapterView = new Intent(ChapterActivity.this, ImageViewerActivity.class);
                 startActivity(chapterView);
             }

@@ -191,7 +191,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
                     scriptManager.getScript(sourceNumber).getMangaListPage1());
             mangaListView.setAdapter(arrayAdapter);
 
-            mangaListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            mangaListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.i("onItemClick", mangaListView.getItemAtPosition(i).toString());

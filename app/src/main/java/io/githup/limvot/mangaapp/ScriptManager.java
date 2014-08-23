@@ -54,7 +54,7 @@ public class ScriptManager {
                         "   apiObj:note('LuaScript downloaded (for manga): ' .. path)\n" +
                         "   daList = {}\n" +
                         "   regex = '<a href=\"/Manga/(.-)\">(.-)</a>'\n" +
-                        "   apiObj:note('Manga Regex: ' .. regex)\n" +
+                        "   apiObj:note('Manga List Regex: ' .. regex)\n" +
                         "   beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex)\n" +
                         "   index = 0\n" +
                         "   while ending do\n" +
@@ -69,25 +69,50 @@ public class ScriptManager {
                         "\n" +
                         "\n" +
                         "function getMangaChapterList(manga)\n" +
-                        "   chapterURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url']\n" +
-                        "   apiObj:note('Manga Path: ' .. chapterURL)\n" +
-                        "   path = apiObj:download(chapterURL)\n" +
+                        "   mangaURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url']\n" +
+                        "   apiObj:note('Manga Path: ' .. mangaURL)\n" +
+                        "   path = apiObj:download(mangaURL)\n" +
                         "   pageSource = apiObj:readFile(path)\n" +
                         "   apiObj:note('LuaScript downloaded (for chapter): ' .. path)\n" +
                         "   daList = {}\n" +
-                        "   regex = '<a href=\"/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)\">(.-)</a>'" +
-                        "   apiObj:note('Chapter Regex: ' .. regex)\n" +
+                        "   regex = '<a href=\"/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)\">(.-)</a>'\n" +
+                        "   apiObj:note('Chapter List Regex: ' .. regex)\n" +
                         "   beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)\n" +
                         "   index = 0\n" +
                         "   while ending do\n" +
                         "       print('Chapter URL: ' .. chapterURL .. ', Chapter Title: ' .. chapterTitle)\n" +
-                        "       daList[index] = {title = chapterTitle, url = chapterURL}\n" +
+                        "       daList[index] = {title = chapterTitle, url = chapterURL, chapterSetUp = false}\n" +
                         "       beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex, ending+1)\n" +
                         "       index = index + 1\n" +
                         "   end\n" +
                         "   daList['numChapters'] = index\n" +
                         "   return daList\n" +
-                        "end\n";
+                        "end\n" +
+                        "\n" +
+                        "\n" +
+                        "function getMangaChapterPage(manga, chapter, page)\n" +
+                        "   if not chapter['chapterSetUp'] then\n" +
+                        "       pageURL = 'The Page URL is: ' .. 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '/' .. chapter['url']\n" +
+                        "       apiObj:note(pageURL)\n" +
+                        "       path = apiObj:download(pageURL)\n" +
+                        "       apiObj:note('After download')\n" +
+                        "       pageSource = apiObj:readFile(path)\n" +
+                        "       regex = 'lstImages%.push%(\"(.-)\"%);'\n" +
+                        "       apiObj:note('Page List Regex: ' .. regex)\n" +
+                        "       beginning, ending, pageURL = string.find(pageSource, regex)\n" +
+                        "       index = 0\n" +
+                        "       while ending do\n" +
+                        "           print('Page URL: ' .. pageURL)\n" +
+                        "           daList[index] = {url = pageURL}\n" +
+                        "           beginning, ending, pageURL = string.find(pageSource, regex, ending+1)\n" +
+                        "           index = index + 1\n" +
+                        "       end\n" +
+                        "       chapter['chapterSetUp'] = true\n" +
+                        "   end\n" +
+                        "   return 'chapter[page]'\n" +
+                        "end\n" +
+                        "\n";
+
                 fos.write(program.getBytes());
                 fos.close();
             } catch (Exception e) {
