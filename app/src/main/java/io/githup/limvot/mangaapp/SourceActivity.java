@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import java.util.Arrays;
@@ -182,10 +183,12 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
             title.setText("Manga List");
 
             final ListView mangaListView = (ListView) rootView.findViewById(R.id.mangaListView);
+            final Button previousButton = (Button) rootView.findViewById(R.id.previousChapterPageButton);
+            final Button nextButton = (Button) rootView.findViewById(R.id.nextChapterPageButton);
             final ScriptManager scriptManager = ScriptManager.getScriptManager();
 
-            ArrayAdapter<Manga> arrayAdapter = new ArrayAdapter<Manga>(getActivity(), android.R.layout.simple_list_item_1,
-                    scriptManager.getScript(sourceNumber).getMangaList());
+            final ArrayAdapter<Manga> arrayAdapter = new ArrayAdapter<Manga>(getActivity(), android.R.layout.simple_list_item_1,
+                    scriptManager.getScript(sourceNumber).getMangaListPage1());
             mangaListView.setAdapter(arrayAdapter);
 
             mangaListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -196,6 +199,22 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
                     scriptManager.setCurrentSource(sourceNumber);
                     scriptManager.getScript(sourceNumber).setCurrentManga((Manga) mangaListView.getItemAtPosition(i));
                     startActivity(chapterView);
+                }
+            });
+
+            previousButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    arrayAdapter.clear();
+                    arrayAdapter.addAll(scriptManager.getScript(sourceNumber).getMangaListPreviousPage());
+                }
+            });
+
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    arrayAdapter.clear();
+                    arrayAdapter.addAll(scriptManager.getScript(sourceNumber).getMangaListNextPage());
                 }
             });
 

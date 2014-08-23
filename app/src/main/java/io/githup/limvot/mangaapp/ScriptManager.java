@@ -32,13 +32,24 @@ public class ScriptManager {
 
                 FileOutputStream fos = new FileOutputStream(newScript);
                 String program = "print 'Hello from Lua!!!!'\n" +
-                        "apiObj = 0\n" +
-                        "function init(apiObjIn)\n" +
-                        "   apiObj = apiObjIn\n" +
+                        "pageNo = 1\n" +
+                        "function getMangaListPage1()\n" +
+                        "   pageNo = 1\n" +
+                        "   return getMangaList('http://kissmanga.com/MangaList')\n" +
                         "end\n" +
                         "\n" +
-                        "function getMangaList()\n" +
-                        "   path = apiObj:download('http://kissmanga.com/MangaList')\n" +
+                        "function getMangaListPreviousPage()\n" +
+                        "   if pageNo > 1 then pageNo = pageNo -1 end\n" +
+                        "   return getMangaList('http://kissmanga.com/MangaList?page=' .. pageNo)\n" +
+                        "end\n" +
+                        "\n" +
+                        "function getMangaListNextPage()\n" +
+                        "   pageNo = pageNo + 1\n" +
+                        "   return getMangaList('http://kissmanga.com/MangaList?page=' .. pageNo)\n" +
+                        "end\n" +
+                        "\n" +
+                        "function getMangaList(url)\n" +
+                        "   path = apiObj:download(url)\n" +
                         "   pageSource = apiObj:readFile(path)\n" +
                         "   apiObj:note('LuaScript downloaded (for manga): ' .. path)\n" +
                         "   daList = {}\n" +
@@ -64,7 +75,7 @@ public class ScriptManager {
                         "   pageSource = apiObj:readFile(path)\n" +
                         "   apiObj:note('LuaScript downloaded (for chapter): ' .. path)\n" +
                         "   daList = {}\n" +
-                        "   regex = '<a href=\"/Manga/' .. manga['url'] .. '/(.-)\">(.-)</a>'" +
+                        "   regex = '<a href=\"/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)\">(.-)</a>'" +
                         "   apiObj:note('Chapter Regex: ' .. regex)\n" +
                         "   beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)\n" +
                         "   index = 0\n" +
@@ -95,6 +106,22 @@ public class ScriptManager {
     }
     public static ScriptManager getScriptManager() {
         return scriptManager;
+    }
+    public static String getLuaPrequal() {
+        return "print('Lua prequal!')\n" +
+                "apiObj = 0\n" +
+                "function init(apiObjIn)\n" +
+                "   apiObj = apiObjIn\n" +
+                "end\n" +
+                "\n" +
+                "\n" +
+                "function escapeRegexStr(theStr)\n" +
+                "   print('Escaping ' .. theStr)\n" +
+                "   newStr = (theStr:gsub('[%-%.%+%[%]%(%)%$$^%%%?%*]', '%%%1'):gsub('%z','%%z'))\n" +
+                "   print('Done Escaping ' .. theStr .. ' as ' .. newStr)\n" +
+                "   return newStr\n" +
+                "end\n" +
+                "\n";
     }
 
     public int numSources() {

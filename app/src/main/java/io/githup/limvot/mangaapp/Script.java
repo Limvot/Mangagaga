@@ -1,5 +1,6 @@
 package io.githup.limvot.mangaapp;
 
+import android.provider.MediaStore;
 import android.util.Log;
 
 import org.luaj.vm2.Globals;
@@ -21,7 +22,9 @@ class Script {
     private String luaCode;
 
     private Globals globals;
-    private LuaValue luaGetMangaList;
+    private LuaValue luaGetMangaListPage1;
+    private LuaValue luaGetMangaListPreviousPage;
+    private LuaValue luaGetMangaListNextPage;
     private LuaValue luaGetMangaChapterList;
 
     private Manga currentManga;
@@ -31,10 +34,14 @@ class Script {
         this.luaCode = luaCode;
 
         globals = JsePlatform.standardGlobals();
-        globals.load(new StringReader(luaCode), name).call();
+        globals.load(new StringReader(ScriptManager.getLuaPrequal()), "luaPrequal").call();
         // Call init function which normally saves this APIObject
         globals.get("init").call(CoerceJavaToLua.coerce(APIObject.getAPIObject()));
-        luaGetMangaList = globals.get("getMangaList");
+
+        globals.load(new StringReader(luaCode), name).call();
+        luaGetMangaListPage1 = globals.get("getMangaListPage1");
+        luaGetMangaListPreviousPage = globals.get("getMangaListPreviousPage");
+        luaGetMangaListNextPage = globals.get("getMangaListNextPage");
         luaGetMangaChapterList = globals.get("getMangaChapterList");
     }
 
@@ -42,8 +49,13 @@ class Script {
         return name;
     }
 
-    public List<Manga> getMangaList() {
-        LuaValue result = luaGetMangaList.call();
+    public List<Manga> getMangaListPage1() { return getMangaList(luaGetMangaListPage1); }
+    public List<Manga> getMangaListPreviousPage() { return getMangaList(luaGetMangaListPreviousPage); }
+    public List<Manga> getMangaListNextPage() { return getMangaList(luaGetMangaListNextPage); }
+
+
+    private List<Manga> getMangaList(LuaValue luaGetMangaListFunc) {
+        LuaValue result = luaGetMangaListFunc.call();
         LuaTable resTable = result.checktable();
 
         ArrayList<Manga> mangaList = new ArrayList<Manga>();

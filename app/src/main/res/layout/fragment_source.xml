@@ -27,6 +27,27 @@
         android:layout_height="wrap_content"
         android:id="@+id/mangaListView"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/testSectionText" />
+        android:layout_below="@+id/testSectionText"
+        android:layout_above="@+id/previousChapterPageButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Previous Page"
+        android:id="@+id/previousChapterPageButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next Page"
+        android:id="@+id/nextChapterPageButton"
+        android:layout_alignBottom="@+id/previousChapterPageButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/testSectionText"
+        android:layout_toEndOf="@+id/testSectionText" />
 
 </RelativeLayout>
