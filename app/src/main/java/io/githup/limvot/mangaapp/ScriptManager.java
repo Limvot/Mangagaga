@@ -75,7 +75,7 @@ public class ScriptManager {
                         "   pageSource = apiObj:readFile(path)\n" +
                         "   apiObj:note('LuaScript downloaded (for chapter): ' .. path)\n" +
                         "   daList = {}\n" +
-                        "   regex = '<a href=\"/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)\">(.-)</a>'\n" +
+                        "   regex = '<a href=\"/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)?id.-\".->(.-)</a>'\n" +
                         "   apiObj:note('Chapter List Regex: ' .. regex)\n" +
                         "   beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)\n" +
                         "   index = 0\n" +
@@ -92,8 +92,8 @@ public class ScriptManager {
                         "\n" +
                         "function getMangaChapterPage(manga, chapter, page)\n" +
                         "   if not chapter['chapterSetUp'] then\n" +
-                        "       pageURL = 'The Page URL is: ' .. 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '/' .. chapter['url']\n" +
-                        "       apiObj:note(pageURL)\n" +
+                        "       pageURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '/' .. chapter['url']\n" +
+                        "       apiObj:note('The Page URL is: ' .. pageURL)\n" +
                         "       path = apiObj:download(pageURL)\n" +
                         "       apiObj:note('After download')\n" +
                         "       pageSource = apiObj:readFile(path)\n" +
@@ -101,15 +101,18 @@ public class ScriptManager {
                         "       apiObj:note('Page List Regex: ' .. regex)\n" +
                         "       beginning, ending, pageURL = string.find(pageSource, regex)\n" +
                         "       index = 0\n" +
+                        "       daList = {}\n" +
                         "       while ending do\n" +
                         "           print('Page URL: ' .. pageURL)\n" +
                         "           daList[index] = {url = pageURL}\n" +
                         "           beginning, ending, pageURL = string.find(pageSource, regex, ending+1)\n" +
                         "           index = index + 1\n" +
                         "       end\n" +
+                        "       daList['numPages'] = index\n" +
+                        "       chapter['pageList'] = daList\n" +
                         "       chapter['chapterSetUp'] = true\n" +
                         "   end\n" +
-                        "   return 'chapter[page]'\n" +
+                        "   return apiObj:download(chapter['pageList'][page]['url'])\n" +
                         "end\n" +
                         "\n";
 
