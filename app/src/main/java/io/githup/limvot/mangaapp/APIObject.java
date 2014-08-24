@@ -29,7 +29,12 @@ public class APIObject {
 
     public static String readFile(String absolutePath) {
         Log.i("Reader: ", "Path is: " + absolutePath);
-        return Utilities.readFile(absolutePath);
+        try {
+            return Utilities.readFile(absolutePath);
+        } catch (Exception e) {
+            Log.e("Could not open in APIObject:readFile", e.toString());
+        }
+        return "FAILURE";
     }
     public static String slice(String toSlice, int a, int b) {
         Log.i("Slicer: ", toSlice);

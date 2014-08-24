@@ -169,17 +169,22 @@ public class Utilities {
         return resultingPath;
     }
 
-    public static String readFile(String absolutePath) {
-        String fileString = "";
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(absolutePath)));
-            StringBuilder sb = new StringBuilder();
-            for (String line = reader.readLine(); line != null; line = reader.readLine())
-                sb.append(line).append("\n");
-            fileString = sb.toString();
-        } catch (Exception e) {
-            Log.e("Script", e.toString());
-        }
-        return fileString;
+    public static String readFile(String absolutePath) throws IOException {
+        return readFile(new FileInputStream(absolutePath));
+    }
+
+    public static String readFile(InputStream input) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+        StringBuilder sb = new StringBuilder();
+        for (String line = reader.readLine(); line != null; line = reader.readLine())
+            sb.append(line).append("\n");
+        return sb.toString();
+    }
+
+    public static void copyStreams(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int readBytes;
+        while( (readBytes = in.read(buffer)) != -1)
+            out.write(buffer, 0, readBytes);
     }
 }
