@@ -168,6 +168,7 @@ public class ImageViewerActivity extends Activity {
     {
         String imagepath = "/storage/sdcard0/Download/11th_doctor_wal_06.jpg";
         Script source = ScriptManager.getScriptManager().getCurrentSource();
+        Log.i("DISPLAY IMAGE", Integer.toString(source.getNumPages()));
         imagepath = source.downloadPage();
         Log.i("Display image!", imagepath);
         ImageManager im = ImageManager.getImageManager();
