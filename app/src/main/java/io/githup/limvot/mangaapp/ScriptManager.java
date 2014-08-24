@@ -90,8 +90,23 @@ public class ScriptManager {
                         "end\n" +
                         "\n" +
                         "\n" +
+                        "function getMangaChapterNumPages(manga, chapter)\n" +
+                        "   if not chapter['chapterSetUp'] then\n" +
+                        "       setUpChapter(manga, chapter)\n" +
+                        "   end\n" +
+                        "   return chapter['pageList']['numPages']\n" +
+                        "end\n" +
+                        "\n" +
+                        "\n" +
                         "function getMangaChapterPage(manga, chapter, page)\n" +
                         "   if not chapter['chapterSetUp'] then\n" +
+                        "       setUpChapter(manga, chapter)\n" +
+                        "   end\n" +
+                        "   return apiObj:download(chapter['pageList'][page]['url'])\n" +
+                        "end\n" +
+                        "\n" +
+                        "\n" +
+                        "function setUpChapter(manga, chapter)\n" +
                         "       pageURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '/' .. chapter['url']\n" +
                         "       apiObj:note('The Page URL is: ' .. pageURL)\n" +
                         "       path = apiObj:download(pageURL)\n" +
@@ -111,8 +126,6 @@ public class ScriptManager {
                         "       daList['numPages'] = index\n" +
                         "       chapter['pageList'] = daList\n" +
                         "       chapter['chapterSetUp'] = true\n" +
-                        "   end\n" +
-                        "   return apiObj:download(chapter['pageList'][page]['url'])\n" +
                         "end\n" +
                         "\n";
 
