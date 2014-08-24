@@ -4,6 +4,7 @@ import io.githup.limvot.mangaapp.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 
 
@@ -50,6 +53,9 @@ public class ImageViewerActivity extends Activity {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
+
+    private Button backButton;
+    private Button nextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +119,28 @@ public class ImageViewerActivity extends Activity {
                 }
             }
         });
+
+        nextButton = (Button) findViewById(R.id.forward_button);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             Script source = ScriptManager.getScriptManager().getCurrentSource();
+             int i = source.getCurrentPage() + 1;
+             source.setCurrentPage(i);
+             displayImage();
+         }
+         });
+
+        backButton = (Button) findViewById(R.id.back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             Script source = ScriptManager.getScriptManager().getCurrentSource();
+             int i = source.getCurrentPage() - 1;
+             source.setCurrentPage(i);
+             displayImage();
+         }
+         });
 
         this.displayImage();
         // Upon interacting with UI controls, delay any scheduled hide()
