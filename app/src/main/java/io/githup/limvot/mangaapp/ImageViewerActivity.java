@@ -11,7 +11,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,7 +28,7 @@ import android.widget.ImageView;
  *
  * @see SystemUiHider
  */
-public class ImageViewerActivity extends Activity {
+public class ImageViewerActivity extends Activity implements GestureDetector.OnGestureListener {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -56,6 +59,8 @@ public class ImageViewerActivity extends Activity {
 
     private Button backButton;
     private Button nextButton;
+    private GestureDetectorCompat detector;
+    private View.OnTouchListener gestureListen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,8 @@ public class ImageViewerActivity extends Activity {
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
+
+        detector = new GestureDetectorCompat(this,this);
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -120,39 +127,13 @@ public class ImageViewerActivity extends Activity {
             }
         });
 
-        nextButton = (Button) findViewById(R.id.forward_button);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-             Script source = ScriptManager.getScriptManager().getCurrentSource();
-             int total = source.getNumPages();
-             int i = source.getCurrentPage();
-             Log.d("onClick", Integer.toString(total));
-             if(i < total-1) {
-                 source.setCurrentPage(i+1);
-             } else {
-                 source.nextChapter();
-                 source.setCurrentPage(0);
-             }
-             displayImage();
-         }
-         });
-
-        backButton = (Button) findViewById(R.id.back_button);
-        backButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-             Script source = ScriptManager.getScriptManager().getCurrentSource();
-             int i = source.getCurrentPage();
-             if(i > 0) {
-                 source.setCurrentPage(i-1);
-             } else {
-                 source.previousChapter();
-                 source.setCurrentPage(source.getNumPages() - 1);
-             }
-             displayImage();
-         }
-         });
+        contentView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                detector.onTouchEvent(motionEvent);
+                return true;
+            }
+        });
 
         this.displayImage();
         // Upon interacting with UI controls, delay any scheduled hide()
@@ -169,6 +150,95 @@ public class ImageViewerActivity extends Activity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+    }
+
+    /**
+     * Gesture Listener method implementations.
+     */
+    @Override
+    public boolean onSingleTapUp(MotionEvent event)
+    {
+        float x;
+        x = event.getX();
+        if(x < 350)
+        {
+            Script source = ScriptManager.getScriptManager().getCurrentSource();
+            int total = source.getNumPages();
+            int i = source.getCurrentPage();
+            if(i < total-1) {
+                source.setCurrentPage(i+1);
+            } else {
+                source.nextChapter();
+                source.setCurrentPage(0);
+            }
+        }
+        else
+        {
+            Script source = ScriptManager.getScriptManager().getCurrentSource();
+            int i = source.getCurrentPage();
+            if(i > 0) {
+                source.setCurrentPage(i-1);
+            } else {
+                source.previousChapter();
+                source.setCurrentPage(source.getNumPages() - 1);
+            }
+        }
+        displayImage();
+        Log.d("onSingleTapUp","X: "+Float.toString(x));
+        return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent event)
+    {}
+
+    @Override
+    public void onLongPress(MotionEvent event)
+    {}
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distancex, float distancey)
+    {
+        return true;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velx, float vely)
+    {
+        Log.d("onFling", "Velx: "+Float.toString(velx));
+        if(velx > 0)
+        {
+            //swiped from left to right
+            Script source = ScriptManager.getScriptManager().getCurrentSource();
+            int total = source.getNumPages();
+            int i = source.getCurrentPage();
+            Log.d("onClick", Integer.toString(total));
+            if(i < total-1) {
+                source.setCurrentPage(i+1);
+            } else {
+                source.nextChapter();
+                source.setCurrentPage(0);
+            }
+        }
+        else
+        {
+            //swiped from right to left
+            Script source = ScriptManager.getScriptManager().getCurrentSource();
+            int i = source.getCurrentPage();
+            if(i > 0) {
+                source.setCurrentPage(i-1);
+            } else {
+                source.previousChapter();
+                source.setCurrentPage(source.getNumPages() - 1);
+            }
+        }
+        displayImage();
+        return true;
+    }
+
+    public boolean onDown(MotionEvent event)
+    {
+        return true;
     }
 
 
