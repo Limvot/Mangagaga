@@ -1,6 +1,7 @@
 package io.githup.limvot.mangaapp;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 
 /**
  * Created by nathan on 8/20/14.
+ * Modified by Pratik on 8/24/14.
  */
 public class ScriptManager {
     static ScriptManager scriptManager;
@@ -22,12 +24,12 @@ public class ScriptManager {
     public ScriptManager(Context ctx) {
         scriptList = new ArrayList<Script>();
 
-        File scriptDir = ctx.getDir("MangagagaScripts", Context.MODE_PRIVATE);
+        File scriptDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Scripts/");
 
         String[] arr = new String[] { "KissManga", "MangaHere", "MangaPanda", "Mangable", "Manga King"};
         for (String name : arr) {
             try {
-                File newScript = new File(scriptDir.getAbsolutePath(), name);
+                File newScript = new File(scriptDir, name);
                 newScript.createNewFile();
 
                 FileOutputStream fos = new FileOutputStream(newScript);

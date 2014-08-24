@@ -2,6 +2,8 @@ package io.githup.limvot.mangaapp;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -12,6 +14,10 @@ import org.luaj.vm2.lib.jse.*;
 import java.io.StringReader;
 import android.content.Intent;
 
+import java.io.File;
+
+// Created by Nathan Braswell on 8/19/14
+// Modified by Pratik Gangwani on 8/24/14
 
 public class HomeScreen extends Activity {
 
@@ -23,6 +29,23 @@ public class HomeScreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        File newFolder = new File(Environment.getExternalStorageDirectory(), "Mangagaga");
+        File newFolder1 = new File(newFolder, "Downloaded");
+        File newFolder2 = new File(newFolder, "Scripts");
+        File newFolder3 = new File(newFolder, "Cache");
+
+        if (!newFolder.exists()) {
+            try {
+
+                newFolder.mkdir();
+                newFolder1.mkdir();
+                newFolder2.mkdir();
+                newFolder3.mkdir();
+
+            } catch (Exception e) {
+                Log.d("OnCreate:", e.toString());
+            }
+        }
 
         // Set up the script manager
         ScriptManager.createScriptManager(this);

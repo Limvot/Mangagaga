@@ -2,6 +2,7 @@ package io.githup.limvot.mangaapp;
 
 /**
  * Created by marcus on 8/19/14.
+ * modified by pratik on 8/24/14
  */
 
 import android.os.AsyncTask;
@@ -92,8 +93,8 @@ public class Utilities {
                         filename += ".zip";
                     }
 
-                    resultingPath = Environment.getExternalStorageDirectory() +"/"+ Environment.DIRECTORY_DOWNLOADS+"/"+filename;
-                    File file = new File(Environment.getExternalStorageDirectory()+"/"+Environment.DIRECTORY_DOWNLOADS+"/", filename);
+                    resultingPath = Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/" + filename;
+                    File file = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/", filename);
                     Log.i("DownloadSource", file.toString());
                     try{
                         file.createNewFile();
@@ -129,7 +130,7 @@ public class Utilities {
                         Log.d("DownloadSource", "Removed '?' and renamed file to: "+filename);
                     }
                     BufferedReader reader = new BufferedReader(new InputStreamReader(sourceSite.openStream()));
-                    File file = new File(Environment.DIRECTORY_DOWNLOADS,filename);
+                    File file = new File (Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/", filename);
                     try{
                         file.createNewFile();
                     }
@@ -139,7 +140,7 @@ public class Utilities {
                         Log.e("DownloadSource", e.toString());
                     }
 
-                    resultingPath = Environment.getExternalStorageDirectory() +"/"+ Environment.DIRECTORY_DOWNLOADS+"/"+filename;
+                    resultingPath = Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/" + filename;
                     FileWriter fw = new FileWriter(resultingPath);
                     BufferedWriter writer = new BufferedWriter(fw);
                     String input;
