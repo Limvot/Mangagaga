@@ -125,8 +125,12 @@ public class ImageViewerActivity extends Activity {
          @Override
          public void onClick(View v) {
              Script source = ScriptManager.getScriptManager().getCurrentSource();
-             int i = source.getCurrentPage() + 1;
-             source.setCurrentPage(i);
+             int total = source.getNumPages();
+             int i = source.getCurrentPage();
+             Log.d("onClick", Integer.toString(total));
+             if(i < total-1) {
+                 source.setCurrentPage(i+1);
+             }
              displayImage();
          }
          });
@@ -136,8 +140,10 @@ public class ImageViewerActivity extends Activity {
          @Override
          public void onClick(View v) {
              Script source = ScriptManager.getScriptManager().getCurrentSource();
-             int i = source.getCurrentPage() - 1;
-             source.setCurrentPage(i);
+             int i = source.getCurrentPage();
+             if(i > 0) {
+                 source.setCurrentPage(i-1);
+             }
              displayImage();
          }
          });
