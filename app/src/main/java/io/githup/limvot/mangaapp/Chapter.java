@@ -7,8 +7,10 @@ import org.luaj.vm2.LuaTable;
  */
 public class Chapter {
     private LuaTable backingTable;
-    public Chapter(LuaTable tableIn) {
+    private int chapterNum;
+    public Chapter(LuaTable tableIn, int num) {
         backingTable = tableIn;
+        chapterNum = num;
     }
     public String toString() {
         return backingTable.get("title").toString();
@@ -16,4 +18,5 @@ public class Chapter {
     public LuaTable getTable() {
         return backingTable;
     }
+    public int getNum() { return chapterNum; }
 }

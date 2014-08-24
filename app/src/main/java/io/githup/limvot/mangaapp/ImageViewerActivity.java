@@ -130,6 +130,8 @@ public class ImageViewerActivity extends Activity {
              Log.d("onClick", Integer.toString(total));
              if(i < total-1) {
                  source.setCurrentPage(i+1);
+             } else {
+                 source.nextChapter();
              }
              displayImage();
          }
@@ -143,6 +145,8 @@ public class ImageViewerActivity extends Activity {
              int i = source.getCurrentPage();
              if(i > 0) {
                  source.setCurrentPage(i-1);
+             } else {
+                 source.previousChapter();
              }
              displayImage();
          }
@@ -200,10 +204,9 @@ public class ImageViewerActivity extends Activity {
 
     public void displayImage()
     {
-        String imagepath = "/storage/sdcard0/Download/11th_doctor_wal_06.jpg";
         Script source = ScriptManager.getScriptManager().getCurrentSource();
         Log.i("DISPLAY IMAGE", Integer.toString(source.getNumPages()));
-        imagepath = source.downloadPage();
+        String imagepath = source.downloadPage();
         Log.i("Display image!", imagepath);
         ImageManager im = ImageManager.getImageManager();
 
