@@ -62,11 +62,6 @@ public class HomeScreen extends Activity {
         LuaValue echoFun = globals.get("Echo");
         scriptView.append(echoFun.call(LuaValue.valueOf("Java String!")).toString());
 
-//        downloader = new Utilities();
-//        downloader.SetSource("http://kissmanga.com/Manga/Naruto");
-//        String res = downloader.Download();
-//        Log.i("onCreate", res);
-
         scriptView.append("\n");
 
         Intent sourceView = new Intent(this, SourceActivity.class);

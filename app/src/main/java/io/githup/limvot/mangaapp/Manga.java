@@ -13,6 +13,15 @@ public class Manga {
     public String toString() {
         return backingTable.get("title").toString();
     }
+    public String getTitle() {
+        return backingTable.get("title").toString();
+    }
+    public String getDescription() {
+        String description =  backingTable.get("description").toString();
+        if (description == "nil")
+            return "No Description";
+        return description;
+    }
     public LuaTable getTable() {
         return backingTable;
     }

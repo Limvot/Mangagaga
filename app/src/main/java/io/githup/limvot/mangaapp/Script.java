@@ -25,6 +25,7 @@ class Script {
     private LuaValue luaGetMangaListPage1;
     private LuaValue luaGetMangaListPreviousPage;
     private LuaValue luaGetMangaListNextPage;
+    private LuaValue luaInitManga;
     private LuaValue luaGetMangaChapterList;
     private LuaValue luaGetMangaChapterPage;
     private LuaValue luaGetMangaChapterNumPages;
@@ -47,6 +48,7 @@ class Script {
         luaGetMangaListPage1 = globals.get("getMangaListPage1");
         luaGetMangaListPreviousPage = globals.get("getMangaListPreviousPage");
         luaGetMangaListNextPage = globals.get("getMangaListNextPage");
+        luaInitManga = globals.get("initManga");
         luaGetMangaChapterList = globals.get("getMangaChapterList");
         luaGetMangaChapterPage = globals.get("getMangaChapterPage");
         luaGetMangaChapterNumPages = globals.get("getMangaChapterNumPages");
@@ -71,6 +73,10 @@ class Script {
             mangaList.add(new Manga(resTable.get(i).checktable()));
 
         return mangaList;
+    }
+
+    public void initManga() {
+        luaInitManga.call(currentManga.getTable());
     }
 
     public List<Chapter> getMangaChapterList() {

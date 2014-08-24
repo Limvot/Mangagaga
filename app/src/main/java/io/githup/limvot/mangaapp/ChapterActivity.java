@@ -30,8 +30,9 @@ public class ChapterActivity extends Activity {
         description = (TextView) findViewById(R.id.mangaDescriptionTextView);
 
         currentSource = ScriptManager.getScriptManager().getCurrentSource();
-
+        currentSource.initManga();
         title.setText(currentSource.getCurrentManga().toString());
+        description.setText(currentSource.getCurrentManga().getDescription());
 
         chapterListView = (ListView) findViewById(R.id.mangaChapterListView);
         ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,

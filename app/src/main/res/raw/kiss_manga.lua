@@ -35,12 +35,18 @@ function getMangaList(url)
 end
 
 
-function getMangaChapterList(manga)
+function initManga(manga)
    mangaURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url']
    apiObj:note('Manga Path: ' .. mangaURL)
    path = apiObj:download(mangaURL)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for chapter): ' .. path)
+
+   -- Set up manga description and other nicities
+   descriptionRegex = '<span class="info">Summary:</span>.-<p.->(.-)</p>'
+   _, _, mangaDescription = string.find(pageSource, descriptionRegex)
+   manga['description'] = mangaDescription
+
    daList = {}
    regex = '<a +href="/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)?id.-".->(.-)</a>'
    apiObj:note('Chapter List Regex: ' .. regex)
@@ -53,7 +59,11 @@ function getMangaChapterList(manga)
        index = index + 1
    end
    daList['numChapters'] = index
-   return daList
+   manga['chapter_list'] = daList
+end
+
+function getMangaChapterList(manga)
+    return manga['chapter_list']
 end
 
 
