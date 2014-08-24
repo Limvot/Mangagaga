@@ -55,7 +55,7 @@ public class ScriptManager {
                         "   pageSource = apiObj:readFile(path)\n" +
                         "   apiObj:note('LuaScript downloaded (for manga): ' .. path)\n" +
                         "   daList = {}\n" +
-                        "   regex = '<a href=\"/Manga/(.-)\">(.-)</a>'\n" +
+                        "   regex = '</div>\\'>.-<a href=\"/Manga/(.-)\">(.-)</a>'\n" +
                         "   apiObj:note('Manga List Regex: ' .. regex)\n" +
                         "   beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex)\n" +
                         "   index = 0\n" +
@@ -77,7 +77,7 @@ public class ScriptManager {
                         "   pageSource = apiObj:readFile(path)\n" +
                         "   apiObj:note('LuaScript downloaded (for chapter): ' .. path)\n" +
                         "   daList = {}\n" +
-                        "   regex = '<a href=\"/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)?id.-\".->(.-)</a>'\n" +
+                        "   regex = '<a +href=\"/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)?id.-\".->(.-)</a>'\n" +
                         "   apiObj:note('Chapter List Regex: ' .. regex)\n" +
                         "   beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)\n" +
                         "   index = 0\n" +

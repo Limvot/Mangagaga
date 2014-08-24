@@ -132,6 +132,7 @@ public class ImageViewerActivity extends Activity {
                  source.setCurrentPage(i+1);
              } else {
                  source.nextChapter();
+                 source.setCurrentPage(0);
              }
              displayImage();
          }
@@ -147,6 +148,7 @@ public class ImageViewerActivity extends Activity {
                  source.setCurrentPage(i-1);
              } else {
                  source.previousChapter();
+                 source.setCurrentPage(source.getNumPages() - 1);
              }
              displayImage();
          }
