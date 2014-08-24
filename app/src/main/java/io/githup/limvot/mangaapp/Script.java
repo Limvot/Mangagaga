@@ -32,6 +32,7 @@ class Script {
     private Manga currentManga;
     private Chapter currentChapter;
     private int currentPage;
+    ArrayList<Chapter> mangaChapterList;
 
     public Script(String name, String luaCode) {
         this.name = name;
@@ -76,10 +77,10 @@ class Script {
         LuaValue result = luaGetMangaChapterList.call(currentManga.getTable());
         LuaTable resTable = result.checktable();
 
-        ArrayList<Chapter> mangaChapterList = new ArrayList<Chapter>();
+        mangaChapterList = new ArrayList<Chapter>();
         Log.i("getMangaChapterList", "Woooooo: " + resTable.length());
         for (int i = 0; i < resTable.get("numChapters").toint(); i++)
-            mangaChapterList.add(new Chapter(resTable.get(i).checktable()));
+            mangaChapterList.add(new Chapter(resTable.get(i).checktable(), i));
 
         return mangaChapterList;
     }
@@ -101,4 +102,20 @@ class Script {
 
     public void setCurrentPage(int page) { currentPage = page; }
     public int getCurrentPage() { return currentPage; }
+
+
+    // THESE LOOK BACKWARDS
+    // But they're not. Or they are. (Because Chapter 1 is at the 'end' of the list.)
+    // Make this script decidable later
+    public void previousChapter() {
+        Log.i("PREVOUS CHAPTER", Integer.toString(currentChapter.getNum()));
+        if (currentChapter.getNum() < mangaChapterList.size()-1)
+            currentChapter = mangaChapterList.get(currentChapter.getNum()+1);
+    }
+
+    public void nextChapter() {
+        Log.i("NEXT CHAPTER", Integer.toString(currentChapter.getNum()));
+        if (currentChapter.getNum() > 0)
+            currentChapter = mangaChapterList.get(currentChapter.getNum()-1);
+    }
 }
