@@ -3,6 +3,7 @@ package io.githup.limvot.mangaapp;
 import io.githup.limvot.mangaapp.util.SystemUiHider;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -33,7 +34,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-    private static final boolean AUTO_HIDE = true;
+    private static final boolean AUTO_HIDE = false;
 
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -57,8 +58,6 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
      */
     private SystemUiHider mSystemUiHider;
 
-    private Button backButton;
-    private Button nextButton;
     private GestureDetectorCompat detector;
     private View.OnTouchListener gestureListen;
 
@@ -67,6 +66,10 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_image_viewer);
+
+        // Hide the action bar.
+        final ActionBar actionBar = getActionBar();
+        actionBar.hide();
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
