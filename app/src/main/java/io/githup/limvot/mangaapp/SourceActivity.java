@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import java.util.Arrays;
 
@@ -182,6 +183,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
             
             title.setText("Manga List");
 
+            final Spinner mangaListTypeSpinner = (Spinner) rootView.findViewById(R.id.manga_list_type_spinner);
             final ListView mangaListView = (ListView) rootView.findViewById(R.id.mangaListView);
             final Button previousButton = (Button) rootView.findViewById(R.id.previousChapterPageButton);
             final Button nextButton = (Button) rootView.findViewById(R.id.nextChapterPageButton);
@@ -199,6 +201,26 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
                     scriptManager.setCurrentSource(sourceNumber);
                     scriptManager.getScript(sourceNumber).setCurrentManga((Manga) mangaListView.getItemAtPosition(i));
                     startActivity(chapterView);
+                }
+            });
+
+            final ArrayAdapter<String> mangaListTypes = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
+                    scriptManager.getScript(sourceNumber).getMangaListTypes());
+            mangaListTypeSpinner.setAdapter(mangaListTypes);
+            mangaListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    String selected = adapterView.getItemAtPosition(i).toString();
+                    Log.i("New selected:", selected);
+                    // Set the new type and get its first page
+                    ScriptManager.getScriptManager().getCurrentSource().setMangaListType(selected);
+                    arrayAdapter.clear();
+                    arrayAdapter.addAll(scriptManager.getScript(sourceNumber).getMangaListPage1());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                    Log.i("Nothing selected:", "Nothin!");
                 }
             });
 

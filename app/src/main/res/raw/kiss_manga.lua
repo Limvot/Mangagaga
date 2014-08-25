@@ -1,18 +1,58 @@
 print 'Hello from Lua!!!! Own file Woop Woop'
+
 pageNo = 1
+mangaListType = 'All'
+
+function getMangaListTypes()
+    titleList = { }
+    titleList[0] = 'All'
+    titleList[1] = 'Most Popular'
+    titleList[2] = 'Latest Update'
+    titleList[3] = 'Newest'
+    titleList['numTypes'] = 4
+    allChar = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    i = 1
+    while i < (string.len(allChar) + 1) do
+        titleList[titleList['numTypes'] + i - 1] = string.sub(allChar, i, i)
+        i = i + 1
+    end
+    titleList['numTypes'] = titleList['numTypes'] + i
+    return titleList
+end
+
+function setMangaListType(type)
+    mangaListType = type
+end
+
 function getMangaListPage1()
-   pageNo = 1
-   return getMangaList('http://kissmanga.com/MangaList')
+    pageNo = 1
+    return getMangaListPage()
 end
 
 function getMangaListPreviousPage()
    if pageNo > 1 then pageNo = pageNo -1 end
-   return getMangaList('http://kissmanga.com/MangaList?page=' .. pageNo)
+   return getMangaListPage()
 end
 
 function getMangaListNextPage()
    pageNo = pageNo + 1
-   return getMangaList('http://kissmanga.com/MangaList?page=' .. pageNo)
+   return getMangaListPage()
+end
+
+function getMangaListPage()
+    if mangaListType == 'All' then
+        return getMangaList('http://kissmanga.com/MangaList?page=' .. pageNo)
+    elseif mangaListType == 'Most Popular' then
+        return getMangaList('http://kissmanga.com/MangaList/MostPopular?page=' .. pageNo)
+    elseif mangaListType == 'Latest Update' then
+        return getMangaList('http://kissmanga.com/MangaList/LatestUpdate?page=' .. pageNo)
+    elseif mangaListType == 'Newest' then
+        return getMangaList('http://kissmanga.com/MangaList/Newest?page=' .. pageNo)
+    elseif mangaListType == '#' then
+        return getMangaList('http://kissmanga.com/MangaList?c=0&page=' .. pageNo)
+    end
+
+    return getMangaList('http://kissmanga.com/MangaList?c=' .. mangaListType .. '&page=' .. pageNo)
 end
 
 function getMangaList(url)

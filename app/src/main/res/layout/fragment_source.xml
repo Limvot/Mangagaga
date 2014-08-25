@@ -27,8 +27,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/mangaListView"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/testSectionText"
-        android:layout_above="@+id/previousChapterPageButton" />
+        android:layout_above="@+id/previousChapterPageButton"
+        android:layout_below="@+id/manga_list_type_spinner" />
 
     <Button
         android:layout_width="wrap_content"
@@ -49,5 +49,13 @@
         android:layout_alignParentEnd="true"
         android:layout_toRightOf="@+id/testSectionText"
         android:layout_toEndOf="@+id/testSectionText" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/manga_list_type_spinner"
+        android:layout_below="@+id/testSectionText"
+        android:layout_toRightOf="@+id/section_label"
+        android:layout_toEndOf="@+id/section_label" />
 
 </RelativeLayout>

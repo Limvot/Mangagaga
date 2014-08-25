@@ -1,6 +1,5 @@
 package io.githup.limvot.mangaapp;
 
-import android.provider.MediaStore;
 import android.util.Log;
 
 import org.luaj.vm2.Globals;
@@ -11,7 +10,6 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,6 +20,8 @@ class Script {
     private String luaCode;
 
     private Globals globals;
+    private LuaValue luaGetMangaListTypes;
+    private LuaValue luaSetMangaListType;
     private LuaValue luaGetMangaListPage1;
     private LuaValue luaGetMangaListPreviousPage;
     private LuaValue luaGetMangaListNextPage;
@@ -45,6 +45,8 @@ class Script {
         globals.get("init").call(CoerceJavaToLua.coerce(APIObject.getAPIObject()));
 
         globals.load(new StringReader(luaCode), name).call();
+        luaGetMangaListTypes = globals.get("getMangaListTypes");
+        luaSetMangaListType = globals.get("setMangaListType");
         luaGetMangaListPage1 = globals.get("getMangaListPage1");
         luaGetMangaListPreviousPage = globals.get("getMangaListPreviousPage");
         luaGetMangaListNextPage = globals.get("getMangaListNextPage");
@@ -57,6 +59,23 @@ class Script {
     public String getName() {
         return name;
     }
+
+    public List<String> getMangaListTypes() {
+        LuaValue result = luaGetMangaListTypes.call();
+        LuaTable resTable = result.checktable();
+
+        ArrayList<String> typeList = new ArrayList<String>();
+        Log.i("getMangaTypeList", "WoopWoopWoop: " + resTable.length());
+        for (int i = 0; i < resTable.get("numTypes").toint(); i++)
+            typeList.add(resTable.get(i).toString());
+
+        return typeList;
+    }
+
+    public void setMangaListType(String type) {
+        luaSetMangaListType.call(type);
+    }
+
 
     public List<Manga> getMangaListPage1() { return getMangaList(luaGetMangaListPage1); }
     public List<Manga> getMangaListPreviousPage() { return getMangaList(luaGetMangaListPreviousPage); }
