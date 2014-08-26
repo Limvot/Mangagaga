@@ -19,7 +19,6 @@ public class ChapterActivity extends Activity {
     private TextView description;
     private ListView chapterListView;
 
-    private Script currentSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,22 +28,22 @@ public class ChapterActivity extends Activity {
         title = (TextView) findViewById(R.id.mangaTitleTextView);
         description = (TextView) findViewById(R.id.mangaDescriptionTextView);
 
-        currentSource = ScriptManager.getScriptManager().getCurrentSource();
-        currentSource.initManga();
-        title.setText(currentSource.getCurrentManga().toString());
-        description.setText(currentSource.getCurrentManga().getDescription());
+        MangaManager mangaManager = MangaManager.getMangaManager();
+
+        title.setText(mangaManager.getCurrentManga().toString());
+        description.setText(mangaManager.getCurrentManga().getDescription());
 
         chapterListView = (ListView) findViewById(R.id.mangaChapterListView);
         ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,
-                currentSource.getMangaChapterList());
+                mangaManager.getMangaChapterList());
         chapterListView.setAdapter(arrayAdapter);
 
         chapterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.i("onItemClick", chapterListView.getItemAtPosition(i).toString());
-                currentSource.setCurrentChapter((Chapter) chapterListView.getItemAtPosition(i));
-                currentSource.setCurrentPage(0);
+                MangaManager.getMangaManager().setCurrentChapter((Chapter) chapterListView.getItemAtPosition(i));
+                MangaManager.getMangaManager().setCurrentPageNum(0);
                 Intent chapterView = new Intent(ChapterActivity.this, ImageViewerActivity.class);
                 startActivity(chapterView);
             }

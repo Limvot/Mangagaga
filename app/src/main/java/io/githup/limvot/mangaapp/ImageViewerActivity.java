@@ -161,29 +161,28 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
     @Override
     public boolean onSingleTapUp(MotionEvent event)
     {
+        MangaManager mangaManager = MangaManager.getMangaManager();
         float x;
         x = event.getX();
         if(x < 350)
         {
-            Script source = ScriptManager.getScriptManager().getCurrentSource();
-            int total = source.getNumPages();
-            int i = source.getCurrentPage();
+            int total = mangaManager.getNumPages();
+            int i = mangaManager.getCurrentPageNum();
             if(i < total-1) {
-                source.setCurrentPage(i+1);
+                mangaManager.setCurrentPageNum(i+1);
             } else {
-                source.nextChapter();
-                source.setCurrentPage(0);
+                mangaManager.nextChapter();
+                mangaManager.setCurrentPageNum(0);
             }
         }
         else
         {
-            Script source = ScriptManager.getScriptManager().getCurrentSource();
-            int i = source.getCurrentPage();
+            int i = mangaManager.getCurrentPageNum();
             if(i > 0) {
-                source.setCurrentPage(i-1);
+                mangaManager.setCurrentPageNum(i-1);
             } else {
-                source.previousChapter();
-                source.setCurrentPage(source.getNumPages() - 1);
+                mangaManager.previousChapter();
+                mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
             }
         }
         displayImage();
@@ -208,31 +207,30 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velx, float vely)
     {
+        MangaManager mangaManager = MangaManager.getMangaManager();
         Log.d("onFling", "Velx: "+Float.toString(velx));
         if(velx > 0)
         {
             //swiped from left to right
-            Script source = ScriptManager.getScriptManager().getCurrentSource();
-            int total = source.getNumPages();
-            int i = source.getCurrentPage();
+            int total = mangaManager.getNumPages();
+            int i = mangaManager.getCurrentPageNum();
             Log.d("onClick", Integer.toString(total));
             if(i < total-1) {
-                source.setCurrentPage(i+1);
+                mangaManager.setCurrentPageNum(i+1);
             } else {
-                source.nextChapter();
-                source.setCurrentPage(0);
+                mangaManager.nextChapter();
+                mangaManager.setCurrentPageNum(0);
             }
         }
         else
         {
             //swiped from right to left
-            Script source = ScriptManager.getScriptManager().getCurrentSource();
-            int i = source.getCurrentPage();
+            int i = mangaManager.getCurrentPageNum();
             if(i > 0) {
-                source.setCurrentPage(i-1);
+                mangaManager.setCurrentPageNum(i-1);
             } else {
-                source.previousChapter();
-                source.setCurrentPage(source.getNumPages() - 1);
+                mangaManager.previousChapter();
+                mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
             }
         }
         displayImage();
@@ -279,12 +277,9 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
 
     public void displayImage()
     {
-        Script source = ScriptManager.getScriptManager().getCurrentSource();
-        Log.i("DISPLAY IMAGE", Integer.toString(source.getNumPages()));
-        String imagepath = source.downloadPage();
+        String imagepath = MangaManager.getMangaManager().getCurrentPage();
         Log.i("Display image!", imagepath);
         ImageManager im = ImageManager.getImageManager();
-
         ImageView contentview = (ImageView) findViewById(R.id.fullscreen_content);
         Bitmap page = im.getNext(imagepath);
         contentview.setImageBitmap(page);
