@@ -1,10 +1,8 @@
 package io.githup.limvot.mangaapp;
 
 import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by nathan on 8/25/14.
@@ -17,15 +15,15 @@ public class MangaManager {
         return mangaManager;
     }
 
-    private static ScriptManager scriptManager;
-
+    private ScriptManager scriptManager;
+    private ArrayList<Chapter> chapterHistory;
     private Manga currentManga;
     private Chapter currentChapter;
     private int currentPage;
-    ArrayList<Chapter> mangaChapterList;
 
     MangaManager() {
         scriptManager = ScriptManager.getScriptManager();
+        chapterHistory = new ArrayList<Chapter>();
     }
 
     public void setCurrentManga(Manga manga) {
@@ -39,25 +37,39 @@ public class MangaManager {
 
     void setCurrentChapter(Chapter current) {
         currentChapter = current;
+        chapterHistory.add(0, current);
     }
 
     List<Chapter> getMangaChapterList() {
         return scriptManager.getCurrentSource().getMangaChapterList(currentManga);
     }
 
+    List<Chapter> getChapterHistoryList() {
+        return chapterHistory;
+    }
+
     // THESE LOOK BACKWARDS
     // But they're not. Or they are. (Because Chapter 1 is at the 'end' of the list.)
     // Make this script decidable later
-    public void previousChapter() {
+    public boolean previousChapter() {
+        List<Chapter> mangaChapterList = getMangaChapterList();
         Log.i("PREVOUS CHAPTER", Integer.toString(currentChapter.getNum()));
+        Log.i("PREVIOUS CHAPTER: size", Integer.toString(mangaChapterList.size()-1));
+
         if (currentChapter.getNum() < mangaChapterList.size()-1)
-            currentChapter = mangaChapterList.get(currentChapter.getNum()+1);
+            setCurrentChapter(mangaChapterList.get(currentChapter.getNum()+1));
+        else
+            return false;
+        return true;
     }
 
-    public void nextChapter() {
+    public boolean nextChapter() {
         Log.i("NEXT CHAPTER", Integer.toString(currentChapter.getNum()));
         if (currentChapter.getNum() > 0)
-            currentChapter = mangaChapterList.get(currentChapter.getNum()-1);
+            setCurrentChapter(getMangaChapterList().get(currentChapter.getNum()-1));
+        else
+            return false;
+        return true;
     }
 
     int getNumPages() {

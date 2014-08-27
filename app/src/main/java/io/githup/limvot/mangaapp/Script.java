@@ -100,7 +100,7 @@ class Script {
         ArrayList<Chapter> mangaChapterList = new ArrayList<Chapter>();
         Log.i("getMangaChapterList", "Woooooo: " + resTable.length());
         for (int i = 0; i < resTable.get("numChapters").toint(); i++)
-            mangaChapterList.add(new Chapter(resTable.get(i).checktable(), i));
+            mangaChapterList.add(new Chapter(manga, resTable.get(i).checktable(), i));
 
         return mangaChapterList;
     }

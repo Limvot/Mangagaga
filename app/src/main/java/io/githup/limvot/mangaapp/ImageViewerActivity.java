@@ -73,7 +73,9 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         Drawable d = new ColorDrawable(0);
         d.setAlpha(1);
         actionBar.setBackgroundDrawable(d);
+
         //actionBar.hide();
+
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
@@ -222,8 +224,9 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
             if(i < total-1) {
                 mangaManager.setCurrentPageNum(i+1);
             } else {
-                mangaManager.nextChapter();
-                mangaManager.setCurrentPageNum(0);
+                // Returns true if successful (has a next chapter)
+                if (mangaManager.nextChapter())
+                    mangaManager.setCurrentPageNum(0);
             }
         }
         else
@@ -233,8 +236,9 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
             if(i > 0) {
                 mangaManager.setCurrentPageNum(i-1);
             } else {
-                mangaManager.previousChapter();
-                mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
+                // Returns true if successful (has a previous chapter)
+                if (mangaManager.previousChapter())
+                    mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
             }
         }
         displayImage();

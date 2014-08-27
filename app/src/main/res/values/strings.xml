@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MangaApp</string>
+    <string name="app_name">Mangagaga</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_source">SourceActivity</string>
@@ -10,5 +10,6 @@
     <string name="forward_button">Next</string>
     <string name="back_button">Back</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_history">HistoryActivity</string>
 
 </resources>
