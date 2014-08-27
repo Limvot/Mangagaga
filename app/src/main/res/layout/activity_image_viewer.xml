@@ -5,6 +5,8 @@
     android:background="#000000"
     tools:context="io.githup.limvot.mangaapp.ImageViewerActivity">
 
+
+
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
@@ -28,6 +30,7 @@
             android:background="@color/black_overlay"
             android:orientation="horizontal"
             tools:ignore="UselessParent">
+
 
             <Button android:id="@+id/forward_button"
                 style="?metaButtonBarButtonStyle"
