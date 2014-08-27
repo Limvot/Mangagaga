@@ -17,11 +17,14 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.InputDevice;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+
 
 
 /**
@@ -74,6 +77,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         d.setAlpha(1);
         actionBar.setBackgroundDrawable(d);
         // actionBar.hide();
+
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
@@ -191,6 +195,13 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         }
         displayImage();
         Log.d("onSingleTapUp","X: "+Float.toString(x));
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.image_viewer, menu);
         return true;
     }
 
