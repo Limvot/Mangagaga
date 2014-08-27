@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -69,7 +70,10 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
 
         // Hide the action bar.
         final ActionBar actionBar = getActionBar();
-        actionBar.hide();
+        Drawable d = new ColorDrawable(0);
+        d.setAlpha(1);
+        actionBar.setBackgroundDrawable(d);
+        // actionBar.hide();
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
