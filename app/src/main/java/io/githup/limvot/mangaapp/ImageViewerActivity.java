@@ -218,8 +218,9 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
             if(i < total-1) {
                 mangaManager.setCurrentPageNum(i+1);
             } else {
-                mangaManager.nextChapter();
-                mangaManager.setCurrentPageNum(0);
+                // Returns true if successful (has a next chapter)
+                if (mangaManager.nextChapter())
+                    mangaManager.setCurrentPageNum(0);
             }
         }
         else
@@ -229,8 +230,9 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
             if(i > 0) {
                 mangaManager.setCurrentPageNum(i-1);
             } else {
-                mangaManager.previousChapter();
-                mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
+                // Returns true if successful (has a previous chapter)
+                if (mangaManager.previousChapter())
+                    mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
             }
         }
         displayImage();

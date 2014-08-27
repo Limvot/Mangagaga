@@ -6,9 +6,11 @@ import org.luaj.vm2.LuaTable;
  * Created by nathan on 8/22/14.
  */
 public class Chapter {
+    private Manga parentManga;
     private LuaTable backingTable;
     private int chapterNum;
-    public Chapter(LuaTable tableIn, int num) {
+    public Chapter(Manga parent, LuaTable tableIn, int num) {
+        parentManga = parent;
         backingTable = tableIn;
         chapterNum = num;
     }
@@ -19,4 +21,7 @@ public class Chapter {
         return backingTable;
     }
     public int getNum() { return chapterNum; }
+    public Manga getParentManga() {
+        return parentManga;
+    }
 }

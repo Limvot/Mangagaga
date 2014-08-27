@@ -6,6 +6,8 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.luaj.vm2.*;
@@ -52,20 +54,24 @@ public class HomeScreen extends Activity {
 
 
         setContentView(R.layout.activity_home_screen);
-        scriptView = (TextView) findViewById(R.id.script_box);
-        scriptView.append("\n");
 
-        String luaFunctionString = "function Echo(it) return 'Lua: ' .. it end";
+        Button browseSources = (Button) findViewById(R.id.browseSourcesButton);
+        browseSources.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sourceView = new Intent(HomeScreen.this, SourceActivity.class);
+                startActivity(sourceView);
+            }
+        });
 
-        Globals globals = JsePlatform.standardGlobals();
-        globals.load(new StringReader(luaFunctionString), "main.lua").call();
-        LuaValue echoFun = globals.get("Echo");
-        scriptView.append(echoFun.call(LuaValue.valueOf("Java String!")).toString());
-
-        scriptView.append("\n");
-
-        Intent sourceView = new Intent(this, SourceActivity.class);
-        startActivity(sourceView);
+        Button history = (Button) findViewById(R.id.historyButton);
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sourceView = new Intent(HomeScreen.this, HistoryActivity.class);
+                startActivity(sourceView);
+            }
+        });
 
     }
 
