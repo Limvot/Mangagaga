@@ -55,6 +55,14 @@ public class SettingsActivity extends Activity {
             }
         });
 
+        Button CFavorites = (Button) findViewById(R.id.buttonClearFavorites);
+        CFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MangaManager.getMangaManager().clearFavorites();
+            }
+        });
+
         Button CAll = (Button) findViewById(R.id.buttonClearAll);
         CAll.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -33,9 +33,20 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Clear Favorites"
+        android:id="@+id/buttonClearFavorites"
+        android:layout_below="@+id/buttonClearCache"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Clear All"
         android:id="@+id/buttonClearAll"
-        android:layout_below="@+id/buttonClearCache"
+        android:layout_below="@+id/buttonClearFavorites"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
