@@ -16,7 +16,9 @@
         android:text="Large Text"
         android:id="@+id/mangaTitleTextView"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_toLeftOf="@+id/favoriteCheckBox"
+        android:layout_toStartOf="@+id/favoriteCheckBox"
+        android:layout_marginRight="37dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -38,4 +40,14 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/mangaDescriptionTextView" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Favorite"
+        android:id="@+id/favoriteCheckBox"
+        android:layout_above="@+id/mangaDescriptionTextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:checked="false" />
 </RelativeLayout>

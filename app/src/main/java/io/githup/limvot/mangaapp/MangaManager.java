@@ -34,6 +34,7 @@ public class MangaManager {
 
     private ScriptManager scriptManager;
     private ArrayList<Chapter> chapterHistory;
+    private ArrayList<Manga> favoriteManga;
     private Manga currentManga;
     private Chapter currentChapter;
     private int currentPage;
@@ -45,6 +46,7 @@ public class MangaManager {
                 .setPrettyPrinting()
                 .create();
         chapterHistory = loadHistory();
+        favoriteManga = loadFavorites();
     }
 
     private ArrayList<Chapter> loadHistory() {
@@ -68,6 +70,52 @@ public class MangaManager {
         } catch (Exception e) {
             Log.i("SAVE_HISTORY", "Problem");
         }
+    }
+
+    public void clearHistory() {
+        chapterHistory.clear();
+        saveHistory();
+    }
+
+    private void saveFavorites() {
+        Log.i("SAVE_FAVORITES", "BEGINNING");
+        try {
+            File favorites = new File(Environment.getExternalStorageDirectory() + "/Mangagaga", "Favorites.json");
+            favorites.createNewFile();
+            FileWriter fw = new FileWriter(favorites.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(gson.toJson(favoriteManga));
+            bw.close();
+            Log.i("SAVE_FAVORITES", "SAVED");
+        } catch (Exception e) {
+            Log.i("SAVE_FAVORITES", "Problem");
+        }
+    }
+
+    private ArrayList<Manga> loadFavorites() {
+        try {
+            return gson.fromJson(Utilities.readFile(Environment.getExternalStorageDirectory() + "/Mangagaga/Favorites.json"), new TypeToken<ArrayList<Manga>>() {}.getType());
+        } catch (Exception e) {
+            return new ArrayList<Manga>();
+        }
+    }
+
+    public ArrayList<Manga> getFavoriteList() {
+        return favoriteManga;
+    }
+
+    public boolean isFavorite(Manga manga) {
+        return favoriteManga.contains(manga);
+    }
+
+    public void addFavorite(Manga manga) {
+        favoriteManga.add(manga);
+        saveFavorites();
+    }
+
+    public void removeFavorite(Manga manga) {
+        favoriteManga.remove(manga);
+        saveFavorites();
     }
 
     public void setCurrentManga(Manga manga) {
@@ -106,11 +154,6 @@ public class MangaManager {
         else
             return false;
         return true;
-    }
-
-    public void clearHistory() {
-        chapterHistory.clear();
-        saveHistory();
     }
 
     public boolean nextChapter() {

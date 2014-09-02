@@ -25,11 +25,11 @@
         android:layout_height="wrap_content"
         android:text="History"
         android:id="@+id/historyButton"
-        android:layout_below="@+id/browseSourcesButton"
+        android:layout_below="@+id/favoritesButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/browseSourcesButton"
-        android:layout_alignEnd="@+id/browseSourcesButton" />
+        android:layout_alignRight="@+id/favoritesButton"
+        android:layout_alignEnd="@+id/favoritesButton" />
 
     <Button
         android:layout_width="wrap_content"
@@ -37,6 +37,17 @@
         android:text="Downloaded"
         android:id="@+id/downloadedButton"
         android:layout_below="@+id/historyButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/historyButton"
+        android:layout_alignEnd="@+id/historyButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Favorites"
+        android:id="@+id/favoritesButton"
+        android:layout_below="@+id/browseSourcesButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/browseSourcesButton"

@@ -61,8 +61,15 @@ public class HomeScreen extends Activity {
         browseSources.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent sourceView = new Intent(HomeScreen.this, SourceActivity.class);
-                startActivity(sourceView);
+                startActivity(new Intent(HomeScreen.this, SourceActivity.class));
+            }
+        });
+
+        Button favorites = (Button) findViewById(R.id.favoritesButton);
+        favorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeScreen.this, FavoritesActivity.class));
             }
         });
 
@@ -70,8 +77,7 @@ public class HomeScreen extends Activity {
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent sourceView = new Intent(HomeScreen.this, HistoryActivity.class);
-                startActivity(sourceView);
+                startActivity(new Intent(HomeScreen.this, HistoryActivity.class));
             }
         });
     }

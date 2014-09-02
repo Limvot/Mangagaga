@@ -11,5 +11,6 @@
     <string name="back_button">Back</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_history">HistoryActivity</string>
+    <string name="title_activity_favorites">FavoritesActivity</string>
 
 </resources>

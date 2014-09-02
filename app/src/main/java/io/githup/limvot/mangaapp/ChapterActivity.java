@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ public class ChapterActivity extends Activity {
 
     private TextView title;
     private TextView description;
+    private CheckBox favoriteBox;
     private ListView chapterListView;
 
 
@@ -27,11 +29,23 @@ public class ChapterActivity extends Activity {
 
         title = (TextView) findViewById(R.id.mangaTitleTextView);
         description = (TextView) findViewById(R.id.mangaDescriptionTextView);
+        favoriteBox = (CheckBox) findViewById(R.id.favoriteCheckBox);
 
-        MangaManager mangaManager = MangaManager.getMangaManager();
+        final MangaManager mangaManager = MangaManager.getMangaManager();
+        final Manga currentManga = mangaManager.getCurrentManga();
 
-        title.setText(mangaManager.getCurrentManga().toString());
-        description.setText(mangaManager.getCurrentManga().getDescription());
+        title.setText(currentManga.toString());
+        description.setText(currentManga.getDescription());
+        favoriteBox.setChecked(mangaManager.isFavorite(currentManga));
+        favoriteBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (favoriteBox.isChecked())
+                    mangaManager.addFavorite(currentManga);
+                else
+                    mangaManager.removeFavorite(currentManga);
+            }
+        });
 
         chapterListView = (ListView) findViewById(R.id.mangaChapterListView);
         ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,

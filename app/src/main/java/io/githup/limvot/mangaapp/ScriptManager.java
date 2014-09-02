@@ -46,10 +46,11 @@ public class ScriptManager {
             }
         }
 
-
+        int index = 0;
         for (File script : scriptDir.listFiles()) {
             try {
-                scriptList.add(new Script(script.getName(), Utilities.readFile(script.getAbsolutePath())));
+                scriptList.add(new Script(script.getName(), Utilities.readFile(script.getAbsolutePath()), index));
+                index++;
             } catch (Exception e) {
                 Log.e("Could not open lua script", e.toString());
             }

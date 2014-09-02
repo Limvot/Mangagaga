@@ -6,8 +6,10 @@ import org.luaj.vm2.LuaTable;
  * Created by nathan on 8/22/14.
  */
 public class Manga {
+    private int sourceNumber;
     private LuaTable backingTable;
-    public Manga(LuaTable tableIn) {
+    public Manga(int sourceNum, LuaTable tableIn) {
+        sourceNumber = sourceNum;
         backingTable = tableIn;
     }
     public String toString() {
@@ -24,5 +26,8 @@ public class Manga {
     }
     public LuaTable getTable() {
         return backingTable;
+    }
+    public int getSourceNumber() {
+        return sourceNumber;
     }
 }

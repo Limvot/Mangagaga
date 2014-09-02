@@ -18,6 +18,7 @@ import java.util.List;
 class Script {
     private String name;
     private String luaCode;
+    private int scriptNumber;
 
     private Globals globals;
     private LuaValue luaGetMangaListTypes;
@@ -30,9 +31,10 @@ class Script {
     private LuaValue luaGetMangaChapterPage;
     private LuaValue luaGetMangaChapterNumPages;
 
-    public Script(String name, String luaCode) {
+    public Script(String name, String luaCode, int scriptNumber) {
         this.name = name;
         this.luaCode = luaCode;
+        this.scriptNumber = scriptNumber;
 
         globals = JsePlatform.standardGlobals();
         globals.load(new StringReader(ScriptManager.getLuaPrequal()), "luaPrequal").call();
@@ -82,7 +84,7 @@ class Script {
 
         ArrayList<Manga> mangaList = new ArrayList<Manga>();
         for (int i = 0; i < resTable.get("numManga").toint(); i++)
-            mangaList.add(new Manga(resTable.get(i).checktable()));
+            mangaList.add(new Manga(scriptNumber, resTable.get(i).checktable()));
 
         return mangaList;
     }
