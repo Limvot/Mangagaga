@@ -21,7 +21,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/chapterHistoryListView"
-        android:layout_below="@+id/chapterHistoryTextView"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/clear_history" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear History"
+        android:id="@+id/clear_history"
+        android:layout_toEndOf="@+id/chapterHistoryTextView"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/chapterHistoryListView"
+        android:layout_alignEnd="@+id/chapterHistoryListView" />
 </RelativeLayout>

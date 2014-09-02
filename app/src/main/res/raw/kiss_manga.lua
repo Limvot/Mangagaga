@@ -65,7 +65,6 @@ function getMangaList(url)
    beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex)
    index = 0
    while ending do
-       print('URL: ' .. mangaURL .. ', Title: ' .. mangaTitle)
        daList[index] = {title = mangaTitle, url = mangaURL}
        beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex, ending+1)
        index = index + 1
@@ -93,7 +92,6 @@ function initManga(manga)
    beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)
    index = 0
    while ending do
-       print('Chapter URL: ' .. chapterURL .. ', Chapter Title: ' .. chapterTitle)
        daList[index] = {title = chapterTitle, url = chapterURL, chapterSetUp = false}
        beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex, ending+1)
        index = index + 1
@@ -135,7 +133,6 @@ function setUpChapter(manga, chapter)
        index = 0
        daList = {}
        while ending do
-           print('Page URL: ' .. pageURL)
            daList[index] = {url = pageURL}
            beginning, ending, pageURL = string.find(pageSource, regex, ending+1)
            index = index + 1
