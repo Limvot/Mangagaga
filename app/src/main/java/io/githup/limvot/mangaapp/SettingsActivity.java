@@ -2,18 +2,42 @@ package io.githup.limvot.mangaapp;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 
 public class SettingsActivity extends Activity {
+
+    private SettingsManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        manager = SettingsManager.getSettingsManager();
+
+        EditText historySize = (EditText) findViewById(R.id.editText);
+        historySize.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                historyLimitCallback();
+            }
+        });
 
         Button CCache = (Button) findViewById(R.id.buttonClearCache);
         CCache.setOnClickListener(new View.OnClickListener() {
@@ -58,5 +82,12 @@ public class SettingsActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void historyLimitCallback()
+    {
+        EditText historySize = (EditText) findViewById(R.id.editText);
+        manager.setHistorySize(Integer.parseInt(historySize.getText().toString()));
+        Log.d("historyLimitCallback", Integer.toString(manager.getHistorySize()));
     }
 }
