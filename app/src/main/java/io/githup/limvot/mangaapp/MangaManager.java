@@ -1,6 +1,21 @@
 package io.githup.limvot.mangaapp;
 
+import android.graphics.Path;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+
+import java.io.BufferedWriter;
+import java.io.File;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.reflect.TypeToken;
+
+import org.luaj.vm2.LuaTable;
+
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +30,8 @@ public class MangaManager {
         return mangaManager;
     }
 
+    private Gson gson;
+
     private ScriptManager scriptManager;
     private ArrayList<Chapter> chapterHistory;
     private Manga currentManga;
@@ -23,12 +40,39 @@ public class MangaManager {
 
     MangaManager() {
         scriptManager = ScriptManager.getScriptManager();
-        chapterHistory = new ArrayList<Chapter>();
+        gson = new GsonBuilder()
+                .registerTypeAdapter(LuaTable.class, new LuaTableSerializer())
+                .setPrettyPrinting()
+                .create();
+        chapterHistory = loadHistory();
+    }
+
+    private ArrayList<Chapter> loadHistory() {
+        try {
+            return gson.fromJson(Utilities.readFile(Environment.getExternalStorageDirectory() + "/Mangagaga/History.json"), new TypeToken<ArrayList<Chapter>>() {}.getType());
+        } catch (Exception e) {
+            return new ArrayList<Chapter>();
+        }
+    }
+
+    private void saveHistory() {
+        Log.i("SAVE_HISTORY", "BEGINNING");
+        try {
+            File history = new File(Environment.getExternalStorageDirectory() + "/Mangagaga", "History.json");
+            history.createNewFile();
+            FileWriter fw = new FileWriter(history.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(gson.toJson(chapterHistory));
+            bw.close();
+            Log.i("SAVE_HISTORY", "SAVED");
+        } catch (Exception e) {
+            Log.i("SAVE_HISTORY", "Problem");
+        }
     }
 
     public void setCurrentManga(Manga manga) {
+        scriptManager.getCurrentSource().initManga(manga);
         currentManga = manga;
-        scriptManager.getCurrentSource().initManga(currentManga);
     }
 
     Manga getCurrentManga() {
@@ -38,6 +82,7 @@ public class MangaManager {
     void setCurrentChapter(Chapter current) {
         currentChapter = current;
         chapterHistory.add(0, current);
+        saveHistory();
     }
 
     List<Chapter> getMangaChapterList() {
@@ -61,6 +106,11 @@ public class MangaManager {
         else
             return false;
         return true;
+    }
+
+    public void clearHistory() {
+        chapterHistory.clear();
+        saveHistory();
     }
 
     public boolean nextChapter() {

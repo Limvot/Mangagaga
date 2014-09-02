@@ -60,7 +60,6 @@ class Script {
         LuaTable resTable = result.checktable();
 
         ArrayList<String> typeList = new ArrayList<String>();
-        Log.i("getMangaTypeList", "WoopWoopWoop: " + resTable.length());
         for (int i = 0; i < resTable.get("numTypes").toint(); i++)
             typeList.add(resTable.get(i).toString());
 
@@ -82,7 +81,6 @@ class Script {
         LuaTable resTable = result.checktable();
 
         ArrayList<Manga> mangaList = new ArrayList<Manga>();
-        Log.i("getMangaList", "Woooooo: " + resTable.length());
         for (int i = 0; i < resTable.get("numManga").toint(); i++)
             mangaList.add(new Manga(resTable.get(i).checktable()));
 
@@ -98,9 +96,9 @@ class Script {
         LuaTable resTable = result.checktable();
 
         ArrayList<Chapter> mangaChapterList = new ArrayList<Chapter>();
-        Log.i("getMangaChapterList", "Woooooo: " + resTable.length());
-        for (int i = 0; i < resTable.get("numChapters").toint(); i++)
+        for (int i = 0; i < resTable.get("numChapters").toint(); i++) {
             mangaChapterList.add(new Chapter(manga, resTable.get(i).checktable(), i));
+        }
 
         return mangaChapterList;
     }
@@ -110,7 +108,6 @@ class Script {
     }
 
     public String downloadPage(Manga manga, Chapter chapter, int page) {
-        Log.i("Downloading Page!", "doing that page");
         return luaGetMangaChapterPage.call(manga.getTable(), chapter.getTable(), LuaValue.valueOf(page)).toString();
     }
 }

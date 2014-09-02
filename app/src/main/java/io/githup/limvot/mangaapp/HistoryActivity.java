@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 
@@ -21,6 +22,15 @@ public class HistoryActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        Button clearHistoryButton = (Button)findViewById(R.id.clear_history);
+        clearHistoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MangaManager.getMangaManager().clearHistory();
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         historyListView = (ListView) findViewById(R.id.chapterHistoryListView);
         adapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,
