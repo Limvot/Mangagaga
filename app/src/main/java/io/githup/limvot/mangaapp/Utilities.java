@@ -187,4 +187,31 @@ public class Utilities {
         while( (readBytes = in.read(buffer)) != -1)
             out.write(buffer, 0, readBytes);
     }
+
+    public static void clearCache()
+    {
+        File cache = new File(Environment.getExternalStorageDirectory()+"/Mangagaga/Cache/");
+        if(!cache.exists())
+        {
+            Log.e("clearCache", "Error clearing cache, file doesn't exist");
+        }
+        else {
+            File[] farr = cache.listFiles();
+            for (int i = 0; i < farr.length; i++) {
+                farr[i].delete();
+            }
+        }
+    }
+
+    public static void clearHistory()
+    {
+       MangaManager manager = MangaManager.getMangaManager();
+        manager.clearHistory();
+    }
+
+    public static void clearAll()
+    {
+        clearCache();
+        clearHistory();
+    }
 }
