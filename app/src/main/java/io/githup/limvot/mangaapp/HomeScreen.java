@@ -80,6 +80,15 @@ public class HomeScreen extends Activity {
                 startActivity(new Intent(HomeScreen.this, HistoryActivity.class));
             }
         });
+
+        Button settings = (Button) findViewById(R.id.settingsButton);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+        public void onClick(View view){
+                Intent settingsView = new Intent(HomeScreen.this, SettingsActivity.class);
+                startActivity(settingsView);
+            }
+        });
     }
 
 

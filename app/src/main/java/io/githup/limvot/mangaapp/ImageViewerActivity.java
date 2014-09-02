@@ -76,7 +76,9 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         Drawable d = new ColorDrawable(0);
         d.setAlpha(1);
         actionBar.setBackgroundDrawable(d);
-        // actionBar.hide();
+
+        //actionBar.hide();
+
 
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
