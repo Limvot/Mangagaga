@@ -15,6 +15,8 @@ import com.google.gson.reflect.TypeToken;
 
 import org.luaj.vm2.LuaTable;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +125,47 @@ public class MangaManager {
         saveFavorites();
     }
 
+    public boolean isSaved(Chapter chapter) {
+        //
+        return false;
+    }
+    public void addSaved(Chapter chapter) {
+        if (isSaved(chapter))
+            return;
+
+        Manga parentManga = chapter.getParentManga();
+
+        File savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/");
+        File mangaDir = new File(savedDir, parentManga.getTitle());
+        File chapterDir = new File(mangaDir, Integer.toString(chapter.getNum()));
+        mangaDir.mkdir();
+        chapterDir.mkdir();
+
+        for (int i = 0; i < getNumPages(); i++) {
+            String fromFile = getCurrentPage(parentManga, chapter, i);
+            try {
+                FileInputStream is = new FileInputStream(fromFile);
+                String filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."));
+                FileOutputStream os = new FileOutputStream(chapterDir.getAbsolutePath() + "/" + filename);
+                Utilities.copyStreams(is, os);
+            } catch (Exception e) {
+                Log.e("Save Chapter ERROR", fromFile);
+            }
+        }
+
+
+    }
+    public void removeSaved(Chapter chapter) {
+        //
+    }
+
+    public List<Manga> getSavedManga() {
+        return new ArrayList<Manga>();
+    }
+    public void clearSaved() {
+        Log.i("MANGA_MANAGER", "Clearing Saved!");
+    }
+
     public void setCurrentManga(Manga manga) {
         scriptManager.getCurrentSource().initManga(manga);
         currentManga = manga;
@@ -185,7 +228,11 @@ public class MangaManager {
     }
 
     String getCurrentPage() {
-        return scriptManager.getCurrentSource().downloadPage(currentManga, currentChapter, currentPage);
+        return getCurrentPage(currentManga, currentChapter, currentPage);
+    }
+
+    String getCurrentPage(Manga manga, Chapter chapter, int page) {
+        return scriptManager.getCurrentSource().downloadPage(manga, chapter, page);
     }
 }
 

@@ -48,9 +48,13 @@ public class ChapterActivity extends Activity {
         });
 
         chapterListView = (ListView) findViewById(R.id.mangaChapterListView);
-        ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,
+//        ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,
+//                mangaManager.getMangaChapterList());
+
+        ChapterListAdapter chapterAdapter = new ChapterListAdapter(this,
                 mangaManager.getMangaChapterList());
-        chapterListView.setAdapter(arrayAdapter);
+
+        chapterListView.setAdapter(chapterAdapter);
 
         chapterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

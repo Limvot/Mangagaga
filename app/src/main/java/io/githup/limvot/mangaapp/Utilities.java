@@ -20,9 +20,7 @@ import java.util.concurrent.ExecutionException;
 
 public class Utilities {
 
-    private String source;
-
-    private class DownloadSource extends AsyncTask<String,Void,String>
+    private static class DownloadSource extends AsyncTask<String,Void,String>
     {
 
         public void onPostExecute(String s)
@@ -38,7 +36,7 @@ public class Utilities {
     {
     }
 
-    public String Download()
+    public static String download(String source)
     {
         try {
             return new DownloadSource().execute(source).get();
@@ -55,15 +53,6 @@ public class Utilities {
         }
     }
 
-    public void SetSource(String s)
-    {
-        this.source = s;
-    }
-
-    public String GetSource()
-    {
-        return this.source;
-    }
 
     public static String DownloadSource(String source)
     {
@@ -77,33 +66,43 @@ public class Utilities {
                 sourceSite = new URL(source);
                 URLConnection urlcon = sourceSite.openConnection();
 
-                if(source.contains(".jpeg") || source.contains(".jpg") || source.contains(".png") || source.contains(".zip"))
-                {
-                    filename = source.substring((source.lastIndexOf('/')+1));
-                    if(source.contains(".jpg"))
-                    {
-                        filename = filename.substring(0, filename.lastIndexOf(".jpg")+4);
-                    }
-                    else if(source.contains(".png"))
-                    {
-                        filename = filename.substring(0, filename.lastIndexOf(".png")+4);
-                    }
-                    else
-                    {
-                        filename += ".zip";
-                    }
+                String extension;
+                if (source.contains(".jpg")) {
+                    extension = ".jpg";
+                } else if (source.contains(".jpeg")) {
+                    extension = ".jpeg";
+                } else if (source.contains(".png")) {
+                    extension = ".png";
+                } else if (source.contains(".zip")) {
+                    extension = ".zip";
+                } else {
+                    extension = ".html";
+                }
+                Log.i("DONLSDFING", source);
+                int extensionIndex = source.lastIndexOf(extension);
+                if (extensionIndex != -1)
+                    filename = source.substring((source.lastIndexOf('/') + 1), extensionIndex + extension.length());
+                else
+                    filename = source.substring((source.lastIndexOf('/') + 1)) + extension;
 
-                    resultingPath = Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/" + filename;
-                    File file = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/", filename);
-                    Log.i("DownloadSource", file.toString());
-                    try{
-                        file.createNewFile();
-                    }
-                    catch(IOException e)
-                    {
-                        Log.e("DownloadSource", "Couldn't make file!!!");
-                        Log.e("DownloadSource", e.toString());
-                    }
+                String dest = Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/";
+
+                if (filename.contains("?")) {
+                    filename = filename.replace('?', '_');
+                    Log.d("DownloadSource", "Removed '?' and renamed file to: " + filename);
+                }
+
+                resultingPath = dest + filename;
+                File file = new File(dest, filename);
+                Log.i("DownloadSource", file.toString());
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    Log.e("DownloadSource", "Couldn't make file!!!");
+                    Log.e("DownloadSource", e.toString());
+                }
+
+                if (extension.equals(".jpeg") || extension.equals(".jpg") || extension.equals(".png") || extension.equals(".zip")) {
 
                     Log.d("DownloadSource", "Making Image fos");
                     FileOutputStream fos = new FileOutputStream(file);
@@ -113,34 +112,15 @@ public class Utilities {
 
                     int chunk = 0;
 
-                    while( (chunk = bis.read()) != -1)
-                    {
+                    while ((chunk = bis.read()) != -1) {
                         buffer.append((byte) chunk);
                     }
                     Log.d("DownloadSource", "Writing Image");
                     fos.write(buffer.toByteArray());
                     fos.flush();
                     fos.close();
-                }
-                else
-                {
-                    filename = source.substring((source.lastIndexOf('/') + 1)) + ".html";
-                    if(filename.contains("?")) {
-                        filename = filename.replace('?', '_');
-                        Log.d("DownloadSource", "Removed '?' and renamed file to: "+filename);
-                    }
+                } else {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(sourceSite.openStream()));
-                    File file = new File (Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/", filename);
-                    try{
-                        file.createNewFile();
-                    }
-                    catch(IOException e)
-                    {
-                        Log.e("DownloadSource", "Couldn't make file!!!");
-                        Log.e("DownloadSource", e.toString());
-                    }
-
-                    resultingPath = Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/" + filename;
                     FileWriter fw = new FileWriter(resultingPath);
                     BufferedWriter writer = new BufferedWriter(fw);
                     String input;

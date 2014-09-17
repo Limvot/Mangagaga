@@ -89,6 +89,15 @@ public class HomeScreen extends Activity {
                 startActivity(settingsView);
             }
         });
+
+        Button downloaded = (Button) findViewById(R.id.downloadedButton);
+        downloaded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeScreen.this, DownloadedActivity.class));
+
+            }
+        });
     }
 
 

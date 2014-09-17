@@ -23,8 +23,7 @@ public class APIObject {
 
     public static String download(String filePath) {
         Log.i("Downloading", filePath);
-        downloader.SetSource(filePath);
-        return downloader.Download();
+        return downloader.download(filePath);
     }
 
     public static String readFile(String absolutePath) {

@@ -63,11 +63,20 @@ public class SettingsActivity extends Activity {
             }
         });
 
+        Button CSaved = (Button) findViewById(R.id.buttonClearSaved);
+        CSaved.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MangaManager.getMangaManager().clearSaved();
+            }
+        });
+
         Button CAll = (Button) findViewById(R.id.buttonClearAll);
         CAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Utilities.clearAll();
+                MangaManager.getMangaManager().clearSaved();
             }
         });
     }
