@@ -1,7 +1,14 @@
 package io.githup.limvot.mangaapp;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Path;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
@@ -19,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,11 +34,16 @@ import java.util.List;
  */
 public class MangaManager {
     public static MangaManager mangaManager;
-    public static MangaManager getMangaManager() {
+    public static void initMangaManager(Context ctx) {
         if (mangaManager == null)
             mangaManager = new MangaManager();
+        mangaManager.setContext(ctx);
+    }
+    public static MangaManager getMangaManager() {
         return mangaManager;
     }
+
+    private  Context mainContext;
 
     private Gson gson;
 
@@ -49,6 +62,10 @@ public class MangaManager {
                 .create();
         chapterHistory = loadHistory();
         favoriteManga = loadFavorites();
+    }
+
+    private void setContext(Context ctx) {
+        mainContext = ctx;
     }
 
     private ArrayList<Chapter> loadHistory() {
@@ -133,28 +150,65 @@ public class MangaManager {
         if (isSaved(chapter))
             return;
 
-        Manga parentManga = chapter.getParentManga();
-
-        File savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/");
-        File mangaDir = new File(savedDir, parentManga.getTitle());
-        File chapterDir = new File(mangaDir, Integer.toString(chapter.getNum()));
-        mangaDir.mkdir();
-        chapterDir.mkdir();
-
-        for (int i = 0; i < getNumPages(); i++) {
-            String fromFile = getCurrentPage(parentManga, chapter, i);
-            try {
-                FileInputStream is = new FileInputStream(fromFile);
-                String filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."));
-                FileOutputStream os = new FileOutputStream(chapterDir.getAbsolutePath() + "/" + filename);
-                Utilities.copyStreams(is, os);
-            } catch (Exception e) {
-                Log.e("Save Chapter ERROR", fromFile);
-            }
-        }
-
-
+        new ChapterDownloader().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Arrays.asList(new Chapter[]{chapter}));
     }
+
+    private class ChapterDownloader extends AsyncTask<List<Chapter>, Void, Void> {
+        @Override
+        protected Void doInBackground(List<Chapter>... toDownloadAr) {
+            List<Chapter> toDownload = toDownloadAr[0];
+            // Notification
+            Context context = mainContext;
+            int notificationID = 0;
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle("Downloading Chapter")
+                    .setContentText("Downloading " + toDownload.size() + " chapters...");
+            Intent resultIntent = new Intent(context, DownloadedActivity.class);
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+            stackBuilder.addParentStack(DownloadedActivity.class);
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent =
+                    stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+            NotificationManager notificationManager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(notificationID, builder.build());
+
+
+
+            for (Chapter chapter : toDownload) {
+                Manga parentManga = chapter.getParentManga();
+
+                File savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/");
+                File mangaDir = new File(savedDir, parentManga.getTitle());
+                File chapterDir = new File(mangaDir, Integer.toString(chapter.getNum()));
+                mangaDir.mkdir();
+                chapterDir.mkdir();
+
+                for (int i = 0; i < getNumPages(parentManga, chapter); i++) {
+                    builder.setContentText("Downloading page " + (i+1) + ".");
+                    notificationManager.notify(notificationID, builder.build());
+                    String fromFile = getCurrentPage(parentManga, chapter, i);
+                    try {
+                        FileInputStream is = new FileInputStream(fromFile);
+                        String filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."));
+                        FileOutputStream os = new FileOutputStream(chapterDir.getAbsolutePath() + "/" + filename);
+                        Utilities.copyStreams(is, os);
+                    } catch (Exception e) {
+                        Log.e("Save Chapter ERROR", fromFile);
+                    }
+                }
+            }
+
+            builder.setContentTitle("Done!");
+            builder.setContentText("Downloaded " + toDownload.size() + " chapters.");
+            notificationManager.notify(notificationID, builder.build());
+            return null;
+        }
+    }
+
     public void removeSaved(Chapter chapter) {
         //
     }
@@ -164,6 +218,8 @@ public class MangaManager {
     }
     public void clearSaved() {
         Log.i("MANGA_MANAGER", "Clearing Saved!");
+        File downloaded = new File(Environment.getExternalStorageDirectory()+"/Mangagaga/Downloaded/");
+        Utilities.clearFolder(downloaded);
     }
 
     public void setCurrentManga(Manga manga) {
@@ -215,8 +271,12 @@ public class MangaManager {
         return true;
     }
 
+    int getNumPages(Manga manga, Chapter chapter) {
+        return scriptManager.getCurrentSource().getNumPages(manga, chapter);
+    }
+
     int getNumPages() {
-        return scriptManager.getCurrentSource().getNumPages(currentManga, currentChapter);
+        return getNumPages(currentManga, currentChapter);
     }
 
     void setCurrentPageNum(int page) {

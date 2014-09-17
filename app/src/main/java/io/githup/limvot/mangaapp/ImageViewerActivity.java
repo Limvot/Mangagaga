@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -65,11 +66,16 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
     private GestureDetectorCompat detector;
     private View.OnTouchListener gestureListen;
 
+    private ImageView contentview;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_image_viewer);
+        contentview = (ImageView) findViewById(R.id.fullscreen_content);
+
 
         // Hide the action bar.
         final ActionBar actionBar = getActionBar();
@@ -148,7 +154,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
             }
         });
 
-        this.displayImage();
+        this.updateImage();
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
@@ -195,7 +201,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
                 mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
             }
         }
-        displayImage();
+        updateImage();
         Log.d("onSingleTapUp","X: "+Float.toString(x));
         return true;
     }
@@ -252,7 +258,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
                     mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
             }
         }
-        displayImage();
+        updateImage();
         return true;
     }
 
@@ -294,13 +300,24 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    public void displayImage()
-    {
-        String imagepath = MangaManager.getMangaManager().getCurrentPage();
-        Log.i("Display image!", imagepath);
-        ImageManager im = ImageManager.getImageManager();
-        ImageView contentview = (ImageView) findViewById(R.id.fullscreen_content);
-        Bitmap page = im.getNext(imagepath);
-        contentview.setImageBitmap(page);
+    // Do image updates async to maintain responsiveness
+    private class UpdateImage extends AsyncTask<Void, Void, Bitmap> {
+        @Override
+        protected Bitmap doInBackground(Void... nothing) {
+            Log.i("ASYNC DO IN BACKGROUND", "STARTING");
+            String imagepath = MangaManager.getMangaManager().getCurrentPage();
+            Log.i("Display image!", imagepath);
+            ImageManager im = ImageManager.getImageManager();
+            Log.i("ASYNC DO IN BACKGROUND", "ENDING");
+            return im.getNext(imagepath);
+        }
+        @Override
+        protected void onPostExecute(Bitmap page) {
+            Log.i("ASYNC DO IN BACKGROUND", "Post Execute!");
+            contentview.setImageBitmap(page);
+        }
+    }
+    public void updateImage() {
+        new UpdateImage().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }

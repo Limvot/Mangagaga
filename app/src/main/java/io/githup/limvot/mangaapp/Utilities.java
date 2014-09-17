@@ -171,27 +171,21 @@ public class Utilities {
     public static void clearCache()
     {
         File cache = new File(Environment.getExternalStorageDirectory()+"/Mangagaga/Cache/");
-        if(!cache.exists())
+        clearFolder(cache);
+    }
+
+    public static void clearFolder(File folder) {
+
+        if(!folder.exists())
         {
-            Log.e("clearCache", "Error clearing cache, file doesn't exist");
-        }
-        else {
-            File[] farr = cache.listFiles();
-            for (int i = 0; i < farr.length; i++) {
-                farr[i].delete();
+            Log.e("clear saved", "Error clearing saved, directory doesn't exist");
+        }else {
+            for (String child : folder.list()) {
+                File childFile = new File(folder, child);
+                if (childFile.isDirectory())
+                    clearFolder(childFile);
+                childFile.delete();
             }
         }
-    }
-
-    public static void clearHistory()
-    {
-       MangaManager manager = MangaManager.getMangaManager();
-        manager.clearHistory();
-    }
-
-    public static void clearAll()
-    {
-        clearCache();
-        clearHistory();
     }
 }

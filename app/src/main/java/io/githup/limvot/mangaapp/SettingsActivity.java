@@ -51,7 +51,7 @@ public class SettingsActivity extends Activity {
         CHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utilities.clearHistory();
+                MangaManager.getMangaManager().clearHistory();
             }
         });
 
@@ -75,7 +75,9 @@ public class SettingsActivity extends Activity {
         CAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Utilities.clearAll();
+                Utilities.clearCache();
+                MangaManager.getMangaManager().clearHistory();
+                MangaManager.getMangaManager().clearFavorites();
                 MangaManager.getMangaManager().clearSaved();
             }
         });

@@ -53,6 +53,9 @@ public class HomeScreen extends Activity {
 
         // Set up the script manager
         ScriptManager.createScriptManager(this);
+        // Init the MangaManager with the current context
+        // This has to be done after script manager has been set up
+        MangaManager.initMangaManager(this);
 
 
         setContentView(R.layout.activity_home_screen);
