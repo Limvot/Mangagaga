@@ -118,6 +118,11 @@ public class MangaManager {
         saveFavorites();
     }
 
+    public void clearFavorites() {
+        favoriteManga.clear();
+        saveFavorites();
+    }
+
     public void setCurrentManga(Manga manga) {
         scriptManager.getCurrentSource().initManga(manga);
         currentManga = manga;
@@ -130,6 +135,8 @@ public class MangaManager {
     void setCurrentChapter(Chapter current) {
         currentChapter = current;
         chapterHistory.add(0, current);
+        for (int i = SettingsManager.getHistorySize(); i < chapterHistory.size(); i++)
+            chapterHistory.remove(i);
         saveHistory();
     }
 

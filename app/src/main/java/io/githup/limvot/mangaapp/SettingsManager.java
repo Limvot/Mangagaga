@@ -19,12 +19,12 @@ public class SettingsManager {
         return settings;
     }
 
-    public void setHistorySize(int size)
+    public static void setHistorySize(int size)
     {
         historySize = size;
     }
 
-    public int getHistorySize()
+    public static int getHistorySize()
     {
         return historySize;
     }
