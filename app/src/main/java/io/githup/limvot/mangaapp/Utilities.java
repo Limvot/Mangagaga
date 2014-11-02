@@ -5,21 +5,22 @@ package io.githup.limvot.mangaapp;
  * modified by pratik on 8/24/14
  */
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
 import org.apache.http.util.ByteArrayBuffer;
 
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.io.*;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutionException;
 import java.util.Date;
-
-import io.githup.limvot.mangaapp.util.SystemUiHider;
-
 
 public class Utilities {
 
@@ -31,36 +32,66 @@ public class Utilities {
             return DownloadSource(sl[0]);
         }
     }
-    private static class GetModifiedTime extends AsyncTask<String,Void,Date>
+    private static class CheckUpdates extends AsyncTask<Context,Void,Void>
     {
-        public void onPostExecute(Date d) {}
-        public Date doInBackground(String... sl)
+        public void onPostExecute() {}
+        public Void doInBackground(Context... ctx)
         {
-            return getModifiedTime(sl[0]);
+            checkForUpdatesAsync(ctx[0]);
+            return null;
         }
     }
     public Utilities()
     {
     }
 
-    public static void checkForUpdates() {
-        Log.i("Does this need updates?", lastModified("http://http://nathanbraswell.com/~nathan/Mangagaga/apk/app-debug.apk").toString());
+    public static void checkForUpdates(Context ctx) {
+        new CheckUpdates().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ctx);
+    }
+    public static void checkForUpdatesAsync(Context ctx) {
+        String updateURL = "http://nathanbraswell.com/~nathan/Mangagaga/apk/app-debug.apk";
+        Date siteApkDate = getModifiedTime(updateURL);
+        Log.i("Does this need updates?", siteApkDate.toString());
+        SettingsManager settingsManager = SettingsManager.getSettingsManager();
+        if (siteApkDate.after(settingsManager.getApkDate())) {
+            File downloadedApk = new File(download(updateURL));
+            Intent promptInstall = new Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(Uri.fromFile(downloadedApk),
+                            "application/vnd.android.package-archive");
+            ctx.startActivity(promptInstall);
+            settingsManager.setApkDate(siteApkDate);
+        }
     }
 
-    public static Date lastModified(String source) {
-        Date lastMod;
-        try {
-            lastMod = new GetModifiedTime().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, source).get();
-            Log.i("Last Modified:", lastMod.toString());
-        } catch (Exception e) {
-            Log.e("Exception in last modified:", e.toString());
-            lastMod = new Date();
-        }
-        return lastMod;
-    }
+//    public static Date lastModified(String source) {
+//        Date lastMod;
+//        try {
+//            lastMod = new GetModifiedTime().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, source).get();
+//            Log.i("Last Modified:", lastMod.toString());
+//        } catch (Exception e) {
+//            Log.e("Exception in last modified:", e.toString());
+//            lastMod = new Date();
+//        }
+//        return lastMod;
+//    }
 
     public static Date getModifiedTime(String source) {
-        return new Date();
+        Log.i("Url to grab modified time from", source);
+        long modifiedTime;
+        try {
+            URL url = new URL(source);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("HEAD");
+            connection.connect();
+            modifiedTime = connection.getLastModified();
+            connection.disconnect();
+        } catch (Exception e) {
+            Log.e("getModifiedTime", e.toString());
+            modifiedTime = 0;
+        }
+        if (modifiedTime == 0)
+            Log.e("Could not get modified time", "Nope couldn't get it");
+        return new Date(modifiedTime);
     }
 
     public static String download(String source)
@@ -102,6 +133,8 @@ public class Utilities {
                     extension = ".png";
                 } else if (source.contains(".zip")) {
                     extension = ".zip";
+                } else if (source.contains(".apk")) {
+                    extension = ".apk";
                 } else {
                     extension = ".html";
                 }
@@ -129,7 +162,8 @@ public class Utilities {
                     Log.e("DownloadSource", e.toString());
                 }
 
-                if (extension.equals(".jpeg") || extension.equals(".jpg") || extension.equals(".png") || extension.equals(".zip")) {
+                if (extension.equals(".jpeg") || extension.equals(".jpg") || extension.equals(".png")
+                        || extension.equals(".zip") || extension.equals(".apk")) {
 
                     Log.d("DownloadSource", "Making Image fos");
                     FileOutputStream fos = new FileOutputStream(file);

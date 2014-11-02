@@ -33,23 +33,24 @@ public class HomeScreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        File newFolder = new File(Environment.getExternalStorageDirectory(), "Mangagaga");
-        File newFolder1 = new File(newFolder, "Downloaded");
-        File newFolder2 = new File(newFolder, "Scripts");
-        File newFolder3 = new File(newFolder, "Cache");
+        File mainFolder = new File(Environment.getExternalStorageDirectory(), "Mangagaga");
+        File[] newFolders = {
+                new File(mainFolder, "Downloaded"),
+                new File(mainFolder, "Scripts"),
+                new File(mainFolder, "Cache"),
+        };
 
-        if (!newFolder.exists()) {
-            try {
 
-                newFolder.mkdir();
-                newFolder1.mkdir();
-                newFolder2.mkdir();
-                newFolder3.mkdir();
-
-            } catch (Exception e) {
+        try {
+            if (!mainFolder.exists())
+                mainFolder.mkdir();
+            for (File folder : newFolders)
+                if (!folder.exists())
+                    folder.mkdir();
+        } catch (Exception e) {
                 Log.d("OnCreate:", e.toString());
-            }
         }
+
 
         // Set up the script manager
         ScriptManager.createScriptManager(this);
@@ -58,7 +59,7 @@ public class HomeScreen extends Activity {
         MangaManager.initMangaManager(this);
 
         //Have Utilites check for updates
-        Utilities.checkForUpdates();
+        Utilities.checkForUpdates(this);
 
 
         setContentView(R.layout.activity_home_screen);
