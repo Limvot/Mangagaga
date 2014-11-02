@@ -16,24 +16,51 @@ import java.net.URL;
 import java.io.*;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutionException;
+import java.util.Date;
+
+import io.githup.limvot.mangaapp.util.SystemUiHider;
 
 
 public class Utilities {
 
     private static class DownloadSource extends AsyncTask<String,Void,String>
     {
-
-        public void onPostExecute(String s)
-        {}
-
+        public void onPostExecute(String s) {}
         public String doInBackground(String... sl)
         {
             return DownloadSource(sl[0]);
         }
-
+    }
+    private static class GetModifiedTime extends AsyncTask<String,Void,Date>
+    {
+        public void onPostExecute(Date d) {}
+        public Date doInBackground(String... sl)
+        {
+            return getModifiedTime(sl[0]);
+        }
     }
     public Utilities()
     {
+    }
+
+    public static void checkForUpdates() {
+        Log.i("Does this need updates?", lastModified("http://http://nathanbraswell.com/~nathan/Mangagaga/apk/app-debug.apk").toString());
+    }
+
+    public static Date lastModified(String source) {
+        Date lastMod;
+        try {
+            lastMod = new GetModifiedTime().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, source).get();
+            Log.i("Last Modified:", lastMod.toString());
+        } catch (Exception e) {
+            Log.e("Exception in last modified:", e.toString());
+            lastMod = new Date();
+        }
+        return lastMod;
+    }
+
+    public static Date getModifiedTime(String source) {
+        return new Date();
     }
 
     public static String download(String source)

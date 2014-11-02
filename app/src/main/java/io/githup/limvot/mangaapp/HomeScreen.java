@@ -57,6 +57,9 @@ public class HomeScreen extends Activity {
         // This has to be done after script manager has been set up
         MangaManager.initMangaManager(this);
 
+        //Have Utilites check for updates
+        Utilities.checkForUpdates();
+
 
         setContentView(R.layout.activity_home_screen);
 
