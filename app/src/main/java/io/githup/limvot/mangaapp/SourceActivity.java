@@ -199,6 +199,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
                     Log.i("onItemClick", mangaListView.getItemAtPosition(i).toString());
                     Intent chapterView = new Intent(getActivity(), ChapterActivity.class);
                     scriptManager.setCurrentSource(sourceNumber);
+                    MangaManager.getMangaManager().readingOffline(false);
                     MangaManager.getMangaManager().setCurrentManga((Manga) mangaListView.getItemAtPosition(i));
                     startActivity(chapterView);
                 }

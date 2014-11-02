@@ -50,6 +50,8 @@ public class MangaManager {
     private ScriptManager scriptManager;
     private ArrayList<Chapter> chapterHistory;
     private ArrayList<Manga> favoriteManga;
+
+    private boolean isOffline;
     private Manga currentManga;
     private Chapter currentChapter;
     private int currentPage;
@@ -68,6 +70,10 @@ public class MangaManager {
         mainContext = ctx;
     }
 
+    public void readingOffline(boolean isOffline) {
+        this.isOffline = isOffline;
+    }
+
     private ArrayList<Chapter> loadHistory() {
         try {
             return gson.fromJson(Utilities.readFile(Environment.getExternalStorageDirectory() + "/Mangagaga/History.json"), new TypeToken<ArrayList<Chapter>>() {}.getType());
@@ -76,19 +82,27 @@ public class MangaManager {
         }
     }
 
-    private void saveHistory() {
-        Log.i("SAVE_HISTORY", "BEGINNING");
-        try {
-            File history = new File(Environment.getExternalStorageDirectory() + "/Mangagaga", "History.json");
-            history.createNewFile();
-            FileWriter fw = new FileWriter(history.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(gson.toJson(chapterHistory));
-            bw.close();
-            Log.i("SAVE_HISTORY", "SAVED");
-        } catch (Exception e) {
-            Log.i("SAVE_HISTORY", "Problem");
+    private class HistorySaver extends AsyncTask<List<Chapter>, Void, Void> {
+        @Override
+        protected Void doInBackground(List<Chapter>... toDownloadAr) {
+            Log.i("SAVE_HISTORY", "BEGINNING");
+            try {
+                File history = new File(Environment.getExternalStorageDirectory() + "/Mangagaga", "History.json");
+                history.createNewFile();
+                FileWriter fw = new FileWriter(history.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(gson.toJson(toDownloadAr[0]));
+                bw.close();
+                Log.i("SAVE_HISTORY", "SAVED");
+            } catch (Exception e) {
+                Log.i("SAVE_HISTORY", "Problem");
+            }
+            return null;
         }
+    }
+
+    private void saveHistory() {
+        new HistorySaver().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, chapterHistory);
     }
 
     public void clearHistory() {
@@ -143,7 +157,25 @@ public class MangaManager {
     }
 
     public boolean isSaved(Chapter chapter) {
-        //
+        /*
+        File savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/");
+        File mangaDir = new File(savedDir, chapter.getParentManga().getTitle());
+        if (mangaDir == null || mangaDir.list() == null)
+            return false;
+        for (String chapterDirStr :  mangaDir.list()) {
+            File chapterDir = new File(mangaDir, chapterDirStr);
+            if (chapterDir.isFile())
+                continue;
+            File chapterFile = new File(chapterDir, "chapter.json");
+            try {
+                Chapter possibleChapter = gson.fromJson(Utilities.readFile(chapterFile.getAbsolutePath()), Chapter.class);
+                if (chapter.equals(possibleChapter))
+                    return true;
+            } catch (Exception e) {
+                Log.e("isSaved", e.toString());
+            }
+        }
+*/
         return false;
     }
     public void addSaved(Chapter chapter) {
@@ -151,6 +183,32 @@ public class MangaManager {
             return;
 
         new ChapterDownloader().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Arrays.asList(new Chapter[]{chapter}));
+    }
+
+    public void removeSaved(Chapter chapter) {
+        //
+    }
+
+    public List<Manga> getSavedManga() {
+        ArrayList<Manga> list = new ArrayList<Manga>();
+        File savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/");
+        for (String dir : savedDir.list()) {
+            Log.i("Get Saved Manga", dir);
+            File mangaDir = new File(savedDir, dir);
+            File mangaFile = new File(mangaDir, "manga.json");
+            try {
+                Manga manga = gson.fromJson(Utilities.readFile(mangaFile.getAbsolutePath()), Manga.class);
+                list.add(manga);
+            } catch (Exception e) {
+                Log.i("GetSaved", "Exception");
+            }
+        }
+        return list;
+    }
+    public void clearSaved() {
+        Log.i("MANGA_MANAGER", "Clearing Saved!");
+        File downloaded = new File(Environment.getExternalStorageDirectory()+"/Mangagaga/Downloaded/");
+        Utilities.clearFolder(downloaded);
     }
 
     private class ChapterDownloader extends AsyncTask<List<Chapter>, Void, Void> {
@@ -187,6 +245,41 @@ public class MangaManager {
                 mangaDir.mkdir();
                 chapterDir.mkdir();
 
+                // Save the Manga object and the Chapter object
+                Log.i("SAVE_CHAPTER", "SAVING MANGA");
+                try {
+                    File mangaJson = new File(mangaDir, "manga.json");
+                    if (!mangaJson.exists()) {
+                        mangaJson.createNewFile();
+                        FileWriter fw = new FileWriter(mangaJson.getAbsoluteFile());
+                        BufferedWriter bw = new BufferedWriter(fw);
+                        bw.write(gson.toJson(parentManga));
+                        bw.close();
+                        Log.i("SAVE_CHAPTER_MANgA", "new SAVED");
+
+                    } else {
+                        Log.i("SAVE_CHAPTER_MANgA", "already existed");
+                    }
+
+                    File chapterJson = new File(chapterDir, "chapter.json");
+                    if (!chapterJson.exists()) {
+                        chapterJson.createNewFile();
+                        FileWriter fw = new FileWriter(chapterJson.getAbsoluteFile());
+                        BufferedWriter bw = new BufferedWriter(fw);
+                        bw.write(gson.toJson(chapter));
+                        bw.close();
+                        Log.i("SAVE_CHAPTER_Chapter", "new SAVED");
+
+                    } else {
+                        Log.i("SAVE_CHAPTER_Chapter", "already existed");
+                    }
+
+
+                    Log.i("SAVE_CHAPTER_MANgA_Chapter", "SAVED success");
+                } catch (Exception e) {
+                    Log.i("SAVE_CHAPTER_MANgA_chapter", "problem/exception");
+                }
+
                 for (int i = 0; i < getNumPages(parentManga, chapter); i++) {
                     builder.setContentText("Downloading page " + (i+1) + ".");
                     notificationManager.notify(notificationID, builder.build());
@@ -207,19 +300,6 @@ public class MangaManager {
             notificationManager.notify(notificationID, builder.build());
             return null;
         }
-    }
-
-    public void removeSaved(Chapter chapter) {
-        //
-    }
-
-    public List<Manga> getSavedManga() {
-        return new ArrayList<Manga>();
-    }
-    public void clearSaved() {
-        Log.i("MANGA_MANAGER", "Clearing Saved!");
-        File downloaded = new File(Environment.getExternalStorageDirectory()+"/Mangagaga/Downloaded/");
-        Utilities.clearFolder(downloaded);
     }
 
     public void setCurrentManga(Manga manga) {

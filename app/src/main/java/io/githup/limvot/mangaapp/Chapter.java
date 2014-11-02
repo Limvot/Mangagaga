@@ -24,4 +24,9 @@ public class Chapter {
     public Manga getParentManga() {
         return parentManga;
     }
+    @Override
+    public boolean equals(Object other) {
+        // One shudders at the horror that this is
+        return toString().equals(other.toString());
+    }
 }

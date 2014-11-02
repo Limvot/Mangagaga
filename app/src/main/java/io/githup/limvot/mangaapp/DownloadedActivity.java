@@ -23,7 +23,7 @@ public class DownloadedActivity extends Activity {
         mangaManager = MangaManager.getMangaManager();
         mangaListView = (ListView) findViewById(R.id.downloadedMangaListView);
 
-        ArrayAdapter<Manga> mangaArrayAdapter = new ArrayAdapter<Manga>(this, android.R.layout.simple_list_item_1,
+        final ArrayAdapter<Manga> mangaArrayAdapter = new ArrayAdapter<Manga>(this, android.R.layout.simple_list_item_1,
                 mangaManager.getSavedManga());
 
         mangaListView.setAdapter(mangaArrayAdapter);
@@ -34,7 +34,8 @@ public class DownloadedActivity extends Activity {
                 Log.i("onItemClick", mangaListView.getItemAtPosition(i).toString());
                 Intent chapterView = new Intent(DownloadedActivity.this, ChapterActivity.class);
                 //ScriptManager.getScriptManager().setCurrentSource(sourceNumber);
-                MangaManager.getMangaManager().setCurrentManga((Manga) mangaListView.getItemAtPosition(i));
+                mangaManager.readingOffline(true);
+                mangaManager.setCurrentManga((Manga) mangaListView.getItemAtPosition(i));
                 startActivity(chapterView);
             }
         });

@@ -42,6 +42,7 @@ public class HistoryActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.i("onItemClick", historyListView.getItemAtPosition(i).toString());
                 MangaManager mangaManager = MangaManager.getMangaManager();
+                mangaManager.readingOffline(false);
                 Chapter chapter = (Chapter) historyListView.getItemAtPosition(i);
                 mangaManager.setCurrentManga(chapter.getParentManga());
                 mangaManager.setCurrentChapter(chapter);
