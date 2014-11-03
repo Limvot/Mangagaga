@@ -12,7 +12,11 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.apache.http.util.ByteArrayBuffer;
+import org.luaj.vm2.LuaTable;
 
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -23,6 +27,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.Date;
 
 public class Utilities {
+
+    static Gson gson;
 
     private static class DownloadSource extends AsyncTask<String,Void,String>
     {
@@ -45,6 +51,15 @@ public class Utilities {
     {
     }
 
+    public static Gson getGson() {
+        if (gson == null)
+            gson = new GsonBuilder()
+                    .registerTypeAdapter(LuaTable.class, new LuaTableSerializer())
+                    .setPrettyPrinting()
+                    .create();
+        return gson;
+    }
+
     public static void checkForUpdates(Context ctx) {
         new CheckUpdates().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ctx);
     }
@@ -62,18 +77,6 @@ public class Utilities {
             settingsManager.setApkDate(siteApkDate);
         }
     }
-
-//    public static Date lastModified(String source) {
-//        Date lastMod;
-//        try {
-//            lastMod = new GetModifiedTime().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, source).get();
-//            Log.i("Last Modified:", lastMod.toString());
-//        } catch (Exception e) {
-//            Log.e("Exception in last modified:", e.toString());
-//            lastMod = new Date();
-//        }
-//        return lastMod;
-//    }
 
     public static Date getModifiedTime(String source) {
         Log.i("Url to grab modified time from", source);

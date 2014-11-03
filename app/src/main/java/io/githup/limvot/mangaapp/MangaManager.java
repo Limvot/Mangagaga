@@ -58,10 +58,7 @@ public class MangaManager {
 
     MangaManager() {
         scriptManager = ScriptManager.getScriptManager();
-        gson = new GsonBuilder()
-                .registerTypeAdapter(LuaTable.class, new LuaTableSerializer())
-                .setPrettyPrinting()
-                .create();
+        gson = Utilities.getGson();
         chapterHistory = loadHistory();
         favoriteManga = loadFavorites();
     }
