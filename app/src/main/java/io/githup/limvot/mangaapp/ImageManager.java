@@ -43,14 +43,17 @@ public class ImageManager {
     {
         int[] textureSize = new int[1];
         GLES10.glGetIntegerv(GLES10.GL_MAX_TEXTURE_SIZE, textureSize, 0);
+        // Hardcode because sadness (the above won't work without an OpenGL context)
+        textureSize[0] = 2048;
 
         Bitmap bm = bitmapMaker.decodeFile(path);
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaledW = ((float) textureSize[0])/width;
         float scaledH = ((float) textureSize[0])/height;
+        float finalScale = scaledH < scaledW ? scaledH : scaledW;
         Matrix matrix = new Matrix();
-        matrix.postScale(scaledW, scaledH);
+        matrix.postScale(finalScale, finalScale);
         return Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
     }
 }
