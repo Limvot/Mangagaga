@@ -51,8 +51,6 @@ public class ImageManager {
         float scaledH = ((float) textureSize[0])/height;
         Matrix matrix = new Matrix();
         matrix.postScale(scaledW, scaledH);
-        Bitmap resizedBm = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-        return resizedBm;
+        return Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
     }
 }
