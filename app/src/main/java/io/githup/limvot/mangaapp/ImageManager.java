@@ -49,9 +49,12 @@ public class ImageManager {
         Bitmap bm = bitmapMaker.decodeFile(path);
         int width = bm.getWidth();
         int height = bm.getHeight();
-        float scaledW = ((float) textureSize[0])/width;
-        float scaledH = ((float) textureSize[0])/height;
-        float finalScale = scaledH < scaledW ? scaledH : scaledW;
+        float finalScale = 1.0f;
+        if (width > textureSize[0] || height > textureSize[0]) {
+            float scaledW = ((float) textureSize[0])/width;
+            float scaledH = ((float) textureSize[0])/height;
+            finalScale = scaledH < scaledW ? scaledH : scaledW;
+        }
         Matrix matrix = new Matrix();
         matrix.postScale(finalScale, finalScale);
         return Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
