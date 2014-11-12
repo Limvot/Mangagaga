@@ -2,15 +2,56 @@
 
 buildscript {
     repositories {
+        mavenCentral()
+        maven {
+            url "http://saturday06.github.io/gradle-android-scala-plugin/repository/snapshot"
+        }
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.14.0'
+        classpath "jp.leafytree.gradle:gradle-android-scala-plugin:1.0-SNAPSHOT"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
+
+repositories {
+    mavenCentral()
+}
+
+/*
+ *apply plugin: "com.android.application"
+ *android {
+ *    compileSdkVersion "android-15"
+ *    buildToolsVersion "20.0.0"
+ *    defaultConfig {
+ *        minSdkVersion 15
+ *        targetSdkVersion 15
+ *        versionCode 1
+ *        versionName "1.0"
+ *    }
+ *
+ *    buildTypes {
+ *        debug {
+ *            runProguard true
+ *            proguardFile file("proguard_rules.txt")
+ *        }
+ *        release {
+ *            runProguard true
+ *            proguardFile file("proguard_rules.txt")
+ *        }
+ *    }
+ *}
+ *
+ *dependencies {
+ *    compile "org.scala-lang:scala-library:2.11.2"
+ *        compile "org.scaloid:scaloid_2.11:3.5-10+"
+ *}
+ */
+
+
 
 allprojects {
     repositories {

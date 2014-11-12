@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 
+
 // Created by Nathan Braswell on 8/19/14
 // Modified by Pratik Gangwani on 8/24/14
 
@@ -52,6 +53,7 @@ public class HomeScreen extends Activity {
         }
 
 
+        ScalaClassThing.doThing();
         // Set up the script manager
         ScriptManager.createScriptManager(this);
         // Init the MangaManager with the current context
