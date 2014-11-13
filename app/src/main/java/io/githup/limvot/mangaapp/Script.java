@@ -39,7 +39,9 @@ class Script {
         globals = JsePlatform.standardGlobals();
         globals.load(new StringReader(ScriptManager.getLuaPrequal()), "luaPrequal").call();
         // Call init function which normally saves this APIObject
-        globals.get("init").call(CoerceJavaToLua.coerce(APIObject.getAPIObject()));
+        APIObject apiObj = APIObject.getAPIObject();
+        Log.i("TheAPIOBject", apiObj.toString());
+        globals.get("init").call(CoerceJavaToLua.coerce(apiObj));
 
         globals.load(new StringReader(luaCode), name).call();
         luaGetMangaListTypes = globals.get("getMangaListTypes");

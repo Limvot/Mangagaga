@@ -2,7 +2,10 @@ print('Lua prequal!')
 
 apiObj = 0
 function init(apiObjIn)
+   print('Doing init')
+   print(apiObjIn)
    apiObj = apiObjIn
+   print(apiObj)
 end
 
 function escapeRegexStr(theStr)

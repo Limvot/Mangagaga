@@ -56,6 +56,8 @@ function getMangaListPage()
 end
 
 function getMangaList(url)
+   print('About to getMangaList!')
+   print(apiObj)
    path = apiObj:download(url)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for manga): ' .. path)

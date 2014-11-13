@@ -9,6 +9,12 @@
 
 # Add any project specific keep options here:
 -ignorewarnings
+-keep class io.** {*;}
+-dontoptimize
+-dontobfuscate
+-keepattributes Signature
+-dontwarn scala.collection.**
+-dontwarn scala.collection.mutable.**
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
