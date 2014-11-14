@@ -7,6 +7,7 @@ class ScalaActivity extends SActivity {
   onCreate {
     contentView = new SVerticalLayout {
       STextView("Hellooo")
+      SButton("O ooo")
     }
   }
 }

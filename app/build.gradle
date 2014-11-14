@@ -1,10 +1,22 @@
 apply plugin: 'com.android.application'
 apply plugin: "android-scala"
 
+
+// Extract signing info into a properties file
+Properties props = new Properties()
+props.load(new FileInputStream(file("signing.properties")))
+
 android {
+    signingConfigs {
+        config {
+            keyAlias props['keyAlias']
+            keyPassword props['keyPassword']
+            storeFile file(props['storeFile'])
+            storePassword props['storePassword']
+        }
+    }
     compileSdkVersion 20
     buildToolsVersion "20.0.0"
-
     defaultConfig {
         applicationId "io.githup.limvot.mangaapp"
         minSdkVersion 15
@@ -16,10 +28,12 @@ android {
         debug {
             runProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         release {
             runProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
@@ -27,8 +41,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('libs/luaj-3.0/lib/luaj-jse-3.0.jar')
-    compile "org.scala-lang:scala-library:2.11.2"
-    compile "org.scaloid:scaloid_2.11:3.5-10+"
+    compile 'org.scala-lang:scala-library:2.11.2'
+    compile 'org.scaloid:scaloid_2.11:3.5-10+'
     compile 'com.android.support:support-v13:20.0.0'
     compile 'com.android.support:support-v4:20.0.0'
     compile files('libs/gson-2.3.jar')

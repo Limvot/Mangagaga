@@ -15,9 +15,11 @@ import android.widget.ListView;
 
 class DownloadedActivity extends SActivity {
   onCreate {
-    contentView = new SRelativeLayout {
-      STextView("Downloaded").<<.wrap.centerHorizontal.alignParentTop.>>
-      SListView().<<.wrap.alignParentRight.>>
+    contentView = new SVerticalLayout() {
+      STextView("Downloaded")
+      SButton("ooook")
+      STextView("Arrr")
+      SListView()
       //SListView().<<.wrap.alignParentRight(true).below(R.+id.downloadedTextView).>>
     }
   }
