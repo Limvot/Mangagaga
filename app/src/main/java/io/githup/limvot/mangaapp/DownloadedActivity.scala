@@ -17,7 +17,7 @@ class DownloadedActivity extends SActivity {
   onCreate {
     contentView = new SVerticalLayout() {
       STextView("Downloaded")
-      SButton("ooook")
+      SButton("ooook goo")
       STextView("Arrr")
       SListView()
       //SListView().<<.wrap.alignParentRight(true).below(R.+id.downloadedTextView).>>
