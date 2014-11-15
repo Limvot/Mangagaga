@@ -29,7 +29,7 @@ public class FavoritesActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.i("onItemClick", favorites.getItemAtPosition(i).toString());
                 Manga manga = (Manga) favorites.getItemAtPosition(i);
-                ScriptManager.getScriptManager().setCurrentSource(manga.getSourceNumber());
+                ScriptManager.setCurrentSource(manga.getSourceNumber());
                 MangaManager.getMangaManager().readingOffline(false);
                 MangaManager.getMangaManager().setCurrentManga(manga);
                 startActivity(new Intent(FavoritesActivity.this, ChapterActivity.class));

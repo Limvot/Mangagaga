@@ -30,7 +30,7 @@ class Script(name : String, luaCode : String, scriptNumber : Int) {
     // var luaGetMangaChapterNumPages : LuaValue
 
     val globals = JsePlatform.standardGlobals()
-    globals.load(new StringReader(ScriptManager.getLuaPrequal()), "luaPrequal").call()
+    globals.load(new StringReader(ScriptManager.getLuaPrequal), "luaPrequal").call()
     // Call init function which normally saves this APIObject
     info(APIObject.instance().toString())
     globals.get("init").call(CoerceJavaToLua.coerce(APIObject.instance()))
