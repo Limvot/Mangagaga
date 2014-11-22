@@ -307,9 +307,10 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
             Log.i("ASYNC DO IN BACKGROUND", "STARTING");
             String imagepath = MangaManager.getMangaManager().getCurrentPage();
             Log.i("Display image!", imagepath);
-            ImageManager im = ImageManager.getImageManager();
+            // ImageManager im = ImageManager.getImageManager();
+
             Log.i("ASYNC DO IN BACKGROUND", "ENDING");
-            return im.getNext(imagepath);
+            return ImageManager.getNext(imagepath);
         }
         @Override
         protected void onPostExecute(Bitmap page) {
