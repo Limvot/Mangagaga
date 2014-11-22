@@ -138,12 +138,12 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public int getCount() {
-            return ScriptManager.getScriptManager().numSources();
+            return ScriptManager.numSources();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return ScriptManager.getScriptManager().getScript(position).getName();
+            return ScriptManager.getScript(position).getName();
         }
     }
 
@@ -180,17 +180,16 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
 
             TextView title = (TextView) rootView.findViewById(R.id.testSectionText);
             final int sourceNumber = getArguments().getInt(ARG_SECTION_NUMBER);
-            
+
             title.setText("Manga List");
 
             final Spinner mangaListTypeSpinner = (Spinner) rootView.findViewById(R.id.manga_list_type_spinner);
             final ListView mangaListView = (ListView) rootView.findViewById(R.id.mangaListView);
             final Button previousButton = (Button) rootView.findViewById(R.id.previousChapterPageButton);
             final Button nextButton = (Button) rootView.findViewById(R.id.nextChapterPageButton);
-            final ScriptManager scriptManager = ScriptManager.getScriptManager();
 
             final ArrayAdapter<Manga> arrayAdapter = new ArrayAdapter<Manga>(getActivity(), android.R.layout.simple_list_item_1,
-                    scriptManager.getScript(sourceNumber).getMangaListPage1());
+                    ScriptManager.getScript(sourceNumber).getMangaListPage1());
             mangaListView.setAdapter(arrayAdapter);
 
             mangaListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
@@ -198,7 +197,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Log.i("onItemClick", mangaListView.getItemAtPosition(i).toString());
                     Intent chapterView = new Intent(getActivity(), ChapterActivity.class);
-                    scriptManager.setCurrentSource(sourceNumber);
+                    ScriptManager.setCurrentSource(sourceNumber);
                     MangaManager.getMangaManager().readingOffline(false);
                     MangaManager.getMangaManager().setCurrentManga((Manga) mangaListView.getItemAtPosition(i));
                     startActivity(chapterView);
@@ -206,7 +205,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
             });
 
             final ArrayAdapter<String> mangaListTypes = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-                    scriptManager.getScript(sourceNumber).getMangaListTypes());
+                    ScriptManager.getScript(sourceNumber).getMangaListTypes());
             mangaListTypeSpinner.setAdapter(mangaListTypes);
             mangaListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -214,9 +213,9 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
                     String selected = adapterView.getItemAtPosition(i).toString();
                     Log.i("New selected:", selected);
                     // Set the new type and get its first page
-                    ScriptManager.getScriptManager().getCurrentSource().setMangaListType(selected);
+                    ScriptManager.getCurrentSource().setMangaListType(selected);
                     arrayAdapter.clear();
-                    arrayAdapter.addAll(scriptManager.getScript(sourceNumber).getMangaListPage1());
+                    arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListPage1());
                 }
 
                 @Override
@@ -229,7 +228,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
                 @Override
                 public void onClick(View view) {
                     arrayAdapter.clear();
-                    arrayAdapter.addAll(scriptManager.getScript(sourceNumber).getMangaListPreviousPage());
+                    arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListPreviousPage());
                 }
             });
 
@@ -237,7 +236,7 @@ public class SourceActivity extends Activity implements ActionBar.TabListener {
                 @Override
                 public void onClick(View view) {
                     arrayAdapter.clear();
-                    arrayAdapter.addAll(scriptManager.getScript(sourceNumber).getMangaListNextPage());
+                    arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListNextPage());
                 }
             });
 

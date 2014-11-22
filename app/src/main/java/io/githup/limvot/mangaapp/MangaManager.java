@@ -47,7 +47,6 @@ public class MangaManager {
 
     private Gson gson;
 
-    private ScriptManager scriptManager;
     private ArrayList<Chapter> chapterHistory;
     private ArrayList<Manga> favoriteManga;
 
@@ -57,7 +56,6 @@ public class MangaManager {
     private int currentPage;
 
     MangaManager() {
-        scriptManager = ScriptManager.getScriptManager();
         gson = Utilities.getGson();
         chapterHistory = loadHistory();
         favoriteManga = loadFavorites();
@@ -300,7 +298,7 @@ public class MangaManager {
     }
 
     public void setCurrentManga(Manga manga) {
-        scriptManager.getCurrentSource().initManga(manga);
+        ScriptManager.getCurrentSource().initManga(manga);
         currentManga = manga;
     }
 
@@ -317,7 +315,7 @@ public class MangaManager {
     }
 
     List<Chapter> getMangaChapterList() {
-        return scriptManager.getCurrentSource().getMangaChapterList(currentManga);
+        return ScriptManager.getCurrentSource().getMangaChapterList(currentManga);
     }
 
     List<Chapter> getChapterHistoryList() {
@@ -349,7 +347,7 @@ public class MangaManager {
     }
 
     int getNumPages(Manga manga, Chapter chapter) {
-        return scriptManager.getCurrentSource().getNumPages(manga, chapter);
+        return ScriptManager.getCurrentSource().getNumPages(manga, chapter);
     }
 
     int getNumPages() {
@@ -369,7 +367,7 @@ public class MangaManager {
     }
 
     String getCurrentPage(Manga manga, Chapter chapter, int page) {
-        return scriptManager.getCurrentSource().downloadPage(manga, chapter, page);
+        return ScriptManager.getCurrentSource().downloadPage(manga, chapter, page);
     }
 }
 
