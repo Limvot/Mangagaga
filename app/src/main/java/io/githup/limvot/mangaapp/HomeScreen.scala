@@ -45,7 +45,7 @@ class HomeScreen extends SActivity {
     ScriptManager.init(this)
     // Init the MangaManager with the current context
     // This has to be done after script manager has been set up
-    MangaManager.initMangaManager(this)
+    MangaManager.setContext(this)
 
     //Have Utilites check for updates
     Utilities.checkForUpdates(this)

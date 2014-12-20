@@ -29,7 +29,7 @@ class FavoritesActivity extends SActivity {
             
         }
 
-        var buff : Buffer[Manga] =  MangaManager.getMangaManager().getFavoriteList()
+        var buff : Buffer[Manga] =  MangaManager.getFavoriteList()
         favoritesAdapter = new SArrayAdapter(buff.toArray)
         listFavorites.setAdapter(favoritesAdapter)
 
@@ -38,8 +38,8 @@ class FavoritesActivity extends SActivity {
                 info(listFavorites.getItemAtPosition(i).toString())
                 val manga = listFavorites.getItemAtPosition(i).asInstanceOf[Manga]
                 ScriptManager.setCurrentSource(manga.getSourceNumber())
-                MangaManager.getMangaManager().readingOffline(false)
-                MangaManager.getMangaManager().setCurrentManga(manga)
+                MangaManager.readingOffline(false)
+                MangaManager.setCurrentManga(manga)
                 startActivity[ChapterActivity]
             }
         })

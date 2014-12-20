@@ -16,13 +16,11 @@ import java.util.List;
 public class ChapterListAdapter extends ArrayAdapter<Chapter> {
     private final Context context;
     private final List<Chapter> values;
-    private final MangaManager mangaManager;
 
     public ChapterListAdapter(Context context, List<Chapter> values) {
         super(context, R.layout.chapter_entry, values);
         this.context = context;
         this.values = values;
-        mangaManager = MangaManager.getMangaManager();
     }
 
     @Override
@@ -33,14 +31,14 @@ public class ChapterListAdapter extends ArrayAdapter<Chapter> {
         final Chapter chapter = (Chapter) values.get(position);
         chapterText.setText(chapter.toString());
         final CheckBox checkBox = (CheckBox) rowView.findViewById(R.id.downloadChapterCheckBox);
-        checkBox.setChecked(mangaManager.isSaved(chapter));
+        checkBox.setChecked(MangaManager.isSaved(chapter));
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (checkBox.isChecked())
-                    mangaManager.addSaved(chapter);
+                    MangaManager.addSaved(chapter);
                 else
-                    mangaManager.removeSaved(chapter);
+                    MangaManager.removeSaved(chapter);
             }
         });
         return rowView;

@@ -31,28 +31,27 @@ public class ChapterActivity extends Activity {
         description = (TextView) findViewById(R.id.mangaDescriptionTextView);
         favoriteBox = (CheckBox) findViewById(R.id.favoriteCheckBox);
 
-        final MangaManager mangaManager = MangaManager.getMangaManager();
-        final Manga currentManga = mangaManager.getCurrentManga();
+        final Manga currentManga = MangaManager.getCurrentManga();
 
         title.setText(currentManga.toString());
         description.setText(currentManga.getDescription());
-        favoriteBox.setChecked(mangaManager.isFavorite(currentManga));
+        favoriteBox.setChecked(MangaManager.isFavorite(currentManga));
         favoriteBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (favoriteBox.isChecked())
-                    mangaManager.addFavorite(currentManga);
+                    MangaManager.addFavorite(currentManga);
                 else
-                    mangaManager.removeFavorite(currentManga);
+                    MangaManager.removeFavorite(currentManga);
             }
         });
 
         chapterListView = (ListView) findViewById(R.id.mangaChapterListView);
 //        ArrayAdapter<Chapter> arrayAdapter = new ArrayAdapter<Chapter>(this, android.R.layout.simple_list_item_1,
-//                mangaManager.getMangaChapterList());
+//                MangaManager.getMangaChapterList());
 
         ChapterListAdapter chapterAdapter = new ChapterListAdapter(this,
-                mangaManager.getMangaChapterList());
+                MangaManager.getMangaChapterList());
 
         chapterListView.setAdapter(chapterAdapter);
 
@@ -60,8 +59,8 @@ public class ChapterActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.i("onItemClick", chapterListView.getItemAtPosition(i).toString());
-                MangaManager.getMangaManager().setCurrentChapter((Chapter) chapterListView.getItemAtPosition(i));
-                MangaManager.getMangaManager().setCurrentPageNum(0);
+                MangaManager.setCurrentChapter((Chapter) chapterListView.getItemAtPosition(i));
+                MangaManager.setCurrentPageNum(0);
                 Intent chapterView = new Intent(ChapterActivity.this, ImageViewerActivity.class);
                 startActivity(chapterView);
             }

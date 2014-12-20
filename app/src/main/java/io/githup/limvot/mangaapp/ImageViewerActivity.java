@@ -177,28 +177,27 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
     @Override
     public boolean onSingleTapUp(MotionEvent event)
     {
-        MangaManager mangaManager = MangaManager.getMangaManager();
         float x;
         x = event.getX();
         if(x < 350)
         {
-            int total = mangaManager.getNumPages();
-            int i = mangaManager.getCurrentPageNum();
+            int total = MangaManager.getNumPages();
+            int i = MangaManager.getCurrentPageNum();
             if(i < total-1) {
-                mangaManager.setCurrentPageNum(i+1);
+                MangaManager.setCurrentPageNum(i+1);
             } else {
-                mangaManager.nextChapter();
-                mangaManager.setCurrentPageNum(0);
+                MangaManager.nextChapter();
+                MangaManager.setCurrentPageNum(0);
             }
         }
         else
         {
-            int i = mangaManager.getCurrentPageNum();
+            int i = MangaManager.getCurrentPageNum();
             if(i > 0) {
-                mangaManager.setCurrentPageNum(i-1);
+                MangaManager.setCurrentPageNum(i-1);
             } else {
-                mangaManager.previousChapter();
-                mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
+                MangaManager.previousChapter();
+                MangaManager.setCurrentPageNum(MangaManager.getNumPages() - 1);
             }
         }
         updateImage();
@@ -230,32 +229,31 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velx, float vely)
     {
-        MangaManager mangaManager = MangaManager.getMangaManager();
         Log.d("onFling", "Velx: "+Float.toString(velx));
         if(velx > 0)
         {
             //swiped from left to right
-            int total = mangaManager.getNumPages();
-            int i = mangaManager.getCurrentPageNum();
+            int total = MangaManager.getNumPages();
+            int i = MangaManager.getCurrentPageNum();
             Log.d("onClick", Integer.toString(total));
             if(i < total-1) {
-                mangaManager.setCurrentPageNum(i+1);
+                MangaManager.setCurrentPageNum(i+1);
             } else {
                 // Returns true if successful (has a next chapter)
-                if (mangaManager.nextChapter())
-                    mangaManager.setCurrentPageNum(0);
+                if (MangaManager.nextChapter())
+                    MangaManager.setCurrentPageNum(0);
             }
         }
         else
         {
             //swiped from right to left
-            int i = mangaManager.getCurrentPageNum();
+            int i = MangaManager.getCurrentPageNum();
             if(i > 0) {
-                mangaManager.setCurrentPageNum(i-1);
+                MangaManager.setCurrentPageNum(i-1);
             } else {
                 // Returns true if successful (has a previous chapter)
-                if (mangaManager.previousChapter())
-                    mangaManager.setCurrentPageNum(mangaManager.getNumPages() - 1);
+                if (MangaManager.previousChapter())
+                    MangaManager.setCurrentPageNum(MangaManager.getNumPages() - 1);
             }
         }
         updateImage();
@@ -305,7 +303,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         @Override
         protected Bitmap doInBackground(Void... nothing) {
             Log.i("ASYNC DO IN BACKGROUND", "STARTING");
-            String imagepath = MangaManager.getMangaManager().getCurrentPage();
+            String imagepath = MangaManager.getCurrentPage();
             Log.i("Display image!", imagepath);
             // ImageManager im = ImageManager.getImageManager();
 

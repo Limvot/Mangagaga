@@ -32,26 +32,25 @@ class HistoryActivity extends SActivity {
         }
 
 
-        var buff : Buffer[Chapter] = MangaManager.getMangaManager().getChapterHistoryList()
+        var buff : Buffer[Chapter] = MangaManager.getChapterHistoryList()
         adapter = new SArrayAdapter(buff.toArray)
-        historyListView.setAdapter(adapter);
+        historyListView.setAdapter(adapter)
 
         historyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             override def onItemClick(adapterView : AdapterView[_], view : View, i : Int, l : Long) {
                 info(historyListView.getItemAtPosition(i).toString())
-                var mangaManager : MangaManager = MangaManager.getMangaManager()
-                mangaManager.readingOffline(false)
+                MangaManager.readingOffline(false)
                 var chapter : Chapter = historyListView.getItemAtPosition(i).asInstanceOf[Chapter]
-                mangaManager.setCurrentManga(chapter.getParentManga())
-                mangaManager.setCurrentChapter(chapter)
-                mangaManager.setCurrentPageNum(0)
+                MangaManager.setCurrentManga(chapter.getParentManga())
+                MangaManager.setCurrentChapter(chapter)
+                MangaManager.setCurrentPageNum(0)
                 startActivity[ImageViewerActivity]
             }
         })
     }
 
     def clearHistCallback() {
-        MangaManager.getMangaManager().clearHistory()
+        MangaManager.clearHistory()
         adapter.notifyDataSetChanged()
     }
 
