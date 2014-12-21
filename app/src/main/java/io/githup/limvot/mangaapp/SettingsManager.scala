@@ -16,7 +16,7 @@ object SettingsManager {
     class SettingsManager() {
         def instance() = this;
         var historySize = 10;
-        var apkDate = new Date;
+        var apkDate = new Date
     }
     
     var settingsMan : SettingsManager = new SettingsManager();
@@ -43,7 +43,7 @@ object SettingsManager {
     def loadSettings() = {
         var savedFile = new File(Environment.getExternalStorageDirectory() + "/Mangagaga", "Settings.json");
         try {
-            Utilities.getGson().fromJson(Utilities.readFile(savedFile.getAbsolutePath()), classOf[SettingsManager]);
+            settingsMan = Utilities.getGson().fromJson(Utilities.readFile(savedFile.getAbsolutePath()), classOf[SettingsManager]);
             Log.i("SAVED_SETTINGS", "Loaded!");
         } catch {
             case e:Exception => {
