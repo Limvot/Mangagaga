@@ -25,7 +25,6 @@ class ChapterActivity extends SActivity {
 
     override def onCreate(savedInstanceState : Bundle) = {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chapter)
         contentView = new SVerticalLayout() {
             title = STextView()
             favoriteBox = SCheckBox("Favorite")
