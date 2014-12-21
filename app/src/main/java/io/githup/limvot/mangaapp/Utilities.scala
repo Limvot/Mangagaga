@@ -58,7 +58,7 @@ object Utilities {
         
         //This is needed to load the settings file from memory
         //and to make sure SettingsManager isn't null
-        var settingsman = SettingsManager.getSettingsManager();
+        SettingsManager.loadSettings();
         
         info("Does this need updates? "+siteApkDate.toString())
         if (siteApkDate.after(SettingsManager.getApkDate())) {

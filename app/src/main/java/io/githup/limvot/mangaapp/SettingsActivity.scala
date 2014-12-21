@@ -16,7 +16,7 @@ import org.scaloid.common._
 class SettingsActivity extends SActivity {
 
     implicit val tag = LoggerTag("Scala Setting Activity")
-    private val manager : SettingsManager = SettingsManager.getSettingsManager();
+    SettingsManager.loadSettings();
     var historySize : STextView = null
     var editText : SEditText = null
 
