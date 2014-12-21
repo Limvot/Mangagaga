@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.app.ActionBar
 
 import org.scaloid.common._
 
@@ -31,6 +32,7 @@ class SettingsActivity extends SActivity {
             editText = SEditText()
             editText.afterTextChanged(historyLimitCallback())
         }
+        getActionBar().setTitle("Settings")
     }
 
     def clearAll() {
