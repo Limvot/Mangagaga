@@ -4,6 +4,8 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import scala.collection.JavaConversions._
 
+import java.util.concurrent.Semaphore
+
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
@@ -40,6 +42,7 @@ object MangaManager {
   implicit val exec = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
   def instance() = this
 
+  val chapterDownloadMutex = new Semaphore(1)
   val gson = Utilities.getGson()
   val chapterHistory = loadHistory()
   val favoriteManga = loadFavorites()
@@ -49,13 +52,16 @@ object MangaManager {
   var currentManga: Manga = null
   var currentChapter: Chapter = null
   var currentPage:Int = 0
+  // Used for cacheing pages and the downloaded chapters
+  val chapterPageMap = collection.mutable.Map[Int, String]()
 
   def setContext(ctx: Context) { mainContext = ctx }
   def readingOffline(isOffline:Boolean) { this.isOffline = isOffline }
 
   def  loadHistory(): ArrayList[Chapter] = {
     try {
-      gson.fromJson(Utilities.readFile(Environment.getExternalStorageDirectory() + "/Mangagaga/History.json"), new TypeToken[ArrayList[Chapter]]() {}.getType())
+      gson.fromJson(Utilities.readFile(Environment.getExternalStorageDirectory() + "/Mangagaga/History.json"),
+                    new TypeToken[ArrayList[Chapter]]() {}.getType())
     } catch  {
       case e: Exception => new ArrayList[Chapter]
     }
@@ -125,12 +131,23 @@ object MangaManager {
   }
 
   def isSaved(chapter: Chapter): Boolean = {
-    false
+    val savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/" + chapter.getParentManga().getTitle + "/" + chapter.getTitle)
+    savedDir.exists()
   }
+
   def addSaved(chapter: Chapter) {
-    if (!isSaved(chapter))
-      Future { downloadChaptersAsync(Vector(chapter)) }
+    if (!isSaved(chapter)) {
+      Future { 
+        try {
+          chapterDownloadMutex.acquire()
+          downloadChaptersAsync(Vector(chapter))
+        } finally {
+          chapterDownloadMutex.release()
+        }
+      }
+    }
   }
+
   def downloadChaptersAsync(toDownload: List[Chapter]) {
     // Notification
     val context = mainContext
@@ -139,7 +156,7 @@ object MangaManager {
       new NotificationCompat.Builder(context)
         .setSmallIcon(R.drawable.ic_launcher)
         .setContentTitle("Downloading Chapter")
-        .setContentText("Downloading " + toDownload.size() + " chapters...")
+        .setContentText("Downloading " + toDownload(0).getTitle)
         val resultIntent = new Intent(context, classOf[DownloadedActivity])
         val stackBuilder = TaskStackBuilder.create(context)
         stackBuilder.addParentStack(classOf[DownloadedActivity])
@@ -154,7 +171,7 @@ object MangaManager {
             val parentManga = chapter.getParentManga
             val savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/")
             val mangaDir = new File(savedDir, parentManga.getTitle())
-            val chapterDir = new File(mangaDir, Integer.toString(chapter.getNum()))
+            val chapterDir = new File(mangaDir, chapter.getTitle)
             mangaDir.mkdir()
             chapterDir.mkdir()
 
@@ -192,14 +209,14 @@ object MangaManager {
             for (i <- 0 until getNumPages(parentManga, chapter)) {
               builder.setContentText("Downloading page " + (i+1) + ".")
               notificationManager.notify(notificationID, builder.build())
-              val fromFile = getCurrentPage(parentManga, chapter, i)
+              val fromFile = ScriptManager.getCurrentSource().downloadPage(parentManga, chapter, i)
               try {
                 val is = new FileInputStream(fromFile)
                 val filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."))
                 val os = new FileOutputStream(chapterDir.getAbsolutePath() + "/" + filename)
                 Utilities.copyStreams(is, os)
               } catch {
-                case e: Exception => Log.e("Save Chapter ERROR", fromFile)
+                case e: Exception => Log.e("Save Chapter ERROR", fromFile + " e: " + e.toString)
               }
             }
           }
@@ -210,7 +227,9 @@ object MangaManager {
   }
 
   def removeSaved(chapter: Chapter) {
-    //
+    val savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/" + chapter.getParentManga().getTitle + "/" + chapter.getTitle)
+    if (savedDir.exists())
+      Utilities.deleteFolder(savedDir)
   }
 
   def getSavedManga(): List[Manga] = {
@@ -229,6 +248,23 @@ object MangaManager {
     }
     list
   }
+
+  def getSavedChapters(manga: Manga): List[Chapter] = {
+    val list = new ArrayList[Chapter]
+    val savedDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Downloaded/" + manga.getTitle)
+    for (dir <- savedDir.list()) {
+      Log.i("Get Saved Chapters", dir)
+      val chapterDir = new File(savedDir, dir)
+      val chapterFile = new File(chapterDir, "chapter.json")
+      try {
+        val chapter = gson.fromJson(Utilities.readFile(chapterFile.getAbsolutePath()), classOf[Chapter])
+        list.add(chapter)
+      } catch {
+        case e: Exception => Log.i("GetSaved Chapters Chapters", "Exception")
+      }
+    }
+    list.reverse
+  }
   def clearSaved() {
     Log.i("MANGA_MANAGER", "Clearing Saved!")
     val downloaded = new File(Environment.getExternalStorageDirectory()+"/Mangagaga/Downloaded/")
@@ -237,23 +273,21 @@ object MangaManager {
 
 
   def setCurrentManga(manga: Manga) {
-    ScriptManager.getCurrentSource().initManga(manga)
+    if (!isOffline)
+      ScriptManager.getCurrentSource().initManga(manga)
     currentManga = manga
   }
 
   def getCurrentManga() = currentManga
 
   def setCurrentChapter(current: Chapter) {
+    chapterPageMap.clear()
     currentChapter = current
     chapterHistory.add(0, current)
     for (i <- SettingsManager.getHistorySize() until chapterHistory.size)
       chapterHistory.remove(i)
       saveHistory()
   }
-
-  def getMangaChapterList(): List[Chapter] = ScriptManager.getCurrentSource().getMangaChapterList(currentManga)
-  def getChapterHistoryList(): List[Chapter] = chapterHistory
-
   // THESE LOOK BACKWARDS
   // But they're not. Or they are. (Because Chapter 1 is at the 'end' of the list.)
   // Make this script decidable later
@@ -261,30 +295,68 @@ object MangaManager {
     val mangaChapterList = getMangaChapterList()
     Log.i("PREVOUS CHAPTER", Integer.toString(currentChapter.getNum()))
     Log.i("PREVIOUS CHAPTER: size", Integer.toString(mangaChapterList.size()-1))
-
-    if (currentChapter.getNum() < mangaChapterList.size()-1)
-      setCurrentChapter(mangaChapterList.get(currentChapter.getNum()+1))
+    val nextIndex = mangaChapterList.indexOf(currentChapter)+1
+    if (nextIndex < mangaChapterList.size())
+      setCurrentChapter(mangaChapterList.get(nextIndex))
     else
       return false
     true
   }
 
   def nextChapter(): Boolean = {
+    val mangaChapterList = getMangaChapterList()
     Log.i("NEXT CHAPTER", Integer.toString(currentChapter.getNum()))
-    if (currentChapter.getNum() > 0)
-      setCurrentChapter(getMangaChapterList().get(currentChapter.getNum()-1))
+    val nextIndex = mangaChapterList.indexOf(currentChapter)-1
+    if (nextIndex > -1)
+      setCurrentChapter(mangaChapterList.get(nextIndex))
     else
       return false
     true
   }
 
-  def getNumPages(manga: Manga, chapter: Chapter): Integer = ScriptManager.getCurrentSource().getNumPages(manga, chapter)
+  def getMangaChapterList(): List[Chapter] = {
+    if (isOffline)
+      getSavedChapters(currentManga)
+    else
+      ScriptManager.getCurrentSource().getMangaChapterList(currentManga)
+  }
+  def getChapterHistoryList(): List[Chapter] = chapterHistory
+
   def getNumPages(): Integer = getNumPages(currentManga, currentChapter)
+  def getNumPages(manga: Manga, chapter: Chapter): Integer = { 
+    if (!isOffline) {
+      ScriptManager.getCurrentSource().getNumPages(manga, chapter)
+    } else {
+      // This is a bit hacky..... If the size is zero we assume that we haven't laoded the chapter
+      // and we load it
+      if (chapterPageMap.size == 0)
+        addToChapterPageMap(manga, chapter, 0)
+      chapterPageMap.size
+    }
+  }
   def setCurrentPageNum(page: Int) { currentPage = page }
   def getCurrentPageNum(): Int = currentPage
   def getCurrentPage(): String = getCurrentPage(currentManga, currentChapter, currentPage)
+  def getCurrentPage(manga: Manga, chapter: Chapter, page: Int): String = { 
+    if (chapterPageMap.get(page) == None)
+      addToChapterPageMap(manga, chapter, page)
+    chapterPageMap(page)
+  }
 
-  def getCurrentPage(manga: Manga, chapter: Chapter, page: Int): String = 
-    ScriptManager.getCurrentSource().downloadPage(manga, chapter, page)
+  def addToChapterPageMap(manga: Manga, chapter: Chapter, page: Int) { 
+    if (!isOffline) {
+      chapterPageMap(page) = ScriptManager.getCurrentSource().downloadPage(manga, chapter, page)
+    } else {
+      // As we load all downloaded pages, we must not have loaded this chapter yet
+      // Do this now
+      chapterPageMap.clear()
+      val chapterDirString = Environment.getExternalStorageDirectory() +
+                             "/Mangagaga/Downloaded/" + manga.getTitle + "/" + chapter.getTitle
+      val savedDir = new File(chapterDirString)
+      for ((dir, i) <- savedDir.list.filter(!_.endsWith(".json")).view.zipWithIndex) {
+        chapterPageMap(i) = chapterDirString + "/" + dir.toString
+      }
+    }
+  }
 }
 

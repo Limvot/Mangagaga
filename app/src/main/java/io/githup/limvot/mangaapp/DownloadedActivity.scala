@@ -15,12 +15,19 @@ import android.widget.ListView;
 
 class DownloadedActivity extends SActivity {
   onCreate {
-    contentView = new SVerticalLayout() {
-      STextView("Downloaded")
-      SButton("ooook goo")
-      STextView("Arrr")
-      SListView()
-      //SListView().<<.wrap.alignParentRight(true).below(R.+id.downloadedTextView).>>
+    contentView = new SRelativeLayout {
+        val listText = STextView("Downloaded Manga:").<<.wrap.>>
+        val mangaListView = SListView().<<.wrap.below(listText).>>
+
+        mangaListView.setAdapter(new SArrayAdapter(MangaManager.getSavedManga().toArray))
+        mangaListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+          override def onItemClick(adapterView: AdapterView[_], view: View, i: Int, l: Long) {
+            Log.i("onItemClick", mangaListView.getItemAtPosition(i).toString())
+            MangaManager.readingOffline(true)
+            MangaManager.setCurrentManga(mangaListView.getItemAtPosition(i).asInstanceOf[Manga])
+            startActivity[ChapterActivity]
+          }
+        })
     }
   }
 }

@@ -259,6 +259,13 @@ object Utilities {
         clearFolder(cache)
     }
 
+    def deleteFolder(folder : File) {
+      if (folder.exists()) {
+        clearFolder(folder)
+        folder.delete()
+      }
+    }
+
     def clearFolder(folder : File) {
 
         if(!folder.exists())

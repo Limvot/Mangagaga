@@ -4,7 +4,8 @@ import org.luaj.vm2.LuaTable;
 
 class Chapter(parentManga:Manga , backingTable:LuaTable, chapterNum:Int){
 
-    override def toString(): String = backingTable.get("title").toString()
+    override def toString(): String = getTitle()
+    def getTitle(): String = backingTable.get("title").toString()
 
     def getTable() : LuaTable = backingTable
 
