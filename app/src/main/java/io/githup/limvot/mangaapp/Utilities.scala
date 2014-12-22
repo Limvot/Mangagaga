@@ -100,7 +100,7 @@ object Utilities {
                 DownloadSource(source)
             }
             //Should Probably make the app handle timeouts a bit better
-            return Await.result(f,20 seconds).asInstanceOf[String]
+            return Await.result(f,60 seconds).asInstanceOf[String]
             //return new DownloadSource().execute(source).get()
         }
         catch {

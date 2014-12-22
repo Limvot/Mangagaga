@@ -26,6 +26,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import scala.concurrent.Future;
+import scala.concurrent.ExecutionContext;
+import org.scaloid.common._
+import scala.collection.JavaConversions._
 
 
 /**
@@ -34,52 +38,52 @@ import android.widget.ImageView;
  *
  * @see SystemUiHider
  */
-public class ImageViewerActivity extends Activity implements GestureDetector.OnGestureListener {
+class ImageViewerActivity extends Activity with GestureDetector.OnGestureListener {
+    implicit val exec = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-    private static final boolean AUTO_HIDE = false;
+    private val AUTO_HIDE: Boolean = false;
 
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
      */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+    private val AUTO_HIDE_DELAY_MILLIS: Int = 3000;
 
     /**
      * If set, will toggle the system UI visibility upon interaction. Otherwise,
      * will show the system UI visibility upon interaction.
      */
-    private static final boolean TOGGLE_ON_CLICK = true;
+    private val TOGGLE_ON_CLICK: Boolean = true;
 
     /**
      * The flags to pass to {@link SystemUiHider#getInstance}.
      */
-    private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
+    private val HIDER_FLAGS: Int = SystemUiHider.FLAG_HIDE_NAVIGATION;
 
     /**
      * The instance of the {@link SystemUiHider} for this activity.
      */
-    private SystemUiHider mSystemUiHider;
+    private var mSystemUiHider:SystemUiHider = null;
 
-    private GestureDetectorCompat detector;
-    private View.OnTouchListener gestureListen;
+    private var detector:GestureDetectorCompat = null;
+    private var gestureListen:View.OnTouchListener = null;
 
-    private ImageView contentview;
+    private var contentview:ImageView = null;
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    override protected def onCreate(savedInstanceState: Bundle) = {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_image_viewer);
-        contentview = (ImageView) findViewById(R.id.fullscreen_content);
+        contentview = findViewById(R.id.fullscreen_content).asInstanceOf[ImageView];
 
 
         // Hide the action bar.
-        final ActionBar actionBar = getActionBar();
-        Drawable d = new ColorDrawable(0);
+        var actionBar: ActionBar = getActionBar();
+        var d = new ColorDrawable(0);
         d.setAlpha(1);
         actionBar.setBackgroundDrawable(d);
 
@@ -87,8 +91,8 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
 
 
 
-        final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        final View contentView = findViewById(R.id.fullscreen_content);
+        val controlsView: View = findViewById(R.id.fullscreen_content_controls);
+        val contentView: View = findViewById(R.id.fullscreen_content);
 
         detector = new GestureDetectorCompat(this,this);
 
@@ -96,15 +100,14 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         // this activity.
         mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
         mSystemUiHider.setup();
-        mSystemUiHider
-                .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
+        mSystemUiHider.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
                     // Cached values.
-                    int mControlsHeight;
-                    int mShortAnimTime;
+                    var mControlsHeight: Int = 0;
+                    var mShortAnimTime: Int = 0;
 
-                    @Override
+                    
                     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-                    public void onVisibilityChange(boolean visible) {
+                    override def onVisibilityChange(visible: Boolean) =  {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
                             // If the ViewPropertyAnimator API is available
                             // (Honeycomb MR2 and later), use it to animate the
@@ -114,17 +117,16 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
                                 mControlsHeight = controlsView.getHeight();
                             }
                             if (mShortAnimTime == 0) {
-                                mShortAnimTime = getResources().getInteger(
-                                        android.R.integer.config_shortAnimTime);
+                                mShortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
                             }
-                            controlsView.animate()
-                                    .translationY(visible ? 0 : mControlsHeight)
-                                    .setDuration(mShortAnimTime);
+                            controlsView.animate().translationY((if (visible) 0 else mControlsHeight)).setDuration(mShortAnimTime);
                         } else {
                             // If the ViewPropertyAnimator APIs aren't
                             // available, simply show or hide the in-layout UI
                             // controls.
-                            controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
+                            controlsView.setVisibility((if (visible) View.VISIBLE else 8));
+                            // replaced GONE with value 8. Looked up value in dev documentation. 
+                            // Value is listed as 0x0000000008
                         }
 
                         if (visible && AUTO_HIDE) {
@@ -136,8 +138,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
 
         // Set up the user interaction to manually show or hide the system UI.
         contentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            override def onClick(view: View) {
                 if (TOGGLE_ON_CLICK) {
                     mSystemUiHider.toggle();
                 } else {
@@ -147,8 +148,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         });
 
         contentView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            override def onTouch(view: View, motionEvent: MotionEvent): Boolean =  {
                 detector.onTouchEvent(motionEvent);
                 return true;
             }
@@ -161,8 +161,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         //findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    override protected def onPostCreate(savedInstanceState: Bundle) = {
         super.onPostCreate(savedInstanceState);
 
         // Trigger the initial hide() shortly after the activity has been
@@ -174,15 +173,13 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
     /**
      * Gesture Listener method implementations.
      */
-    @Override
-    public boolean onSingleTapUp(MotionEvent event)
-    {
-        float x;
+    override def onSingleTapUp(event: MotionEvent): Boolean = {
+        var x: Float = 0;
         x = event.getX();
         if(x < 350)
         {
-            int total = MangaManager.getNumPages();
-            int i = MangaManager.getCurrentPageNum();
+            var total: Int = MangaManager.getNumPages();
+            var i: Int = MangaManager.getCurrentPageNum();
             if(i < total-1) {
                 MangaManager.setCurrentPageNum(i+1);
             } else {
@@ -192,7 +189,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         }
         else
         {
-            int i = MangaManager.getCurrentPageNum();
+            var i: Int = MangaManager.getCurrentPageNum();
             if(i > 0) {
                 MangaManager.setCurrentPageNum(i-1);
             } else {
@@ -201,40 +198,31 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
             }
         }
         updateImage();
-        Log.d("onSingleTapUp","X: "+Float.toString(x));
+        Log.d("onSingleTapUp","X: "+x.toFloat.toString);
         return true;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    override def onCreateOptionsMenu(menu: Menu): Boolean = {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.image_viewer, menu);
         return true;
     }
 
-    @Override
-    public void onShowPress(MotionEvent event)
-    {}
+    override def onShowPress(event: MotionEvent) = {}
 
-    @Override
-    public void onLongPress(MotionEvent event)
-    {}
+    override def onLongPress(event: MotionEvent) = {}
 
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distancex, float distancey)
-    {
+    override def onScroll(e1: MotionEvent, e2:MotionEvent, distancex: Float, distancey: Float): Boolean = {
         return true;
     }
 
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velx, float vely)
-    {
-        Log.d("onFling", "Velx: "+Float.toString(velx));
+    override def onFling(e1: MotionEvent, e2: MotionEvent, velx: Float, vely: Float): Boolean = {
+        Log.d("onFling", "Velx: "+velx.toFloat.toString);
         if(velx > 0)
         {
             //swiped from left to right
-            int total = MangaManager.getNumPages();
-            int i = MangaManager.getCurrentPageNum();
+            var total: Int = MangaManager.getNumPages();
+            var i: Int = MangaManager.getCurrentPageNum();
             Log.d("onClick", Integer.toString(total));
             if(i < total-1) {
                 MangaManager.setCurrentPageNum(i+1);
@@ -247,7 +235,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         else
         {
             //swiped from right to left
-            int i = MangaManager.getCurrentPageNum();
+            var i: Int = MangaManager.getCurrentPageNum();
             if(i > 0) {
                 MangaManager.setCurrentPageNum(i-1);
             } else {
@@ -260,8 +248,7 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         return true;
     }
 
-    public boolean onDown(MotionEvent event)
-    {
+    def onDown(event: MotionEvent): Boolean = {
         return true;
     }
 
@@ -271,9 +258,8 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-    View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
+    var mDelayHideTouchListener = new View.OnTouchListener() {
+        override def onTouch(view: View, motionEvent: MotionEvent): Boolean = {
             if (AUTO_HIDE) {
                 delayedHide(AUTO_HIDE_DELAY_MILLIS);
             }
@@ -281,10 +267,9 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
         }
     };
 
-    Handler mHideHandler = new Handler();
-    Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
+    var mHideHandler = new Handler();
+    var mHideRunnable = new Runnable() {
+        override def run() = {
             mSystemUiHider.hide();
         }
     };
@@ -293,30 +278,27 @@ public class ImageViewerActivity extends Activity implements GestureDetector.OnG
      * Schedules a call to hide() in [delay] milliseconds, canceling any
      * previously scheduled calls.
      */
-    private void delayedHide(int delayMillis) {
+    private def delayedHide(delayMillis: Int) = {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
     // Do image updates async to maintain responsiveness
-    private class UpdateImage extends AsyncTask<Void, Void, Bitmap> {
-        @Override
-        protected Bitmap doInBackground(Void... nothing) {
-            Log.i("ASYNC DO IN BACKGROUND", "STARTING");
-            String imagepath = MangaManager.getCurrentPage();
-            Log.i("Display image!", imagepath);
-            // ImageManager im = ImageManager.getImageManager();
 
+
+    def updateImage() = {
+        // new UpdateImage().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        // THE FUTURE IS NOW
+        Future {
+            Log.i("ASYNC DO IN BACKGROUND", "STARTING");
+            var imagepath = MangaManager.getCurrentPage();
+            Log.i("Display image!", imagepath);
             Log.i("ASYNC DO IN BACKGROUND", "ENDING");
-            return ImageManager.getNext(imagepath);
-        }
-        @Override
-        protected void onPostExecute(Bitmap page) {
+            var bm: Bitmap = ImageManager.getNext(imagepath);
             Log.i("ASYNC DO IN BACKGROUND", "Post Execute!");
-            contentview.setImageBitmap(page);
+            runOnUiThread(contentview.setImageBitmap(bm));
         }
-    }
-    public void updateImage() {
-        new UpdateImage().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        // NOW IT'S THE PRESENT
+
     }
 }
