@@ -16,6 +16,7 @@ object SettingsManager {
     class SettingsManager() {
         def instance() = this;
         var historySize = 10;
+        var cacheAmmount = 5
         var apkDate = new Date
     }
     
@@ -29,8 +30,10 @@ object SettingsManager {
         settingsMan.historySize = size;
         saveSettings();
     }
-
     def getHistorySize(): Int = settingsMan.historySize;
+
+    def getCacheSize() = settingsMan.cacheAmmount
+    def setCacheSize(size: Int) { settingsMan.cacheAmmount = size; saveSettings() }
 
     def getApkDate() : Date = settingsMan.apkDate;
     

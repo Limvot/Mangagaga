@@ -43,6 +43,7 @@ object MangaManager {
   def instance() = this
 
   val chapterDownloadMutex = new Semaphore(1)
+  val nextPageCachingMutex = new Semaphore(1)
   val gson = Utilities.getGson()
   val chapterHistory = loadHistory()
   val favoriteManga = loadFavorites()
@@ -338,8 +339,18 @@ object MangaManager {
   def getCurrentPageNum(): Int = currentPage
   def getCurrentPage(): String = getCurrentPage(currentManga, currentChapter, currentPage)
   def getCurrentPage(manga: Manga, chapter: Chapter, page: Int): String = { 
+    nextPageCachingMutex.acquire() 
     if (chapterPageMap.get(page) == None)
       addToChapterPageMap(manga, chapter, page)
+    Future {
+      try {
+      for (i <- 0 until SettingsManager.getCacheSize)
+        if (chapterPageMap.get(page+i) == None && page+i < getNumPages())
+          addToChapterPageMap(manga, chapter, page+i)
+      } finally {
+        nextPageCachingMutex.release()
+      }
+    }
     chapterPageMap(page)
   }
 
