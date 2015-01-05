@@ -18,6 +18,7 @@ class DownloadedActivity extends SActivity {
     contentView = new SRelativeLayout {
         val listText = STextView("Downloaded Manga:").<<.wrap.>>
         val mangaListView = SListView().<<.wrap.below(listText).>>
+        
 
         mangaListView.setAdapter(new SArrayAdapter(MangaManager.getSavedManga().toArray))
         mangaListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {

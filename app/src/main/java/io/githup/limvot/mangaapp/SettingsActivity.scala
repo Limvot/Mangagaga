@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.app.ActionBar
 
 import org.scaloid.common._
 
@@ -24,9 +23,10 @@ class SettingsActivity extends SActivity {
         contentView = new SVerticalLayout() {
             val buttonClearHistory = SButton("Clear History",MangaManager.clearHistory())
             val buttonClearCache = SButton("Clear Cache",Utilities.clearCache())
-            val buttonClearFavorites = SButton("Clear Favorites",MangaManager.clearFavorites())
+            val buttonClearFavorites = SButton("Clear Favroites",MangaManager.clearFavorites())
             val buttonClearSaved = SButton("Clear Saved Chapters",MangaManager.clearSaved())
             val buttonClearAll = SButton("Clear All", clearAll)
+            val buttonCheckUpdate: SButton = SButton("Check for Updates", update)
             val historySize = STextView("Number of entries to save in history")
             historySizeText = SEditText(SettingsManager.getHistorySize.toString)
             historySizeText.afterTextChanged { SettingsManager.setHistorySize(Integer.parseInt(historySizeText.getText().toString())) }
@@ -35,7 +35,6 @@ class SettingsActivity extends SActivity {
             val cacheSizeText = SEditText(SettingsManager.getCacheSize.toString)
             cacheSizeText.afterTextChanged { SettingsManager.setCacheSize(Integer.parseInt(cacheSizeText.getText.toString)) }
         }
-        getActionBar().setTitle("Settings")
     }
 
     def clearAll() {
@@ -44,4 +43,6 @@ class SettingsActivity extends SActivity {
         MangaManager.clearFavorites()
         MangaManager.clearSaved()
     }
+
+    def update() = Utilities.checkForUpdates(this)
 }

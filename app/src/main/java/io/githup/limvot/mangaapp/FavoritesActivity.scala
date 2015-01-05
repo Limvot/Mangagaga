@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.app.ActionBar
 
 import org.scaloid.common._
 import scala.collection.JavaConversions._
@@ -28,7 +27,6 @@ class FavoritesActivity extends SActivity {
             listFavorites = SListView()            
         }
         
-        getActionBar().setTitle("Favorites")
         var buff : Buffer[Manga] =  MangaManager.getFavoriteList()
         favoritesAdapter = new SArrayAdapter(buff.toArray)
         listFavorites.setAdapter(favoritesAdapter)
