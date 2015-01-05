@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.app.ActionBar
 
 import org.scaloid.common._
 import scala.collection.JavaConversions._
@@ -30,8 +29,6 @@ class HistoryActivity extends SActivity {
             SButton("Clear History").onClick(clearHistCallback())
             historyListView = SListView()
         }
-
-        getActionBar().setTitle("Chapter History")
 
 
         var buff : Buffer[Chapter] = MangaManager.getChapterHistoryList()

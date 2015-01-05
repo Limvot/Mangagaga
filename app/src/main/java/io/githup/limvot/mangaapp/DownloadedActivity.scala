@@ -30,6 +30,5 @@ class DownloadedActivity extends SActivity {
           }
         })
     }
-    getActionBar().setTitle("Downloaded Manga")
   }
 }

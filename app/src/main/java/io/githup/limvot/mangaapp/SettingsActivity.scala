@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.app.ActionBar
 
 import org.scaloid.common._
 
@@ -28,11 +27,11 @@ class SettingsActivity extends SActivity {
             val buttonClearFavorites = SButton("Clear Favroites",MangaManager.clearFavorites())
             val buttonClearSaved = SButton("Clear Saved Chapters",MangaManager.clearSaved())
             val buttonClearAll = SButton("Clear All",clearAll())
+            val buttonCheckUpdate = SButton("Check for Updates", checkUpdate())
             historySize = STextView("Number of entries to save in history")
             editText = SEditText()
             editText.afterTextChanged(historyLimitCallback())
         }
-        getActionBar().setTitle("Settings")
     }
 
     def clearAll() {
@@ -42,6 +41,9 @@ class SettingsActivity extends SActivity {
         MangaManager.clearSaved()
     }
 
+    def checkUpdate() {
+        Utilities.checkForUpdates(this)
+    }
 
 
     /*override def onCreateOptionsMenu(menu : Menu) : Boolean = {

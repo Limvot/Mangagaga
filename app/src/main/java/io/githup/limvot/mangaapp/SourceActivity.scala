@@ -38,7 +38,6 @@ class SourceActivity extends SActivity {
       this += fLayout
     }
     getActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS)
-    getActionBar().setTitle("Browse Sources")
     for (i <- 0 until ScriptManager.numSources)
       getActionBar.addTab(getActionBar.newTab.setText(ScriptManager.getScript(i).getName)
         .setTabListener(new TabListener(new TabContentFragment(i))))
