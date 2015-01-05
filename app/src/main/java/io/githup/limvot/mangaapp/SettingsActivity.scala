@@ -25,7 +25,7 @@ class SettingsActivity extends SActivity {
         contentView = new SVerticalLayout() {
             val buttonClearHistory = SButton("Clear History",MangaManager.clearHistory())
             val buttonClearCache = SButton("Clear Cache",Utilities.clearCache())
-            val buttonClearFavorites = SButton("Clear Favorites",MangaManager.clearFavorites())
+            val buttonClearFavorites = SButton("Clear Favroites",MangaManager.clearFavorites())
             val buttonClearSaved = SButton("Clear Saved Chapters",MangaManager.clearSaved())
             val buttonClearAll = SButton("Clear All",clearAll())
             historySize = STextView("Number of entries to save in history")

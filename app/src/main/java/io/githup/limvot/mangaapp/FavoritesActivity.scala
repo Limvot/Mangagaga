@@ -28,7 +28,7 @@ class FavoritesActivity extends SActivity {
             listFavorites = SListView()            
         }
         
-        getActionBar().setTitle("Favorites")
+        getActionBar().setTitle("Favroites")
         var buff : Buffer[Manga] =  MangaManager.getFavoriteList()
         favoritesAdapter = new SArrayAdapter(buff.toArray)
         listFavorites.setAdapter(favoritesAdapter)
