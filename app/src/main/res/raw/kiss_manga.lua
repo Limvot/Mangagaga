@@ -77,7 +77,7 @@ end
 
 
 function initManga(manga)
-   mangaURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url']
+   mangaURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '?confirm=yes'
    apiObj:note('Manga Path: ' .. mangaURL)
    path = apiObj:download(mangaURL)
    pageSource = apiObj:readFile(path)
