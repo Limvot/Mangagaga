@@ -2,3 +2,6 @@ Mangagaga - The Ultimate Manga Reader
 
 An Android app meant to be used for manga reading, powered by Lua scripts. Lua scripts define sources that can be websites, local directories, etc. These scripts are called by the main app in order to get lists of manga, their chapters, and their pages.
 
+
+Note: We use LuaJ-Lite which we forked from LuaJ to get rid of stuff that caused warnings with Android/Proguard. If you want to rebuild the LuaJ part, you may want to use that. If not, you'd have to edit the proguard rules to ignore warnings and other distasteful things.
+

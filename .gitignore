@@ -7,3 +7,6 @@
 /build
 signing.properties
 *.keystore
+*.iml
+app/libs/luaj-src
+manual.sh
