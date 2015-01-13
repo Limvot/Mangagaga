@@ -15,12 +15,12 @@ android {
             storePassword props['storePassword']
         }
     }
-    compileSdkVersion 20
-    buildToolsVersion "20.0.0"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "io.githup.limvot.mangaapp"
         minSdkVersion 15
-        targetSdkVersion 20
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }

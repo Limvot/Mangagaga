@@ -65,6 +65,7 @@ class SourceActivity extends SActivity {
         val previousButton = SButton("Previous").<<.wrap.alignParentBottom.alignParentLeft.>>
         val mangaListView = SListView().<<.wrap.below(listText).above(previousButton).>>
         val nextButton = SButton("Next").<<.wrap.below(mangaListView).rightOf(previousButton).alignParentRight.>>
+        
 
         val arrayAdapter = new ArrayAdapter[Manga](getActivity(), android.R.layout.simple_list_item_1,
                                                    ScriptManager.getScript(sourceNumber).getMangaListPage1())
