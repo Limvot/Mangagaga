@@ -15,11 +15,8 @@ import android.widget.ListView;
 
 class DownloadedActivity extends SActivity {
   onCreate {
-    contentView = new SRelativeLayout {
-        // val listText = STextView("Downloaded Manga:").<<.wrap.>>
-        // val mangaListView = SListView().<<.wrap.below(listText).>>
-        val clearButton = SButton("Clear Saved Chapters",MangaManager.clearSaved())
-        val mangaListView = SListView().<<.wrap.below(clearButton).>>
+    contentView = new SVerticalLayout {
+        val mangaListView = SListView().<<.wrap.>>
         
 
         mangaListView.setAdapter(new SArrayAdapter(MangaManager.getSavedManga().toArray))
