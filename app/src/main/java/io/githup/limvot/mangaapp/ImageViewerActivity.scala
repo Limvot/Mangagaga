@@ -85,9 +85,10 @@ class ImageViewerActivity extends Activity with GestureDetector.OnGestureListene
         var actionBar: ActionBar = getActionBar();
         var d = new ColorDrawable(0);
         d.setAlpha(1);
-        actionBar.setBackgroundDrawable(d);
-
-        actionBar.hide();
+        if (actionBar != null) {
+          actionBar.setBackgroundDrawable(d);
+          actionBar.hide();
+        }
 
 
 
