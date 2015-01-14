@@ -29,6 +29,7 @@ class SettingsActivity extends SActivity {
             val buttonCheckUpdate: SButton = SButton("Check for Updates", update)
             val historySize = STextView("Number of entries to save in history")
             historySizeText = SEditText(SettingsManager.getHistorySize.toString)
+            historySizeText.setRawInputType(2)
             //historySizeText.afterTextChanged { SettingsManager.setHistorySize(Integer.parseInt(historySizeText.getText().toString())) }
             historySizeText.afterTextChanged {changeHistorySize(historySizeText)}
 
@@ -36,6 +37,7 @@ class SettingsActivity extends SActivity {
             val cacheSizeText = SEditText(SettingsManager.getCacheSize.toString)
             //cacheSizeText.afterTextChanged { SettingsManager.setCacheSize(Integer.parseInt(cacheSizeText.getText.toString)) }
             cacheSizeText.afterTextChanged { changeCacheSize(cacheSizeText) }
+            cacheSizeText.setRawInputType(2)
         }
     }
 
