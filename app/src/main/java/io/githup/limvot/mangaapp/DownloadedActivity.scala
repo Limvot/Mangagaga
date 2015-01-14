@@ -18,8 +18,8 @@ class DownloadedActivity extends SActivity {
     contentView = new SRelativeLayout {
         // val listText = STextView("Downloaded Manga:").<<.wrap.>>
         // val mangaListView = SListView().<<.wrap.below(listText).>>
-        SButton("Clear Saved Chapters",MangaManager.clearSaved())
-        val mangaListView = SListView()
+        val clearButton = SButton("Clear Saved Chapters",MangaManager.clearSaved())
+        val mangaListView = SListView().<<.wrap.below(clearButton).>>
         
 
         mangaListView.setAdapter(new SArrayAdapter(MangaManager.getSavedManga().toArray))
