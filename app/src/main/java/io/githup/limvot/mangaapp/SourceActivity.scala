@@ -59,13 +59,60 @@ class SourceActivity extends SActivity {
     def getSourceNumber = sourceNumber
     override def onCreateView(inf: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle) = {
       new SRelativeLayout {
-        val catagoriesText = STextView("Manga Catagories:").<<.wrap.>>
-        val mangaListTypeSpinner = SSpinner().<<.wrap.below(catagoriesText).>>
-        val listText = STextView("Manga List:").<<.wrap.below(mangaListTypeSpinner).>>
-        val previousButton = SButton("Previous").<<.wrap.alignParentBottom.alignParentLeft.>>
-        val mangaListView = SListView().<<.wrap.below(listText).above(previousButton).>>
-        val nextButton = SButton("Next").<<.wrap.below(mangaListView).rightOf(previousButton).alignParentRight.>>
+          
+    val linearLayout0 = new SLinearLayout {
         
+        val catagoriesText = STextView("List By =>").<<.wrap.>>
+        val mangaListTypeSpinner = SSpinner().<<.wrap.>>
+        catagoriesText.<<weight = 1.0f
+        mangaListTypeSpinner.<<weight = 1.0f
+        
+        val mangaListTypes = new ArrayAdapter[String](getActivity(), android.R.layout.simple_list_item_1,
+                                                      ScriptManager.getScript(sourceNumber).getMangaListTypes())
+        
+         mangaListTypeSpinner.setAdapter(mangaListTypes)
+        mangaListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+          override def onItemSelected(adapterView: AdapterView[_], view: View, i: Int, l: Long) {
+            val selected = adapterView.getItemAtPosition(i).toString()
+            Log.i("New selected:", selected)
+            // Set the new type and get its first page
+            ScriptManager.getCurrentSource().setMangaListType(selected);
+            arrayAdapter.clear()
+            arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListPage1())
+          }
+          override def onNothingSelected(adapterView: AdapterView[_]) { Log.i("Nothing selected:", "Nothin!") }
+        })
+       
+    }
+          
+        this += linearLayout0
+        linearLayout0.<<.alignParentTop  
+          
+    val linearLayout1 = new SLinearLayout {
+    
+        val previousButton = SButton("Previous").<<.wrap.>>
+        val nextButton = SButton("  Next  ").<<.wrap.>>
+        nextButton.<<weight = 1.0f
+        previousButton.<<.weight = 1.0f
+        
+        previousButton.setOnClickListener(new View.OnClickListener() {
+          override def onClick(view: View) {
+            arrayAdapter.clear()
+            arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListPreviousPage())
+          }
+        })
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+          override def onClick(view: View) {
+            arrayAdapter.clear()
+            arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListNextPage())
+          }
+        })
+    }
+        
+        this += linearLayout1
+        linearLayout1.<<.alignParentBottom
+        val mangaListView = SListView().<<.wrap.below(linearLayout0).above(linearLayout1)>>
 
         val arrayAdapter = new ArrayAdapter[Manga](getActivity(), android.R.layout.simple_list_item_1,
                                                    ScriptManager.getScript(sourceNumber).getMangaListPage1())
@@ -80,35 +127,9 @@ class SourceActivity extends SActivity {
             startActivity(new Intent(getActivity(), classOf[ChapterActivity]))
           }
         })
+       
 
-        val mangaListTypes = new ArrayAdapter[String](getActivity(), android.R.layout.simple_list_item_1,
-                                                      ScriptManager.getScript(sourceNumber).getMangaListTypes())
-        mangaListTypeSpinner.setAdapter(mangaListTypes)
-        mangaListTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-          override def onItemSelected(adapterView: AdapterView[_], view: View, i: Int, l: Long) {
-            val selected = adapterView.getItemAtPosition(i).toString()
-            Log.i("New selected:", selected)
-            // Set the new type and get its first page
-            ScriptManager.getCurrentSource().setMangaListType(selected);
-            arrayAdapter.clear()
-            arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListPage1())
-          }
-          override def onNothingSelected(adapterView: AdapterView[_]) { Log.i("Nothing selected:", "Nothin!") }
-        })
 
-        previousButton.setOnClickListener(new View.OnClickListener() {
-          override def onClick(view: View) {
-            arrayAdapter.clear()
-            arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListPreviousPage())
-          }
-        })
-
-        nextButton.setOnClickListener(new View.OnClickListener() {
-          override def onClick(view: View) {
-            arrayAdapter.clear()
-            arrayAdapter.addAll(ScriptManager.getScript(sourceNumber).getMangaListNextPage())
-          }
-        })
       }
     }
   }
