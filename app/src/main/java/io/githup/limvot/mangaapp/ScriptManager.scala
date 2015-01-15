@@ -27,15 +27,21 @@ object ScriptManager {
     }
 
     val scriptDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Scripts/")
-    for (name <- Array("kiss_manga", "MangaHere", "MangaPanda", "Mangable", "Manga King")) {
+    for (name <- Array("kiss_manga", "unix_manga")) {
       try {
         val newScript = new File(scriptDir, name)
-        newScript.createNewFile()
-
-        val fos = new FileOutputStream(newScript)
-        val rawResource = context.getResources().openRawResource(R.raw.kiss_manga)
-        Utilities.copyStreams(rawResource, fos)
-        fos.close()
+        // Right now this is commented out because for testing we want to always copy over scripts
+        // on every update
+        //if (!newScript.exists()) {
+          newScript.createNewFile()
+          val fos = new FileOutputStream(newScript)
+          val rawResource = context.getResources().openRawResource( name match {
+            case "kiss_manga" => R.raw.kiss_manga
+            //case "unix_manga" => R.raw.unix_manga
+          })
+          Utilities.copyStreams(rawResource, fos)
+          fos.close()
+        //}
       } catch {
         case e:Exception => Log.e("Script", e.toString())
       }
