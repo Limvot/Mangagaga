@@ -20,7 +20,11 @@ class SettingsActivity extends SActivity {
     var historySizeText: SEditText = null
 
     onCreate{
-        contentView = new SVerticalLayout() {
+
+        contentView = new SScrollView() {
+
+            this += new SVerticalLayout {
+        
             val buttonClearHistory = SButton("Clear History",MangaManager.clearHistory())
             val buttonClearCache = SButton("Clear Cache",Utilities.clearCache())
             val buttonClearFavorites = SButton("Clear Favroites",MangaManager.clearFavorites())
@@ -30,14 +34,18 @@ class SettingsActivity extends SActivity {
             val historySize = STextView("Number of entries to save in history")
             historySizeText = SEditText(SettingsManager.getHistorySize.toString)
             historySizeText.setRawInputType(2)
-            //historySizeText.afterTextChanged { SettingsManager.setHistorySize(Integer.parseInt(historySizeText.getText().toString())) }
+
             historySizeText.afterTextChanged {changeHistorySize(historySizeText)}
 
             val cacheSize = STextView("Number of pages to prefetch")
             val cacheSizeText = SEditText(SettingsManager.getCacheSize.toString)
-            //cacheSizeText.afterTextChanged { SettingsManager.setCacheSize(Integer.parseInt(cacheSizeText.getText.toString)) }
+
+
             cacheSizeText.afterTextChanged { changeCacheSize(cacheSizeText) }
             cacheSizeText.setRawInputType(2)
+
+            }
+
         }
     }
 

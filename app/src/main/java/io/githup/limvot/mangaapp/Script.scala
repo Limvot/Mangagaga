@@ -18,17 +18,6 @@ import java.util.List
 class Script(name : String, luaCode : String, scriptNumber : Int) {
     implicit val tag = LoggerTag("Scala Script")
 
-    // //var globals : Globals
-    // var luaGetMangaListTypes : LuaValue
-    // var luaSetMangaListType : LuaValue
-    // var luaGetMangaListPage1 : LuaValue
-    // var luaGetMangaListPreviousPage : LuaValue
-    // var luaGetMangaListNextPage : LuaValue
-    // var luaInitManga : LuaValue
-    // var luaGetMangaChapterList : LuaValue
-    // var luaGetMangaChapterPage : LuaValue
-    // var luaGetMangaChapterNumPages : LuaValue
-
     val globals = JsePlatform.standardGlobals()
     globals.load(new StringReader(ScriptManager.getLuaPrequal), "luaPrequal").call()
     // Call init function which normally saves this APIObject
