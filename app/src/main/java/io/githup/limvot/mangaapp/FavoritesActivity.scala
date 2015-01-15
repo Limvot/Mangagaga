@@ -24,7 +24,6 @@ class FavoritesActivity extends SActivity {
     override def onCreate(savedInstanceState:Bundle) {
         super.onCreate(savedInstanceState);
         contentView = new SVerticalLayout() {
-            val buttonClearFavorites = SButton("Clear Favroites",MangaManager.clearFavorites())
             listFavorites = SListView()            
         }
         
