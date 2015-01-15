@@ -32,16 +32,16 @@ object ScriptManager {
         val newScript = new File(scriptDir, name)
         // Right now this is commented out because for testing we want to always copy over scripts
         // on every update
-        //if (!newScript.exists()) {
+        if (!newScript.exists()) {
           newScript.createNewFile()
           val fos = new FileOutputStream(newScript)
           val rawResource = context.getResources().openRawResource( name match {
             case "kiss_manga" => R.raw.kiss_manga
-            //case "unix_manga" => R.raw.unix_manga
+            case "unix_manga" => R.raw.unixmanga
           })
           Utilities.copyStreams(rawResource, fos)
           fos.close()
-        //}
+        }
       } catch {
         case e:Exception => Log.e("Script", e.toString())
       }
