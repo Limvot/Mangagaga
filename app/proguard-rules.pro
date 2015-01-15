@@ -9,7 +9,7 @@
 
 # Add any project specific keep options here:
 -keep class io.** {*;}
-#-dontoptimize
+-dontoptimize
 -dontobfuscate
 -keepattributes Signature
 -dontwarn scala.collection.**

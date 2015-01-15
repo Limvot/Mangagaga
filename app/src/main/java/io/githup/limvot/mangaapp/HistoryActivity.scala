@@ -26,7 +26,6 @@ class HistoryActivity extends SActivity {
         super.onCreate(savedInstanceState)
         
         contentView = new SVerticalLayout() {
-            SButton("Clear History").onClick(clearHistCallback())
             historyListView = SListView()
         }
 

@@ -29,11 +29,15 @@ class SettingsActivity extends SActivity {
             val buttonCheckUpdate: SButton = SButton("Check for Updates", update)
             val historySize = STextView("Number of entries to save in history")
             historySizeText = SEditText(SettingsManager.getHistorySize.toString)
-            historySizeText.afterTextChanged { SettingsManager.setHistorySize(Integer.parseInt(historySizeText.getText().toString())) }
+            historySizeText.setRawInputType(2)
+            //historySizeText.afterTextChanged { SettingsManager.setHistorySize(Integer.parseInt(historySizeText.getText().toString())) }
+            historySizeText.afterTextChanged {changeHistorySize(historySizeText)}
 
             val cacheSize = STextView("Number of pages to prefetch")
             val cacheSizeText = SEditText(SettingsManager.getCacheSize.toString)
-            cacheSizeText.afterTextChanged { SettingsManager.setCacheSize(Integer.parseInt(cacheSizeText.getText.toString)) }
+            //cacheSizeText.afterTextChanged { SettingsManager.setCacheSize(Integer.parseInt(cacheSizeText.getText.toString)) }
+            cacheSizeText.afterTextChanged { changeCacheSize(cacheSizeText) }
+            cacheSizeText.setRawInputType(2)
         }
     }
 
@@ -45,4 +49,24 @@ class SettingsActivity extends SActivity {
     }
 
     def update() = Utilities.checkForUpdates(this)
+
+    def changeHistorySize(textView : SEditText) {
+      try {
+        var newSize = Integer.parseInt(textView.toString)
+        SettingsManager.setHistorySize(newSize)
+      }
+      catch{
+        case e:NumberFormatException => { Log.d("Settings Changed","Unable to parse history size!")}
+      }
+    }
+    
+    def changeCacheSize(textView : SEditText) {
+      try {
+        var newSize = Integer.parseInt(textView.toString)
+        SettingsManager.setCacheSize(newSize)
+      }
+      catch{
+        case e:NumberFormatException => { Log.d("Settings Changed","Unable to parse cache size!")}
+      }
+    }
 }
