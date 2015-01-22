@@ -62,17 +62,18 @@ function getMangaList(url)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for manga): ' .. path)
    daList = {}
-   regex = '<td>.<a href="http://unixmanga.co/onlinereading/(.-)"title=".-">(.-)</a>'
+   regex = '<a href="http://unixmanga.co/onlinereading/(.-)"title=".-">(.-)</a>'
    apiObj:note('Manga List Regex: ' .. regex)
    beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex)
    index = 0
-   apiObj:note('Beginning Loop, Forming manga list')
-   while ending do
+   daList[index] = {title = mangaTitle, url = mangaURL}
+   count = 0
+   while count < 20 do
        daList[index] = {title = mangaTitle, url = mangaURL}
        beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex, ending+1)
        index = index + 1
+       count = count + 1
    end
-   apiObj:note('Ending Loop, Finished forming manga list')
    daList['numManga'] = index
    return daList
 end
@@ -91,7 +92,7 @@ function initManga(manga)
    manga['description'] = manga['title']
 
    daList = {}
-   regex = '<td>.<a +href="(http://unixmanga.co/onlinereading/.-/' .. escapeRegexStr(manga['url']) .. ')".->(.-)</a>'
+   regex = '<a +href="(http://unixmanga.co/onlinereading/.-/' .. escapeRegexStr(manga['url']) .. ')".->(.-)</a>'
    apiObj:note('Chapter List Regex: ' .. regex)
    beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)
    index = 0

@@ -45,7 +45,7 @@ class Script(name : String, luaCode : String, scriptNumber : Int) {
 
         var typeList = Buffer[String]();
 
-        for(i <- 0 until resTable.get("numTypes").toint())
+        for(i <- 0 until (resTable.get("numTypes").toint() - 1))
             typeList.append(resTable.get(i).toString())
 
         typeList
