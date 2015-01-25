@@ -1,7 +1,10 @@
 package io.githup.limvot.mangaapp;
 
 import android.annotation.TargetApi;
+
 import android.app.ActionBar;
+import android.os.Build;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,7 +33,7 @@ import scala.collection.JavaConversions._
 
 
 class ImageViewerActivity extends SActivity with GestureDetector.OnGestureListener {
-    implicit val exec = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+    implicit val exec = ExecutionContext.fromExecutor(Utilities.executor)
 
     private var detector:GestureDetectorCompat = null;
     private var image:ImageView = null;
@@ -39,12 +42,14 @@ class ImageViewerActivity extends SActivity with GestureDetector.OnGestureListen
         contentView = new SFrameLayout() { image = SImageView().<<.fill.>> }
 
         // Hide the action bar.
-        var actionBar: ActionBar = getActionBar();
-        var d = new ColorDrawable(0);
-        d.setAlpha(1);
-        if (actionBar != null) {
-          actionBar.setBackgroundDrawable(d);
-          actionBar.hide();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) { 
+          var actionBar: ActionBar = getActionBar();
+          var d = new ColorDrawable(0);
+          d.setAlpha(1);
+          if (actionBar != null) {
+            actionBar.setBackgroundDrawable(d);
+            actionBar.hide();
+          }
         }
 
         detector = new GestureDetectorCompat(this,this);

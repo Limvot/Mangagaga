@@ -39,7 +39,7 @@ import java.util.List
  * Created by nathan on 8/25/14.
  */
 object MangaManager {
-  implicit val exec = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+  implicit val exec = ExecutionContext.fromExecutor(Utilities.executor)
   def instance() = this
 
   val chapterDownloadMutex = new Semaphore(1)
