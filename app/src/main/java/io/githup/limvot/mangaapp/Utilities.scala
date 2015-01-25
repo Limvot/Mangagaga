@@ -53,7 +53,7 @@ object Utilities {
         //info("Finished Starting a future!")
     }
     def checkForUpdatesAsync(ctx : Context) {
-        var updateURL : String = "http://nathanbraswell.com/~nathan/Mangagaga/apk/app-debug.apk"
+        var updateURL : String = "http://mangagaga.nathanbraswell.com/app-debug.apk"
         var siteApkDate : Date = getModifiedTime(updateURL)
         
         //This is needed to load the settings file from memory
