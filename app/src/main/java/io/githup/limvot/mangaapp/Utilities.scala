@@ -23,6 +23,7 @@ import java.net.URL;
 import java.io._;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.Date;
 
 import scala.collection.JavaConversions._
@@ -34,7 +35,17 @@ import scala.concurrent.duration._
 
 object Utilities {
     implicit val tag = LoggerTag("ScalaUtilities")
-    implicit val exec = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+    //val executor = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
+    val executor = if (true) {
+      new Executor  {
+        def execute(r: Runnable) {
+          new Thread(r).start();
+        }
+      }
+    } else {
+      AsyncTask.THREAD_POOL_EXECUTOR
+    }
+    implicit val exec = ExecutionContext.fromExecutor(executor)
     var gson : Gson = null
 
 
@@ -53,7 +64,7 @@ object Utilities {
         //info("Finished Starting a future!")
     }
     def checkForUpdatesAsync(ctx : Context) {
-        var updateURL : String = "http://nathanbraswell.com/~nathan/Mangagaga/apk/app-debug.apk"
+        var updateURL : String = "http://mangagaga.nathanbraswell.com/app-debug.apk"
         var siteApkDate : Date = getModifiedTime(updateURL)
         
         //This is needed to load the settings file from memory

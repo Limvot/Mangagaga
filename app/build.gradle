@@ -19,7 +19,7 @@ android {
     buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "io.githup.limvot.mangaapp"
-        minSdkVersion 15
+        minSdkVersion 10
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -43,7 +43,6 @@ dependencies {
     compile files('libs/luaj-3.0/lib/luaj-jse-3.0.jar')
     compile 'org.scala-lang:scala-library:2.11.2'
     compile 'org.scaloid:scaloid_2.11:3.5-10+'
-    compile 'com.android.support:support-v13:20.0.0'
     compile 'com.android.support:support-v4:20.0.0'
     compile files('libs/gson-2.3.jar')
 }

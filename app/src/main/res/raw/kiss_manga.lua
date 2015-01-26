@@ -89,7 +89,8 @@ function initManga(manga)
    manga['description'] = mangaDescription
 
    daList = {}
-   regex = '<a +href="/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)?id.-".->(.-)</a>'
+   --regex = '<a +href="/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)?id.-".->(.-)</a>'
+   regex = '<a +href="/Manga/' .. escapeRegexStr(manga['url']) .. '/(.-)".->(.-)</a>'
    apiObj:note('Chapter List Regex: ' .. regex)
    beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)
    index = 0

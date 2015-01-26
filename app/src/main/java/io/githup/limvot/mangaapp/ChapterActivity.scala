@@ -12,7 +12,9 @@ import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.ListView
 import android.widget.TextView
+
 import android.app.ActionBar
+import android.os.Build;
 
 import org.scaloid.common._
 
@@ -32,7 +34,8 @@ class ChapterActivity extends SActivity {
         }
 
         val currentManga : Manga = MangaManager.getCurrentManga()
-        getActionBar().setTitle(currentManga.toString())
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1)
+          getActionBar().setTitle(currentManga.toString())
 
         description.setText(currentManga.getDescription())
         favoriteBox.setChecked(MangaManager.isFavorite(currentManga))
