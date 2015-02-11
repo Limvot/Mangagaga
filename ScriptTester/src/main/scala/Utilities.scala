@@ -121,7 +121,8 @@ object Utilities {
                     var fos : FileOutputStream = new FileOutputStream(file)
                     var is : InputStream = urlcon.getInputStream()
                     var bis : BufferedInputStream = new BufferedInputStream(is)
-                    var buffer : ByteBuffer = ByteBuffer.allocate(500)
+                    //var buffer : ByteBuffer = ByteBuffer.allocate(500)
+                    var buffer : ByteBuffer = ByteBuffer.allocate(1024 * 1024 * 16)
 
                     var chunk : Int = bis.read()
 
