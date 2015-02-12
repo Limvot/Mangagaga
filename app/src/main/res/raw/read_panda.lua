@@ -40,7 +40,13 @@ function getMangaListNextPage()
 end
 
 function getMangaListPage()
-    return getMangaList('http://readpanda.net/manga-list/')
+    if mangaListType == 'All' then
+        return getMangaList('http://readpanda.net/manga-list/' .. pageNo)
+    elseif mangaListType == 'Latest Update' then
+        return getMangaList('http://readpanda.net/latest-releases/' .. pageNo)
+    end
+
+    return getMangaList('http://readpanda.net/manga-list/' .. pageNo)
 end
     --if mangaListType == 'All' then
         --return getMangaList('http://readpanda.net/manga-list/' .. pageNo)
