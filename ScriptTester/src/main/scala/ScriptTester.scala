@@ -106,12 +106,12 @@ object ScriptTester {
   def imageLoop() = {
     var iloop = true
     println("Debug String 2")
-    var list : Buffer[String] = null
+    var list : Buffer[String] = Buffer[String]()
     var current : String = null
     var total = MangaManager.getNumPages()
     println("Debug String 3")
     current = updateImage()
-    list += current
+    list.append(current)
     println("Debug String 4")
     while(iloop) {
       println("Images downloaded: ")
@@ -133,7 +133,7 @@ object ScriptTester {
           }
         }
         current = updateImage()
-        list += current
+        list.append(current)
       } else if(ln(0) == 'p') {
         //get previoust image!
         var i = MangaManager.getCurrentPageNum()
@@ -145,7 +145,7 @@ object ScriptTester {
           }
         }
         current = updateImage()
-        list += current
+        list.append(current)
       } else {
         println("Error, unrecognized command!")
       }
