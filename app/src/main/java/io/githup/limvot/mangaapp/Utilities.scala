@@ -55,13 +55,13 @@ object Utilities {
         return gson
     }
 
+    var id = 0
+    def getID() : Int = this.synchronized { id += 1; id }
+
     def checkForUpdates(ctx : Context) {
-        //new CheckUpdates().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ctx);
-        //info("Starting a future!!!")
         Future {
             checkForUpdatesAsync(ctx)
         }
-        //info("Finished Starting a future!")
     }
     def checkForUpdatesAsync(ctx : Context) {
         var updateURL : String = "http://mangagaga.nathanbraswell.com/app-debug.apk"
@@ -112,7 +112,6 @@ object Utilities {
             }
             //Should Probably make the app handle timeouts a bit better
             return Await.result(f,60 seconds).asInstanceOf[String]
-            //return new DownloadSource().execute(source).get()
         }
         catch {
             case e : ExecutionException => {
@@ -172,6 +171,8 @@ object Utilities {
                     filename = filename.replace('?', '_')
                     debug("DownloadSource: Removed '?' and renamed file to: " + filename)
                 }
+                // Prepend an ID to the file name so different files do not conflict
+                filename = getID().toString + "_" + filename
 
                 resultingPath = dest + filename
                 var file : File = new File(dest, filename)

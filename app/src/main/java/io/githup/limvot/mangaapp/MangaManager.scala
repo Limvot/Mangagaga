@@ -31,6 +31,8 @@ import org.luaj.vm2.LuaTable
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FileWriter
+import java.nio.file.StandardCopyOption._;
+import java.nio.file._;
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.List
@@ -207,15 +209,14 @@ object MangaManager {
               case e: Exception => Log.i("SAVE_CHAPTER_MANgA_chapter", "problem/exception")
             }
 
-            for (i <- 0 until getNumPages(parentManga, chapter)) {
-              builder.setContentText("Downloading page " + (i+1) + ".")
+            val numPages = getNumPages(parentManga, chapter)
+            for (i <- 0 until numPages) {
+              builder.setContentText("Downloading page " + (i+1) + "/" (numPages+1) + ".")
               notificationManager.notify(notificationID, builder.build())
               val fromFile = ScriptManager.getCurrentSource().downloadPage(parentManga, chapter, i)
               try {
-                val is = new FileInputStream(fromFile)
                 val filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."))
-                val os = new FileOutputStream(chapterDir.getAbsolutePath() + "/" + filename)
-                Utilities.copyStreams(is, os)
+                Files.move(Paths.get(fromFile), Paths.get(chapterDir.getAbsolutePath() + "/" + filename), REPLACE_EXISTING)
               } catch {
                 case e: Exception => Log.e("Save Chapter ERROR", fromFile + " e: " + e.toString)
               }
@@ -223,7 +224,7 @@ object MangaManager {
           }
 
           builder.setContentTitle("Done!")
-          builder.setContentText("Downloaded " + toDownload.size() + " chapters.")
+          //builder.setContentText("Downloaded " + toDownload.size() + " chapters.")
           notificationManager.notify(notificationID, builder.build())
   }
 
@@ -282,6 +283,9 @@ object MangaManager {
   def getCurrentManga() = currentManga
 
   def setCurrentChapter(current: Chapter) {
+    // delete all of our cached pages before clearing the cache
+    for (pair <- chapterPageMap)
+      new File(pair._2).delete()
     chapterPageMap.clear()
     currentChapter = current
     chapterHistory.add(0, current)

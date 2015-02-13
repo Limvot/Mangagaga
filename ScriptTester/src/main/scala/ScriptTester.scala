@@ -1,5 +1,6 @@
 import java.io.File
 import collection.mutable.Buffer
+import collection.mutable.ArrayBuffer
 import scala.collection.JavaConversions._
 
 object ScriptTester {
@@ -106,7 +107,8 @@ object ScriptTester {
   def imageLoop() = {
     var iloop = true
     println("Debug String 2")
-    var list : Buffer[String] = Buffer[String]()
+    //var list : Buffer[String] = null
+    var list : Buffer[String] = new ArrayBuffer[String]
     var current : String = null
     var total = MangaManager.getNumPages()
     println("Debug String 3")

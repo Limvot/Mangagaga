@@ -41,6 +41,8 @@ class HomeScreen extends SActivity {
     } catch {
       case e:Exception => info("OnCreate:" + e.toString)
     }
+    // Clean out the cache folder
+    Utilities.clearCache()
     // Init ScriptManager with context
     ScriptManager.init(this)
     // Init the MangaManager with the current context

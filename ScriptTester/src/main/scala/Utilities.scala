@@ -123,8 +123,8 @@ object Utilities {
                     var bis : BufferedInputStream = new BufferedInputStream(is)
                     println("DownloadSource: Making buffer")
                     //var buffer : ByteBuffer = ByteBuffer.allocate(500)
-                    var buffer = ArrayBuffer[Byte]() 
-                    
+                    var buffer : ByteBuffer = ByteBuffer.allocate(1024 * 1024 * 16)
+
                     var chunk : Int = bis.read()
                     println("Looping through chunks!")
                     while (chunk != -1) {
