@@ -159,14 +159,12 @@ function setUpChapter(manga, chapter)
        numPages = tonumber(countStr)
        apiObj:note('num pages: ' .. numPages)
 
-       pageNum = 0
        index = 0
        daList = {}
        apiObj:note('Page List Regex: ' .. regex)
-       while pageNum < numPages do
-           pageURL = chapter['url'] .. pageNum
+       while index < numPages do
+           pageURL = chapter['url'] .. (index+1)
            daList[index] = {htmlPageUrl = pageURL}
-           pageNum = pageNum + 1
            index = index + 1
        end
        daList['numPages'] = numPages

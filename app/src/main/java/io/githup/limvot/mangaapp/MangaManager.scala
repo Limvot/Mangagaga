@@ -31,8 +31,6 @@ import org.luaj.vm2.LuaTable
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FileWriter
-import java.nio.file.StandardCopyOption._;
-import java.nio.file._;
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.List
@@ -211,12 +209,16 @@ object MangaManager {
 
             val numPages = getNumPages(parentManga, chapter)
             for (i <- 0 until numPages) {
-              builder.setContentText("Downloading page " + (i+1) + "/" (numPages+1) + ".")
+              builder.setContentText("Downloading page " + (i+1) + "/" + (numPages) + ".")
               notificationManager.notify(notificationID, builder.build())
               val fromFile = ScriptManager.getCurrentSource().downloadPage(parentManga, chapter, i)
               try {
                 val filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."))
-                Files.move(Paths.get(fromFile), Paths.get(chapterDir.getAbsolutePath() + "/" + filename), REPLACE_EXISTING)
+                //Files.move(Paths.get(fromFile), Paths.get(chapterDir.getAbsolutePath() + "/" + filename), REPLACE_EXISTING)
+                val is = new FileInputStream(fromFile)
+                val os = new FileOutputStream(chapterDir.getAbsolutePath() + "/" + filename)
+                Utilities.copyStreams(is, os)
+                new File(fromFile).delete()
               } catch {
                 case e: Exception => Log.e("Save Chapter ERROR", fromFile + " e: " + e.toString)
               }
@@ -245,7 +247,7 @@ object MangaManager {
         val manga = gson.fromJson(Utilities.readFile(mangaFile.getAbsolutePath()), classOf[Manga])
         list.add(manga)
       } catch {
-        case e: Exception => Log.i("GetSaved", "Exception")
+        case e: Exception => Log.i("GetSaved", "Exception: " + e.toString)
       }
     }
     list
