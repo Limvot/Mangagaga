@@ -113,7 +113,7 @@ object ScriptTester {
     var total = MangaManager.getNumPages()
     println("Debug String 3")
     current = updateImage()
-    list += current
+    list.append(current)
     println("Debug String 4")
     while(iloop) {
       println("Images downloaded: ")
@@ -135,7 +135,7 @@ object ScriptTester {
           }
         }
         current = updateImage()
-        list += current
+        list.append(current)
       } else if(ln(0) == 'p') {
         //get previoust image!
         var i = MangaManager.getCurrentPageNum()
@@ -147,7 +147,7 @@ object ScriptTester {
           }
         }
         current = updateImage()
-        list += current
+        list.append(current)
       } else {
         println("Error, unrecognized command!")
       }

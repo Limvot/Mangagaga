@@ -22,6 +22,7 @@ import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.collection.mutable.ArrayBuffer
 
 object Utilities {
     var gson : Gson = null
@@ -117,21 +118,23 @@ object Utilities {
                 if (extension.equals(".jpeg") || extension.equals(".jpg") || extension.equals(".png")
                         || extension.equals(".zip") || extension.equals(".apk")) {
 
-                    System.out.println("DownloadSource: Making Image fos")
                     var fos : FileOutputStream = new FileOutputStream(file)
                     var is : InputStream = urlcon.getInputStream()
                     var bis : BufferedInputStream = new BufferedInputStream(is)
+                    println("DownloadSource: Making buffer")
                     //var buffer : ByteBuffer = ByteBuffer.allocate(500)
                     var buffer : ByteBuffer = ByteBuffer.allocate(1024 * 1024 * 16)
 
                     var chunk : Int = bis.read()
-
+                    println("Looping through chunks!")
                     while (chunk != -1) {
-                        buffer.put(chunk.asInstanceOf[Byte])
+                        //buffer.put(chunk.asInstanceOf[Byte])
+                        //println("Adding chunk to buffer!")
+                        buffer.append(chunk.asInstanceOf[Byte])
                         chunk = bis.read()
                     }
-                    System.out.println("DownloadSource: Writing Image")
-                    fos.write(buffer.array())
+                    println("DownloadSource: Writing Image")
+                    fos.write(buffer.toArray)
                     fos.flush()
                     fos.close()
                 } else {
