@@ -141,9 +141,13 @@ object Utilities {
         {
             debug("DownloadSource: "+source)
             try {
+                error("DownloadSource: URL is: "+source)
                 sourceSite = new URL(source)
+                if (sourceSite == null) {
+                  error("HUGE ERROR!!!")
+                }
                 var urlcon : URLConnection = sourceSite.openConnection()
-
+                error("TYPE IS... "+urlcon.getContentType)       
                 var extension : String = ""
                 if (source.contains(".jpg")) {
                     extension = ".jpg"
@@ -176,7 +180,7 @@ object Utilities {
 
                 resultingPath = dest + filename
                 var file : File = new File(dest, filename)
-                info("DownloadSource: "+file.toString())
+                info("DownloadSource: resulting file: "+file.toString())
                 try {
                     file.createNewFile()
                 } catch {
@@ -188,12 +192,15 @@ object Utilities {
 
                 if (extension.equals(".jpeg") || extension.equals(".jpg") || extension.equals(".png")
                         || extension.equals(".zip") || extension.equals(".apk")) {
-
                     debug("DownloadSource: Making Image fos")
                     var fos : FileOutputStream = new FileOutputStream(file)
+                    info("DownloadSource: FOS is made!")
                     var is : InputStream = urlcon.getInputStream()
+                    info("DownloadSource: IS is made!")
                     var bis : BufferedInputStream = new BufferedInputStream(is)
+                    info("DownloadSource: BIS is made!")
                     var buffer : ByteArrayBuffer = new ByteArrayBuffer(500)
+                    info("DownloadSource: buffer is made!")
 
                     var chunk : Int = bis.read()
 
@@ -206,9 +213,15 @@ object Utilities {
                     fos.flush()
                     fos.close()
                 } else {
-                    var reader : BufferedReader = new BufferedReader(new InputStreamReader(sourceSite.openStream()))
+                    error("DownloadSource: Preparing to do the write!!!!")
+                    var is = new InputStreamReader(sourceSite.openStream)
+                    error("DownloadSource: IS made...")
+                    var reader : BufferedReader = new BufferedReader(is)
+                    error("DownloadSource: Made BufferedReader")
                     var fw : FileWriter = new FileWriter(resultingPath)
+                    error("DownloadSource: Made FileWriter")
                     var writer : BufferedWriter = new BufferedWriter(fw)
+                    error("DownloadSource: Made BufferedWriter")
                     var input : String = reader.readLine()
                     while (input != null) {
                         writer.write(input)

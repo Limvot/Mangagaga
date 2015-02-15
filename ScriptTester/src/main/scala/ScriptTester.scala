@@ -12,33 +12,6 @@ object ScriptTester {
     initFolders()
     ScriptManager.init()
     sourceLoop()
-    //printSources() 
-    //setSourceNumber(readInt)
-    //println("You chose source number "+srcnum)
-    //changeSource()
-    /*var list = getChapterList()*/
-    //while(!done) {
-    //printMangaList(list)
-    //println("Next page (n), Previous page (p), Change Source (c), Quit (q), or Manga Number:")
-    //val ln = readLine()
-    //if(ln(0) == 'q') {
-      //println("Exiting!!")
-      //done = true
-    //} else if(ln(0) == 'n') {
-      //list = getSourceNextPage()
-    //} else if(ln(0) == 'p') {
-      //list = getSourcePreviousPage()
-    //} else if(ln(0) == 'c') {
-      //changeSource()
-      //list = getChapterList()
-    //} else {
-      //println("you chose the manga "+list(ln.toInt).getTitle)
-      //ScriptManager.setCurrentSource(srcnum)
-      //MangaManager.readingOffline(false)
-      //MangaManager.setCurrentManga(list(ln.toInt))
-      //done = true
-    //}
-  /*}*/
   }
   
   def sourceLoop() = {
@@ -65,8 +38,6 @@ object ScriptTester {
         list = getSourcePreviousPage()
       } else if(ln(0) == 'b') {
         mloop = false
-        //changeSource()
-        //list = getChapterList()
       } else {
         var num = ln.toInt
         println("you chose the manga "+list(num).getTitle)
@@ -107,7 +78,6 @@ object ScriptTester {
   def imageLoop() = {
     var iloop = true
     println("Debug String 2")
-    //var list : Buffer[String] = null
     var list : Buffer[String] = new ArrayBuffer[String]
     var current : String = null
     var total = MangaManager.getNumPages()
