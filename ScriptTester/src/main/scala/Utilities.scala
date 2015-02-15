@@ -130,11 +130,11 @@ object Utilities {
                     while (chunk != -1) {
                         //buffer.put(chunk.asInstanceOf[Byte])
                         //println("Adding chunk to buffer!")
-                        buffer.append(chunk.asInstanceOf[Byte])
+                        buffer.put(chunk.asInstanceOf[Byte])
                         chunk = bis.read()
                     }
                     println("DownloadSource: Writing Image")
-                    fos.write(buffer.toArray)
+                    fos.write(buffer.array)
                     fos.flush()
                     fos.close()
                 } else {

@@ -62,7 +62,7 @@ function getMangaList(url)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for manga): ' .. path)
    daList = {}
-   regex = '<a href="http://unixmanga.co/onlinereading/(.-)"title=".-">(.-)</a>'
+   regex = '<td>.-<a href="http://unixmanga.co/onlinereading/(.-)"title=".-">(.-)</a>.-</td>'
    apiObj:note('Manga List Regex: ' .. regex)
    beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex)
    index = 0
@@ -92,7 +92,10 @@ function initManga(manga)
    manga['description'] = manga['title']
 
    daList = {}
-   regex = '<a +href="(http://unixmanga.co/onlinereading/.-/' .. escapeRegexStr(manga['url']) .. ')".->(.-)</a>'
+   urlminhtml = manga['url']
+   urlminhtml = string.gsub(urlminhtml, ".html", "")
+   urlminhtml = escapeRegexStr(urlminhtml)
+   regex = '<td>.-<a +href="(http://unixmanga.co/onlinereading/.-/' .. urlminhtml .. '.-)"title=".-">(.-)</a>'
    apiObj:note('Chapter List Regex: ' .. regex)
    beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)
    index = 0
@@ -127,17 +130,21 @@ end
 
 
 function setUpChapter(manga, chapter)
-       pageURL = 'http://unixmanga.co/onlinereading' .. '/' .. string.gsub(manga['url'], ".html", '') .. '/' .. chapter['url']
+       apiObj:note(chapter['url'])
+       pageURL = chapter['url']
        apiObj:note('The Page URL is: ' .. pageURL)
        path = apiObj:download(pageURL)
        apiObj:note('After download')
        pageSource = apiObj:readFile(path)
-       regex = 'lstImages%.push%("(.-)"%);'
+       regex = '<.-http://ex2.(unixmanga.net/.-)">.-<.->'
        apiObj:note('Page List Regex: ' .. regex)
        beginning, ending, pageURL = string.find(pageSource, regex)
        index = 0
        daList = {}
        while ending do
+           pageURL = string.gsub(pageURL, ' ', '%%20')
+           pageURL = string.gsub(pageURL, '&server=nas.html', '')
+           pageURL = 'http://nas.' .. string.gsub(pageURL, '?image=', '')
            daList[index] = {url = pageURL}
            beginning, ending, pageURL = string.find(pageSource, regex, ending+1)
            index = index + 1
