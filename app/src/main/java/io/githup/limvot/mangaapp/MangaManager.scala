@@ -285,9 +285,10 @@ object MangaManager {
   def getCurrentManga() = currentManga
 
   def setCurrentChapter(current: Chapter) {
-    // delete all of our cached pages before clearing the cache
-    for (pair <- chapterPageMap)
-      new File(pair._2).delete()
+    // delete all of our cached pages before clearing the cache if we're reading online
+    if (!isOffline)
+      for (pair <- chapterPageMap)
+        new File(pair._2).delete()
     chapterPageMap.clear()
     currentChapter = current
     chapterHistory.add(0, current)
