@@ -1,4 +1,4 @@
-package io.githup.limvot.mangaapp;
+package io.githup.limvot.mangagaga;
 
 /**
  * Created by marcus on 12/17/14.

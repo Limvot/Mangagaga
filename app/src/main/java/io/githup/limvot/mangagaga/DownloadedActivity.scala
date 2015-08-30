@@ -1,4 +1,4 @@
-package io.githup.limvot.mangaapp;
+package io.githup.limvot.mangagaga;
 
 import org.scaloid.common._
 

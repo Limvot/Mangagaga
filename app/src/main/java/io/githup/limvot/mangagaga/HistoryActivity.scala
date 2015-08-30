@@ -1,4 +1,4 @@
-package io.githup.limvot.mangaapp;
+package io.githup.limvot.mangagaga;
 
 import android.app.Activity;
 import android.content.Intent;

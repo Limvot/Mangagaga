@@ -14,6 +14,9 @@
 -keepattributes Signature
 -dontwarn scala.collection.**
 -dontwarn scala.collection.mutable.**
+-dontwarn sun.misc.Unsafe
+-dontwarn java.beans.*
+-dontwarn java.lang.management.*
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
