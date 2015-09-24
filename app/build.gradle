@@ -16,7 +16,7 @@ android {
         }
     }
     compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId "io.githup.limvot.mangagaga"
         minSdkVersion 10

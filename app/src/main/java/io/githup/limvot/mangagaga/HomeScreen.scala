@@ -23,7 +23,7 @@ class HomeScreen extends SActivity {
     super.onCreate(savedInstanceState)
     contentView = new SVerticalLayout() {
       SButton("Browse Sources").onClick(startActivity[SourceActivity])
-        SButton("Favroites").onClick(startActivity[FavoritesActivity])
+        SButton("Favroitess").onClick(startActivity[FavoritesActivity])
         SButton("History").onClick(startActivity[HistoryActivity])
         SButton("Downloaded").onClick(startActivity[DownloadedActivity])
         SButton("Settings").onClick(startActivity[SettingsActivity])
