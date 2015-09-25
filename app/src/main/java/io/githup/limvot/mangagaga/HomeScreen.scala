@@ -21,6 +21,12 @@ class HomeScreen extends SActivity {
 
   override def onCreate(savedInstanceState:Bundle) {
     super.onCreate(savedInstanceState)
+    Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                  def uncaughtException(paramThread : Thread, paramThrowable : Throwable) {
+                              Log.e("MANGAGAGA","Lets See if it Works !!!")
+                              System.exit(1)
+                  }
+    });
     contentView = new SVerticalLayout() {
       SButton("Browse Sources").onClick(startActivity[SourceActivity])
         SButton("Favroitess").onClick(startActivity[FavoritesActivity])
