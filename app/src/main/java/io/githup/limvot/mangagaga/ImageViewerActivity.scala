@@ -138,7 +138,9 @@ class ImageViewerActivity extends SActivity with GestureDetector.OnGestureListen
             Log.i("ASYNC DO IN BACKGROUND", "ENDING")
             var bm: Bitmap = ImageManager.getNext(imagepath)
             Log.i("ASYNC DO IN BACKGROUND", "Post Execute!")
+            Log.i("IMAGES THING", "SETTING IMAGE!")
             runOnUiThread(image.setImageBitmap(bm))
+            Log.i("IMAGES THING", "DID SET IMAGE! (maybe)")
         }
         // NOW IT'S THE PRESENT
     }

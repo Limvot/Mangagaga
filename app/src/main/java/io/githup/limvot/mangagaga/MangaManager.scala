@@ -2,7 +2,10 @@ package io.githup.limvot.mangagaga
 import org.scaloid.common._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
+import scala.concurrent.Await
 import scala.collection.JavaConversions._
+import java.util.concurrent.TimeoutException; 
+import scala.concurrent.duration._
 
 import java.util.concurrent.Semaphore
 
@@ -346,14 +349,35 @@ object MangaManager {
   def getCurrentPageNum(): Int = currentPage
   def getCurrentPage(): String = getCurrentPage(currentManga, currentChapter, currentPage)
   def getCurrentPage(manga: Manga, chapter: Chapter, page: Int): String = { 
-    nextPageCachingMutex.acquire() 
-    if (chapterPageMap.get(page) == None)
-      addToChapterPageMap(manga, chapter, page)
+    val single = Future {
+      nextPageCachingMutex.acquire() 
+      if (chapterPageMap.get(page) == None) {
+        nextPageCachingMutex.release() 
+        addToChapterPageMap(manga, chapter, page)
+      } else {
+        nextPageCachingMutex.release() 
+      }
+    }
+
+    try { 
+      Await.result(single, 20 seconds)
+    } catch {
+      case e : TimeoutException => {
+        Log.i("MangaManager", "Timeout!!")
+        Log.i("MangaManager", e.getMessage())
+      }
+    } 
     Future {
       try {
-      for (i <- 0 until SettingsManager.getCacheSize)
-        if (chapterPageMap.get(page+i) == None && page+i < getNumPages())
-          addToChapterPageMap(manga, chapter, page+i)
+        for (i <- 0 until SettingsManager.getCacheSize) {
+          nextPageCachingMutex.acquire() 
+          if (chapterPageMap.get(page+i) == None && page+i < getNumPages()) {
+            nextPageCachingMutex.release()
+            addToChapterPageMap(manga, chapter, page+i)
+          } else {
+            nextPageCachingMutex.release()
+          }
+        }
       } finally {
         nextPageCachingMutex.release()
       }
@@ -363,16 +387,23 @@ object MangaManager {
 
   def addToChapterPageMap(manga: Manga, chapter: Chapter, page: Int) { 
     if (!isOffline) {
-      chapterPageMap(page) = ScriptManager.getCurrentSource().downloadPage(manga, chapter, page)
+      val returned_page = ScriptManager.getCurrentSource().downloadPage(manga, chapter, page)
+      nextPageCachingMutex.acquire() 
+      chapterPageMap(page) = returned_page
+      nextPageCachingMutex.release()
     } else {
       // As we load all downloaded pages, we must not have loaded this chapter yet
       // Do this now
+      nextPageCachingMutex.acquire() 
       chapterPageMap.clear()
+      nextPageCachingMutex.release()
       val chapterDirString = Environment.getExternalStorageDirectory() +
                              "/Mangagaga/Downloaded/" + manga.getTitle + "/" + chapter.getTitle
       val savedDir = new File(chapterDirString)
       for ((dir, i) <- savedDir.list.filter(!_.endsWith(".json")).view.zipWithIndex) {
+        nextPageCachingMutex.acquire() 
         chapterPageMap(i) = chapterDirString + "/" + dir.toString
+        nextPageCachingMutex.release()
       }
     }
   }
