@@ -41,18 +41,18 @@ end
 
 function getMangaListPage()
     if mangaListType == 'All' then
-        return getMangaList('http://unixmanga.co/onlinereading/manga-lists.html')
+        return getMangaList('http://unixmanga.nl/onlinereading/manga-lists.html')
     elseif mangaListType == 'Hot Manga' then
-        return getMangaList('http://unixmanga.co/onlinereading/manga-lists.html')
+        return getMangaList('http://unixmanga.nl/onlinereading/manga-lists.html')
     elseif mangaListType == 'Latest Update' then
-        return getMangaList('http://unixmanga.co/onlinereading/0-desc-date.php')
+        return getMangaList('http://unixmanga.nl/onlinereading/0-desc-date.php')
     elseif mangaListType == 'Newest' then
-        return getMangaList('http://unixmanga.co/onlinereading/0-desc-date.php')
+        return getMangaList('http://unixmanga.nl/onlinereading/0-desc-date.php')
     elseif mangaListType == '#' then
-        return getMangaList('http://unixmanga.co/onlinereading/manga-lists.html')
+        return getMangaList('http://unixmanga.nl/onlinereading/manga-lists.html')
     end
 
-    return getMangaList('http://unixmanga.co/onlinereading/manga-lists.html')
+    return getMangaList('http://unixmanga.nl/onlinereading/manga-lists.html')
 end
 
 function getMangaList(url)
@@ -62,7 +62,7 @@ function getMangaList(url)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for manga): ' .. path)
    daList = {}
-   regex = '<td>.-<a href="http://unixmanga.co/onlinereading/(.-)"title=".-">(.-)</a>.-</td>'
+   regex = '<td>.-<a href="http://unixmanga.nl/onlinereading/(.-)"title=".-">(.-)</a>.-</td>'
    apiObj:note('Manga List Regex: ' .. regex)
    beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex)
    index = 0
@@ -98,7 +98,7 @@ end
 
 
 function initManga(manga)
-   mangaURL = 'http://unixmanga.co/onlinereading/' .. manga['url']
+   mangaURL = 'http://unixmanga.nl/onlinereading/' .. manga['url']
    apiObj:note('Manga Path: ' .. mangaURL)
    path = apiObj:download(mangaURL)
    pageSource = apiObj:readFile(path)
@@ -113,7 +113,7 @@ function initManga(manga)
    urlminhtml = manga['url']
    urlminhtml = string.gsub(urlminhtml, ".html", "")
    urlminhtml = escapeRegexStr(urlminhtml)
-   regex = '<td>.-<a +href="(http://unixmanga.co/onlinereading/.-/' .. urlminhtml .. '.-)"title=".-">(.-)</a>'
+   regex = '<td>.-<a +href="(http://unixmanga.nl/onlinereading/.-/' .. urlminhtml .. '.-)"title=".-">(.-)</a>'
    apiObj:note('Chapter List Regex: ' .. regex)
    beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)
    index = 0
@@ -157,7 +157,7 @@ function setUpChapter(manga, chapter)
        apiObj:note('THE PATH: ' .. path)
        apiObj:note('After download')
        pageSource = apiObj:readFile(path)
-       regex = '<.-http://ex2.(unixmanga.net/.-)">.-<.->'
+       regex = '<.-http://ex5.(unixmanga.net/.-)">.-<.->'
        apiObj:note('Page List Regex: ' .. regex)
        beginning, ending, pageURL = string.find(pageSource, regex)
        index = 0
