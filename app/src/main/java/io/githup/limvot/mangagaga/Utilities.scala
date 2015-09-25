@@ -23,6 +23,7 @@ import java.net.URL;
 import java.io._;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException; 
 import java.util.concurrent.Executor;
 import java.util.Date;
 
@@ -111,7 +112,8 @@ object Utilities {
                 DownloadSource(source)
             }
             //Should Probably make the app handle timeouts a bit better
-            return Await.result(f,60 seconds).asInstanceOf[String]
+            return Await.result(f,20 seconds).asInstanceOf[String]
+            //return Await.result(f,100 millis).asInstanceOf[String]
         }
         catch {
             case e : ExecutionException => {
@@ -128,6 +130,11 @@ object Utilities {
                 error("Download: Interrupted Exception!!!")
                 error(e.getMessage())
                 return "Error Interrupted!"
+            }
+            case e : TimeoutException => {
+                error("Download: Timeout Exception!!!")
+                error(e.getMessage())
+                return "Error Timeout!"
             }
         }
     }
@@ -148,27 +155,7 @@ object Utilities {
                 }
                 var urlcon : URLConnection = sourceSite.openConnection()
                 error("TYPE IS... "+urlcon.getContentType)       
-                var extension : String = ""
-                if (source.contains(".jpg")) {
-                    extension = ".jpg"
-                } else if (source.contains(".jpeg")) {
-                    extension = ".jpeg"
-                } else if (source.contains(".png")) {
-                    extension = ".png"
-                } else if (source.contains(".zip")) {
-                    extension = ".zip"
-                } else if (source.contains(".apk")) {
-                    extension = ".apk"
-                } else {
-                    extension = ".html"
-                }
-                info("DONLSDFING: "+source)
-                var extensionIndex : Int = source.lastIndexOf(extension)
-                if (extensionIndex != -1)
-                    filename = source.substring((source.lastIndexOf('/') + 1), extensionIndex + extension.length())
-                else
-                    filename = source.substring((source.lastIndexOf('/') + 1)) + extension
-
+                filename = source.substring((source.lastIndexOf('/') + 1))
                 var dest : String = Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/"
 
                 if (filename.contains("?")) {
@@ -190,18 +177,12 @@ object Utilities {
                     }
                 }
 
-                debug("DownloadSource: Making Image fos")
                 var fos : FileOutputStream = new FileOutputStream(file)
-                info("DownloadSource: FOS is made!")
                 var is : InputStream = urlcon.getInputStream()
-                info("DownloadSource: IS is made!")
                 var bis : BufferedInputStream = new BufferedInputStream(is)
-                info("DownloadSource: BIS is made!")
                 var buffer : ByteArrayBuffer = new ByteArrayBuffer(500)
-                info("DownloadSource: buffer is made!")
 
                 var chunk : Int = bis.read()
-
                 while (chunk != -1) {
                   buffer.append(chunk.asInstanceOf[Byte])
                   chunk = bis.read()
