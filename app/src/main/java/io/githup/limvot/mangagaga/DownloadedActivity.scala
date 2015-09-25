@@ -19,7 +19,7 @@ class DownloadedActivity extends SActivity {
         val mangaListView = SListView().<<.wrap.>>
         
 
-        mangaListView.setAdapter(new SArrayAdapter(MangaManager.getSavedManga().toArray))
+        mangaListView.setAdapter(new SArrayAdapter(MangaManager.getSavedManga()))
         mangaListView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
           override def onItemClick(adapterView: AdapterView[_], view: View, i: Int, l: Long) {
             Log.i("onItemClick", mangaListView.getItemAtPosition(i).toString())

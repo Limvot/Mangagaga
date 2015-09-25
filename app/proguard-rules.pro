@@ -17,6 +17,8 @@
 -dontwarn sun.misc.Unsafe
 -dontwarn java.beans.*
 -dontwarn java.lang.management.*
+-dontwarn scala.reflect.internal.*
+-dontwarn org.scaloid.common.*
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface

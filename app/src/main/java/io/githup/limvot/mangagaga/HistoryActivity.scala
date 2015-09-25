@@ -31,7 +31,7 @@ class HistoryActivity extends SActivity {
 
 
         var buff : Buffer[Chapter] = MangaManager.getChapterHistoryList()
-        adapter = new SArrayAdapter(buff.toArray)
+        adapter = new SArrayAdapter(buff)
         historyListView.setAdapter(adapter)
 
         historyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
