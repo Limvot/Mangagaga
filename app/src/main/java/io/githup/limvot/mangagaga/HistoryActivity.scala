@@ -20,7 +20,8 @@ import collection.mutable.Buffer
 class HistoryActivity extends SActivity {
     implicit val tag = LoggerTag("Scala History Activity")
     var historyListView : SListView = null
-    var adapter : ArrayAdapter[Chapter] = null
+    //var adapter : ArrayAdapter[Chapter] = null
+    var adapter : SimpleListAdapter[Chapter] = null
 
     override def onCreate(savedInstanceState:Bundle) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,8 @@ class HistoryActivity extends SActivity {
 
 
         var buff : Buffer[Chapter] = MangaManager.getChapterHistoryList()
-        adapter = new SArrayAdapter(buff)
+        //adapter = new SArrayAdapter(buff)
+        adapter = new SimpleListAdapter[Chapter](this, buff);
         historyListView.setAdapter(adapter)
 
         historyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

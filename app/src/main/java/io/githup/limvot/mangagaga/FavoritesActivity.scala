@@ -18,7 +18,8 @@ import collection.mutable.Buffer
 
 class FavoritesActivity extends SActivity {
     implicit val tag = LoggerTag("Scala Favorites Activity")
-    var favoritesAdapter : ArrayAdapter[Manga] = null
+    //var favoritesAdapter : ArrayAdapter[Manga] = null
+    var favoritesAdapter : SimpleListAdapter[Manga] = null
     var listFavorites : SListView = null
 
     override def onCreate(savedInstanceState:Bundle) {
@@ -28,7 +29,8 @@ class FavoritesActivity extends SActivity {
         }
         
         var buff : Buffer[Manga] =  MangaManager.getFavoriteList()
-        favoritesAdapter = new SArrayAdapter(buff)
+        //favoritesAdapter = new SArrayAdapter(buff)
+        favoritesAdapter = new SimpleListAdapter[Manga](this, buff)
         listFavorites.setAdapter(favoritesAdapter)
 
         listFavorites.setOnItemClickListener(new AdapterView.OnItemClickListener() {
