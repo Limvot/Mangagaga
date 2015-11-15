@@ -15,8 +15,11 @@ android {
             storePassword props['storePassword']
         }
     }
+    lintOptions {
+        abortOnError false
+    }
     compileSdkVersion 21
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "io.githup.limvot.mangagaga"
         minSdkVersion 10
@@ -45,4 +48,5 @@ dependencies {
     compile 'org.scaloid:scaloid_2.11:4.0+'
     compile 'com.android.support:support-v4:20.0.0'
     compile files('libs/gson-2.3.jar')
+    compile files('libs/js.jar')
 }

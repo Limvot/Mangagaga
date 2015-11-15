@@ -43,6 +43,10 @@ function getMangaListPage()
     if mangaListType == 'All' then
         return getMangaList('http://kissmanga.com/MangaList?page=' .. pageNo)
     elseif mangaListType == 'Most Popular' then
+        apiObj:note("before doDaJS")
+        js_result = apiObj:doDaJS('1+2')
+        apiObj:note(js_result)
+        apiObj:note('that was the result')
         return getMangaList('http://kissmanga.com/MangaList/MostPopular?page=' .. pageNo)
     elseif mangaListType == 'Latest Update' then
         return getMangaList('http://kissmanga.com/MangaList/LatestUpdate?page=' .. pageNo)

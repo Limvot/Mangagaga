@@ -6,17 +6,18 @@ mangaListType = 'All'
 function getMangaListTypes()
     titleList = { }
     titleList[0] = 'All'
-    titleList[1] = 'Most Popular'
+    --titleList[1] = 'Most Popular'
     titleList[2] = 'Latest Update'
-    titleList[3] = 'Newest'
-    titleList['numTypes'] = 4
-    allChar = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    i = 1
-    while i < (string.len(allChar) + 1) do
-        titleList[titleList['numTypes'] + i - 1] = string.sub(allChar, i, i)
-        i = i + 1
-    end
-    titleList['numTypes'] = titleList['numTypes'] + i
+    --titleList[3] = 'Newest'
+    titleList['numTypes'] = 2
+    --titleList['numTypes'] = 4
+    --allChar = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    --i = 1
+    --while i < (string.len(allChar) + 1) do
+        --titleList[titleList['numTypes'] + i - 1] = string.sub(allChar, i, i)
+        --i = i + 1
+    --end
+    --titleList['numTypes'] = titleList['numTypes'] + i
     return titleList
 end
 
@@ -48,20 +49,6 @@ function getMangaListPage()
 
     return getMangaList('http://readpanda.net/manga-list/' .. pageNo)
 end
-    --if mangaListType == 'All' then
-        --return getMangaList('http://readpanda.net/manga-list/' .. pageNo)
-    --elseif mangaListType == 'Most Popular' then
-        --return getMangaList('http://kissmanga.com/MangaList/MostPopular?page=' .. pageNo)
-    --elseif mangaListType == 'Latest Update' then
-        --return getMangaList('http://kissmanga.com/MangaList/LatestUpdate?page=' .. pageNo)
-    --elseif mangaListType == 'Newest' then
-        --return getMangaList('http://kissmanga.com/MangaList/Newest?page=' .. pageNo)
-    --elseif mangaListType == '#' then
-        --return getMangaList('http://kissmanga.com/MangaList?c=0&page=' .. pageNo)
-    --end
-
-    --return getMangaList('http://kissmanga.com/MangaList?c=' .. mangaListType .. '&page=' .. pageNo)
---end
 
 function getMangaList(url)
    print('About to getMangaList!')

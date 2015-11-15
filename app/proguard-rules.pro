@@ -8,6 +8,7 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+-keep class org.mozilla.javascript.** {*;}
 -keep class io.** {*;}
 -dontoptimize
 -dontobfuscate
@@ -19,6 +20,9 @@
 -dontwarn java.lang.management.*
 -dontwarn scala.reflect.internal.*
 -dontwarn org.scaloid.common.*
+
+-dontwarn org.mozilla.javascript.**
+-dontwarn org.mozilla.classfile.**
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
