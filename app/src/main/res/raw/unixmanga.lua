@@ -58,6 +58,7 @@ end
 function getMangaList(url)
    print('About to getMangaList!')
    print(apiObj)
+   num_per_page = 200
    path = apiObj:download(url)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for manga): ' .. path)
@@ -70,7 +71,7 @@ function getMangaList(url)
    count = 0
 
    if mangaListType == 'All'  then
-    while count < 30*(pageNo-1) do
+    while count < num_per_page*(pageNo-1) do
         beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex, ending+1)
         count = count + 1
     end
@@ -86,7 +87,7 @@ function getMangaList(url)
         end
    end
         
-   while count < 30*pageNo do
+   while count < num_per_page*pageNo do
        daList[index] = {title = mangaTitle, url = mangaURL}
        beginning, ending, mangaURL, mangaTitle = string.find(pageSource, regex, ending+1)
        index = index + 1
@@ -96,35 +97,46 @@ function getMangaList(url)
    return daList
 end
 
+function extractChapterList(mangaURL, urlminhtml)
+   local mangaURL = mangaURL
+   local urlminhtml = urlminhtml
+   local path = apiObj:download(mangaURL)
+   local pageSource = apiObj:readFile(path)
+
+   local daList = {}
+    -- this is a weird one; it's to make sure it isn't just urlminhtml.html ------------\/
+   local regex = '<td>.-<a +href="(http://unixmanga.nl/onlinereading/.-/' .. urlminhtml .. '..-.html)"title=".-">(.-)</a>'
+   local beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)
+   local index = 0
+   while ending do
+       if string.find(chapterURL, '%d+%-%d+.html') then
+           newList = extractChapterList(chapterURL, urlminhtml)
+           local newListIdx = 0
+           while newListIdx < newList['numChapters'] do 
+               local newOne = newList[newListIdx]
+               newOne['title'] = chapterTitle .. ' | ' .. newOne['title']
+               daList[index] = newList[newListIdx]
+               index = index + 1
+               newListIdx = newListIdx + 1
+           end
+       else
+           chapterURL = string.gsub(chapterURL, '.html', '_nas.html')
+           daList[index] = {title = chapterTitle, url = chapterURL, chapterSetUp = false}
+           index = index + 1
+       end
+       beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex, ending+1)
+   end
+   daList['numChapters'] = index
+   return daList
+end
 
 function initManga(manga)
-   mangaURL = 'http://unixmanga.nl/onlinereading/' .. manga['url']
-   apiObj:note('Manga Path: ' .. mangaURL)
-   path = apiObj:download(mangaURL)
-   pageSource = apiObj:readFile(path)
-   apiObj:note('LuaScript downloaded (for chapter): ' .. path)
-
-   -- Set up manga description and other nicities
-   -- descriptionRegex = '<span class="info">Summary:</span>.-<p.->(.-)</p>'
-   -- _, _, mangaDescription = string.find(pageSource, descriptionRegex)
    manga['description'] = manga['title']
-
-   daList = {}
+   mangaURL = 'http://unixmanga.nl/onlinereading/' .. manga['url']
    urlminhtml = manga['url']
    urlminhtml = string.gsub(urlminhtml, ".html", "")
    urlminhtml = escapeRegexStr(urlminhtml)
-   regex = '<td>.-<a +href="(http://unixmanga.nl/onlinereading/.-/' .. urlminhtml .. '.-)"title=".-">(.-)</a>'
-   apiObj:note('Chapter List Regex: ' .. regex)
-   beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex)
-   index = 0
-   while ending do
-       chapterURL = string.gsub(chapterURL, '.html', '_nas.html')
-       daList[index] = {title = chapterTitle, url = chapterURL, chapterSetUp = false}
-       beginning, ending, chapterURL, chapterTitle = string.find(pageSource, regex, ending+1)
-       index = index + 1
-   end
-   daList['numChapters'] = index
-   manga['chapter_list'] = daList
+   manga['chapter_list'] = extractChapterList(mangaURL, urlminhtml)
 end
 
 function getMangaChapterList(manga)
@@ -134,7 +146,7 @@ end
 
 function getMangaChapterNumPages(manga, chapter)
    if not chapter['chapterSetUp'] then
-       setUpChapter(manga, chapter)
+       setUpChapter(chapter)
    end
    return chapter['pageList']['numPages']
 end
@@ -142,13 +154,12 @@ end
 
 function getMangaChapterPage(manga, chapter, page)
    if not chapter['chapterSetUp'] then
-       setUpChapter(manga, chapter)
+       setUpChapter(chapter)
    end
    return apiObj:download(chapter['pageList'][page]['url'])
 end
 
-
-function setUpChapter(manga, chapter)
+function setUpChapter(chapter)
        apiObj:note(chapter['url'])
        pageURL = chapter['url']
        apiObj:note('SETTING UP CHAPTER!!!')
