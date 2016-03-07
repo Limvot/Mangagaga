@@ -45,12 +45,14 @@ object SettingsManager {
 
     def loadSettings() = {
         var savedFile = new File(Environment.getExternalStorageDirectory() + "/Mangagaga", "Settings.json");
+        if (!savedFile.exists())
+          saveSettings()
         try {
             settingsMan = Utilities.getGson().fromJson(Utilities.readFile(savedFile.getAbsolutePath()), classOf[SettingsManager]);
             Log.i("SAVED_SETTINGS", "Loaded!");
         } catch {
             case e:Exception => {
-            Log.i("SAVED_SETTINGS", "Exception!");
+            Log.i("SAVED_SETTINGS", "Exception!"+e.toString());
             }
         }
     }
