@@ -10,15 +10,26 @@ object APIObject {
   def instance() = this
   def note(theNote: String) =  info(theNote)
 
-  var rhino = Context.enter()
-  rhino.setOptimizationLevel(-1)
-  var scope = rhino.initStandardObjects();
-  //Context.exit()
 
   def doDaJS(to_eval: String): String = {
-    var result = rhino.evaluateString(scope, to_eval, "<cmd>", 1, null).toString()
-    note("before toString")
-    note(result)
+    note("string to eval")
+    note(to_eval)
+    var result = ""
+    try {
+      // yep, new one every time! (because this function can be called from not the main thread, and contexts are associated with threads)
+      var rhino = Context.enter()
+      rhino.setOptimizationLevel(-1)
+      var scope = rhino.initStandardObjects();
+      var temp = rhino.evaluateString(scope, to_eval, "<cmd>", 1, null)
+      note("before toString")
+      note(temp.toString())
+      result = temp.toString()
+      Context.exit()
+    } catch {
+      case e : Exception => {
+        error("evaluateString: "+e.toString())
+      }
+    }
     result
   }
   

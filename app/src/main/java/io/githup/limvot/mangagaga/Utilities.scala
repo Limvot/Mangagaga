@@ -169,8 +169,12 @@ object Utilities {
                 error("following is " + urlcon.getInstanceFollowRedirects())
                 error("TYPE IS... "+urlcon.getContentType)       
                 filename = source.substring((source.lastIndexOf('/') + 1))
-                if (referer.length() > 0)
+                if (referer.length() > 0) {
+                  error("Using referer instead: " + referer)
                   filename = referer.substring((source.lastIndexOf('/') + 1))
+                  error("filename:")
+                  error(filename)
+                }
                 var dest : String = Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/"
 
                 if (filename.contains("?")) {
