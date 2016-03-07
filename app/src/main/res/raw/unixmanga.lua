@@ -59,7 +59,7 @@ function getMangaList(url)
    print('About to getMangaList!')
    print(apiObj)
    num_per_page = 200
-   path = apiObj:download(url)
+   path = download_cf(url)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for manga): ' .. path)
    daList = {}
@@ -100,7 +100,7 @@ end
 function extractChapterList(mangaURL, urlminhtml)
    local mangaURL = mangaURL
    local urlminhtml = urlminhtml
-   local path = apiObj:download(mangaURL)
+   local path = download_cf(mangaURL)
    local pageSource = apiObj:readFile(path)
 
    local daList = {}
@@ -156,7 +156,7 @@ function getMangaChapterPage(manga, chapter, page)
    if not chapter['chapterSetUp'] then
        setUpChapter(chapter)
    end
-   return apiObj:download(chapter['pageList'][page]['url'])
+   return download_cf(chapter['pageList'][page]['url'])
 end
 
 function setUpChapter(chapter)
@@ -164,7 +164,7 @@ function setUpChapter(chapter)
        pageURL = chapter['url']
        apiObj:note('SETTING UP CHAPTER!!!')
        apiObj:note('The Page URL is: ' .. pageURL)
-       path = apiObj:download(pageURL)
+       path = download_cf(pageURL)
        apiObj:note('THE PATH: ' .. path)
        apiObj:note('After download')
        pageSource = apiObj:readFile(path)

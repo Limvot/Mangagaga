@@ -26,6 +26,10 @@ object APIObject {
     info("Downloading" + filePath)
     Utilities.download(filePath)
   }
+  def downloadWithRequestHeadersAndReferrer(filePath: String, referer: String): (String, java.util.Map[String,java.util.List[String]]) =  {
+    info("Downloading" + filePath)
+    Utilities.downloadWithRequestHeadersAndReferrer(filePath, referer)
+  }
 
   def readFile(absolutePath: String): String = {
     info("Reader Path is: " + absolutePath)
@@ -37,4 +41,5 @@ object APIObject {
     "FAILURE"
   }
   def slice(toSlice: String, a: Int, b: Int): String = toSlice.substring(a,b)
+  def sleep(time: Int) = Thread sleep time
 }

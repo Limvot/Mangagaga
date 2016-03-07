@@ -18,6 +18,8 @@ import org.apache.http.util.ByteArrayBuffer;
 import org.luaj.vm2.LuaTable;
 
 import java.net.HttpURLConnection;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.io._;
@@ -105,14 +107,16 @@ object Utilities {
         return new Date(modifiedTime)
     }
 
-    def download(source : String) : String = {
+    def download(source : String) : String = downloadWithRequestHeadersAndReferrer(source, "")._1
+    CookieHandler.setDefault(new CookieManager())
+    def downloadWithRequestHeadersAndReferrer(source : String, referer: String) : (String, java.util.Map[String,java.util.List[String]]) = {
         try {
 
-            val f : Future[String] = Future[String] {
-                DownloadSource(source)
+            val f = Future[(String, java.util.Map[String,java.util.List[String]])] {
+                DownloadSource(source, referer)
             }
             //Should Probably make the app handle timeouts a bit better
-            return Await.result(f,20 seconds).asInstanceOf[String]
+            return Await.result(f,20 seconds).asInstanceOf[(String, java.util.Map[String,java.util.List[String]])]
             //return Await.result(f,100 millis).asInstanceOf[String]
         }
         catch {
@@ -124,38 +128,49 @@ object Utilities {
                     err += x.toString()+"\n"
                 }
                 error(err)
-                return "Error Async!"
+                return ("Error Async!", null)
             }
             case e : InterruptedException => {
                 error("Download: Interrupted Exception!!!")
                 error(e.getMessage())
-                return "Error Interrupted!"
+                return ("Error Interrupted!", null)
             }
             case e : TimeoutException => {
                 error("Download: Timeout Exception!!!")
                 error(e.getMessage())
-                return "Error Timeout!"
+                return ("Error Timeout!", null)
             }
         }
     }
 
 
-    def DownloadSource(source : String) : String = {
+    def DownloadSource(source : String, referer: String) : (String, java.util.Map[String,java.util.List[String]]) = {
         var filename : String = ""
         var resultingPath : String = ""
+        var resultingHeaders : java.util.Map[String,java.util.List[String]] = null
         var sourceSite : URL = null
-        if(!source.isEmpty())
-        {
+        if(!source.isEmpty()) {
             debug("DownloadSource: "+source)
+            var urlcon : HttpURLConnection = null
             try {
                 error("DownloadSource: URL is: "+source)
                 sourceSite = new URL(source)
                 if (sourceSite == null) {
                   error("HUGE ERROR!!!")
                 }
-                var urlcon : URLConnection = sourceSite.openConnection()
+                urlcon = sourceSite.openConnection().asInstanceOf[HttpURLConnection]
+                urlcon.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0");
+                if (referer.length() > 0)
+                  urlcon.setRequestProperty("Referer", referer);
+                //urlcon.setRequestProperty("User-Agent", "Mangagaga");
+                error("user agent is " + urlcon.getRequestProperty("User-Agent"))
+                error("following is " + urlcon.getInstanceFollowRedirects())
+                urlcon.setInstanceFollowRedirects(true)
+                error("following is " + urlcon.getInstanceFollowRedirects())
                 error("TYPE IS... "+urlcon.getContentType)       
                 filename = source.substring((source.lastIndexOf('/') + 1))
+                if (referer.length() > 0)
+                  filename = referer.substring((source.lastIndexOf('/') + 1))
                 var dest : String = Environment.getExternalStorageDirectory() + "/Mangagaga/Cache/"
 
                 if (filename.contains("?")) {
@@ -176,9 +191,23 @@ object Utilities {
                         error("DownloadSource: "+e.toString())
                     }
                 }
+                
+                resultingHeaders = urlcon.getHeaderFields()
+                error("Request Headers:")
+                for (mapping <- resultingHeaders;
+                     value <- mapping._2)
+                  error(mapping._1 + " : " + value)
+                error("here we go")
+                error(urlcon.getResponseMessage())
 
                 var fos : FileOutputStream = new FileOutputStream(file)
-                var is : InputStream = urlcon.getInputStream()
+                var is : InputStream = null
+                // RRRARRRARARGH you gave to do getErrorStream if it's returned an error
+                // and getResponseMessage doesn't work if it returned an error
+                if (200 <= urlcon.getResponseCode() && urlcon.getResponseCode() <= 299)
+                  is = urlcon.getInputStream()
+                else
+                  is = urlcon.getErrorStream()
                 var bis : BufferedInputStream = new BufferedInputStream(is)
                 var buffer : ByteArrayBuffer = new ByteArrayBuffer(500)
 
@@ -195,17 +224,21 @@ object Utilities {
             catch {
                 case e : MalformedURLException => {
                     error("DownloadSource: Error opening page!")
-                    return "Error 1"
+                    return ("Error 1 - malformed url", resultingHeaders)
                 }
                 case e : IOException => {
-                    error("DownloadSource: Error With Reader/Writer!")
+                    error("DownloadSource: Error With Reader/Writer! (returning getResponseMessage as the string instead of the file path)")
                     error("DownloadSource: "+e.toString())
-                    return "Error 2"
+                    return ("Error 2 error with reader writer", resultingHeaders)
                 }
+            }
+            finally {
+              if (urlcon != null)
+                urlcon.disconnect()
             }
         }
 
-        return resultingPath
+        return (resultingPath, resultingHeaders)
     }
 
     @throws(classOf[IOException])

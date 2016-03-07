@@ -62,7 +62,8 @@ end
 function getMangaList(url)
    print('About to getMangaList!')
    print(apiObj)
-   path = apiObj:download(url)
+   path = download_cf(url)
+   --path = download_cf(url)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for manga): ' .. path)
    daList = {}
@@ -83,7 +84,7 @@ end
 function initManga(manga)
    mangaURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '?confirm=yes'
    apiObj:note('Manga Path: ' .. mangaURL)
-   path = apiObj:download(mangaURL)
+   path = download_cf(mangaURL)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for chapter): ' .. path)
 
@@ -124,14 +125,14 @@ function getMangaChapterPage(manga, chapter, page)
    if not chapter['chapterSetUp'] then
        setUpChapter(manga, chapter)
    end
-   return apiObj:download(chapter['pageList'][page]['url'])
+   return download_cf(chapter['pageList'][page]['url'])
 end
 
 
 function setUpChapter(manga, chapter)
        pageURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '/' .. chapter['url']
        apiObj:note('The Page URL is: ' .. pageURL)
-       path = apiObj:download(pageURL)
+       path = download_cf(pageURL)
        apiObj:note('After download')
        pageSource = apiObj:readFile(path)
        regex = 'lstImages%.push%("(.-)"%);'
