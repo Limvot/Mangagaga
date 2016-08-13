@@ -23,8 +23,8 @@ function download_cf(str)
     print(result)
     file_name = result['_1']
     response_headers = result['_2']
-    if response_headers:containsKey('Refresh') then
-        if string.find(response_headers:get('Refresh'):get(0), escapeRegexStr('URL=/cdn-cgi/'))
+    if response_headers:containsKey('X-Android-Response-Source') then
+        if string.find(response_headers:get('X-Android-Response-Source'):get(0), escapeRegexStr('NETWORK 503'))
             and response_headers:containsKey('Server')
             and string.find(response_headers:get('Server'):get(0), escapeRegexStr('cloudflare-nginx')) then
             print('CLOUDFLARE DETECTED')
@@ -45,7 +45,7 @@ function download_cf(str)
             to_eval = string.gsub(to_eval, '%s-r =.-;', '')
             to_eval = string.gsub(to_eval, '%s-t%.innerHTML.-;', '')
             to_eval = string.gsub(to_eval, '%s-f%.submit.-;', '')
-            to_eval = string.gsub(to_eval, '%s-a%.value = (.-) %+ t.length;', '%1')
+            to_eval = string.gsub(to_eval, '%s-a%.value = (.-) %+ t.length;(.*)', '%1')
             print('edited to')
             print(to_eval)
             _,_,domain = string.find(str, 'http://(.-)/')
