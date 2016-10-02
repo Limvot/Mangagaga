@@ -27,7 +27,7 @@ object ScriptManager {
     }
 
     val scriptDir = new File(Environment.getExternalStorageDirectory() + "/Mangagaga/Scripts/")
-    for (name <- Array("kiss_manga", "unixmanga", "read_panda")) {
+    for (name <- Array("kiss_manga", "unixmanga", "read_panda", "manga_stream")) {
       try {
         val newScript = new File(scriptDir, name)
         // Right now this is commented out because for testing we want to always copy over scripts
@@ -39,6 +39,7 @@ object ScriptManager {
             case "kiss_manga" => R.raw.kiss_manga
             case "unixmanga" => R.raw.unixmanga
             case "read_panda" => R.raw.read_panda
+            case "manga_stream" => R.raw.manga_stream
           })
           Utilities.copyStreams(rawResource, fos)
           fos.close()
