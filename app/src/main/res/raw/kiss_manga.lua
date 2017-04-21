@@ -130,18 +130,29 @@ end
 
 
 function setUpChapter(manga, chapter)
+       --let's get with it
+       --this won't stop us
+       --they encode their links now, so we download all their crypto js
+       --and execute it (over and over for every link right now...)
+       path = download_cf('http://kissmanga.com/Scripts/ca.js')
+       ca_js = apiObj:readFile(path)
+       path = download_cf('http://kissmanga.com/Scripts/lo.js')
+       lo_js = apiObj:readFile(path)
+       pageJS = ca_js .. ';' .. lo_js .. ';'
+
        pageURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '/' .. chapter['url']
+
        apiObj:note('The Page URL is: ' .. pageURL)
        path = download_cf(pageURL)
        apiObj:note('After download')
        pageSource = apiObj:readFile(path)
-       regex = 'lstImages%.push%("(.-)"%);'
+       regex = 'lstImages%.push%((.-)%);'
        apiObj:note('Page List Regex: ' .. regex)
        beginning, ending, pageURL = string.find(pageSource, regex)
        index = 0
        daList = {}
        while ending do
-           daList[index] = {url = pageURL}
+           daList[index] = {url = apiObj:doDaJS(pageJS .. pageURL)}
            beginning, ending, pageURL = string.find(pageSource, regex, ending+1)
            index = index + 1
        end
