@@ -132,7 +132,7 @@ class ImageViewerActivity extends SActivity with GestureDetector.OnGestureListen
     def updateImage() = {
         // THE FUTURE IS NOW
         Future {
-            Log.i("ASYNC DO IN BACKGROUND", "STARTING")
+            Log.i("ASYNC DO IN BACKGROUND", "STARTING fo sho")
             var imagepath = MangaManager.getCurrentPage()
             Log.i("Display image!", imagepath)
             Log.i("ASYNC DO IN BACKGROUND", "ENDING")

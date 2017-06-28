@@ -125,6 +125,12 @@ function getMangaChapterPage(manga, chapter, page)
    if not chapter['chapterSetUp'] then
        setUpChapter(manga, chapter)
    end
+   apiObj:note('lookie')
+   apiObj:note('there are # pages')
+   apiObj:note(chapter['pageList']['numPages'])
+   apiObj:note(chapter['pageList'])
+   apiObj:note(chapter['pageList'][page])
+   apiObj:note(chapter['pageList'][page]['url'])
    return download_cf(chapter['pageList'][page]['url'])
 end
 

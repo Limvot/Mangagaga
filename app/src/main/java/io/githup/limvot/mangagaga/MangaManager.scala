@@ -360,13 +360,19 @@ object MangaManager {
     }
 
     try { 
-      Await.result(single, 20 seconds)
+      //Await.result(single, 20 seconds)
+      Await.result(single, 5 seconds)
     } catch {
       case e : TimeoutException => {
         Log.i("MangaManager", "Timeout!!")
         Log.i("MangaManager", e.getMessage())
       }
+      case e :Exception => {
+        Log.i("MangaManager", "Some other exception!!")
+        Log.i("MangaManager", e.getMessage())
+      }
     } 
+    Log.i("MangaManager", "Finished awaiting!")
     Future {
       try {
         for (i <- 0 until SettingsManager.getCacheSize) {
