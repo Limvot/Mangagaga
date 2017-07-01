@@ -11,11 +11,28 @@ class SettingsActivity : Activity() {
         toast("Hello Kotlin SettingsActivity")
 
         verticalLayout {
-            button("some setting") {
-                onClick {
-                    toast("set the setting!")
-                }
-            }
+            button("Clear History")         { onClick { MangaManager.clearHistory() } }
+            button("Clear Cache")           { onClick { Utilities.clearCache() } }
+            button("Clear Favorites")       { onClick { MangaManager.clearFavorites() } }
+            button("Clear Saved Chapters")  { onClick { MangaManager.clearSaved() } }
+
+            button("Clear All")             { onClick { MangaManager.clearHistory()
+                                                        Utilities.clearCache()
+                                                        MangaManager.clearFavorites()
+                                                        MangaManager.clearSaved() } }
+
+            button("Check for Updates")     { onClick { Utilities.checkForUpdates(ctx) } }
+
+            textView("Number of entries to save in history")
+            val history_size_entry = editText(SettingsManager.getHistorySize().toString()) 
+
+            textView("Number of pages to prefetch")
+            val cache_size_entry = editText(SettingsManager.getCacheSize().toString()) 
+
+            button("Save") { onClick {
+                SettingsManager.setHistorySize(history_size_entry.text.toString().toInt())
+                SettingsManager.setCacheSize(cache_size_entry.text.toString().toInt())
+            } }
         }
     }
 }
