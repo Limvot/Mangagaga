@@ -126,6 +126,7 @@ object MangaManager : AnkoLogger {
     return try {
       gson.fromJson(File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Favorites.json").readText(), object : TypeToken<ArrayList<Manga>>() {}.type)
     } catch (e: Exception) {
+      info("Caught exception while trying to load favorites - $e")
       ArrayList<Manga>()
     }
   }

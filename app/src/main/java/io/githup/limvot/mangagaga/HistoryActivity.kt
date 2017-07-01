@@ -8,13 +8,16 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 class HistoryActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toast("Hello Kotlin HistoryActivity")
 
         verticalLayout {
-            button("some history") {
+            button("how much history?") {
                 onClick {
-                    toast("set the history!")
+                    toast("there are ${MangaManager.getChapterHistoryList().size} things in history")
                 }
+            }
+            listView {
+                val listItems = MangaManager.getChapterHistoryList().map { TextListItem(it.toString()) }
+                adapter = SimpleListAdaptor(ctx, listItems)
             }
         }
     }

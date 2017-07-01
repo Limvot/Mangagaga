@@ -11,10 +11,14 @@ class DownloadedActivity : Activity() {
         toast("Hello Kotlin DownloadedActivity")
 
         verticalLayout {
-            button("some downloads") {
+            button("how many downloads?") {
                 onClick {
-                    toast("set the download!")
+                    toast("there are ${MangaManager.getSavedManga().size} downloaded manga")
                 }
+            }
+            listView {
+                val listItems = MangaManager.getSavedManga().map { TextListItem(it.toString()) }
+                adapter = SimpleListAdaptor(ctx, listItems)
             }
         }
     }
