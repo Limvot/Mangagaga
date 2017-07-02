@@ -6,20 +6,28 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 class HistoryActivity : Activity() {
+    var historyAdapter: SimpleListAdaptor? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         verticalLayout {
-            button("how much history?") {
-                onClick {
-                    toast("there are ${MangaManager.getChapterHistoryList().size} things in history")
-                }
-            }
             listView {
-                val listItems = MangaManager.getChapterHistoryList().map { TextListItem(it.toString(), { toast("why history?") }) }
-                adapter = SimpleListAdaptor(ctx, listItems)
+                val listItems = MangaManager.getChapterHistoryList().map { chapter -> TextListItem(chapter.toString(), {
+                                                    MangaManager.readingOffline(false)
+                                                    MangaManager.currentManga = chapter.parentManga
+                                                    ScriptManager.currentSource = chapter.parentManga.sourceNumber
+                                                    MangaManager.currentChapter = chapter
+                                                    MangaManager.setCurrentPageNum(0)
+                                                    startActivity<ImageViewerActivity>()
+                                                }) }
+                historyAdapter = SimpleListAdaptor(ctx, listItems)
+                adapter = historyAdapter
             }
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        historyAdapter!!.notifyDataSetChanged()
     }
 }
 

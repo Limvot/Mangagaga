@@ -16,6 +16,8 @@ class SourceActivity : Activity(), AnkoLogger {
     var mangaListAdapter: SimpleListAdaptor? = null
     var sourceText: TextView? = null
     var sourceNumber = 0
+    var typeText: TextView? = null
+    var mangaListType = "default type"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -25,6 +27,8 @@ class SourceActivity : Activity(), AnkoLogger {
         verticalLayout{
             sourceText = textView("Source: ...") { textSize = 32f }
             button("Change Source") { onClick { doSourcePopup() } }
+            typeText = textView("Type: ...") { textSize = 32f }
+            button("Change List Type") { onClick { doTypePopup() } }
 
             /*listView {*/
                 /*val items = ScriptManager.getScript(0)!!.getMangaListTypes()*/
@@ -38,9 +42,6 @@ class SourceActivity : Activity(), AnkoLogger {
                 val dialog = indeterminateProgressDialog(title = "Fetching next page", message = "really should be fast...")
                 doAsync {
                     val items = ScriptManager.getScript(sourceNumber)!!.getMangaListNextPage()
-                    info("These are the manga")
-                    items.forEach { info(it.toString()) }
-                    info("mangalist done")
                     uiThread {
                         dialog.dismiss()
                         showMangaList(items)
@@ -61,12 +62,27 @@ class SourceActivity : Activity(), AnkoLogger {
         doSourcePopup()
     }
     fun doSourcePopup() {
-        selector("Which Sourcce", ScriptManager.scriptList.map {it.name}) { dialog_interface, i-> 
+        selector("Which Source", ScriptManager.scriptList.map {it.name}) { dialog_interface, i-> 
             sourceNumber = i
             sourceText!!.text = "Source: ${ScriptManager.scriptList[i].name}"
             val dialog = indeterminateProgressDialog(title = "Loading manga from source", message = "(may take 5 seconds to get through CloudFlare or something)")
             doAsync {
-                val items = ScriptManager.getScript(i)!!.getMangaListPage1()
+                val items = ScriptManager.getScript(sourceNumber)!!.getMangaListPage1()
+                uiThread {
+                    dialog.dismiss()
+                    showMangaList(items)
+                }
+            }
+        }
+    }
+    fun doTypePopup() {
+        selector("Sorted How", ScriptManager.getScript(sourceNumber)!!.getMangaListTypes()) { dialog_interface, i-> 
+            mangaListType = ScriptManager.getScript(sourceNumber)!!.getMangaListTypes()[i]
+            typeText!!.text = "List Type: $mangaListType"
+            val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
+            doAsync {
+                ScriptManager.getCurrentSource().setMangaListType(mangaListType)
+                val items = ScriptManager.getScript(sourceNumber)!!.getMangaListPage1()
                 uiThread {
                     dialog.dismiss()
                     showMangaList(items)
