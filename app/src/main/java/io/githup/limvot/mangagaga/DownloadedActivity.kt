@@ -17,7 +17,7 @@ class DownloadedActivity : Activity() {
                 }
             }
             listView {
-                val listItems = MangaManager.getSavedManga().map { TextListItem(it.toString()) }
+                val listItems = MangaManager.getSavedManga().map { TextListItem(it.toString(), { toast("Downloaded?") }) }
                 adapter = SimpleListAdaptor(ctx, listItems)
             }
         }

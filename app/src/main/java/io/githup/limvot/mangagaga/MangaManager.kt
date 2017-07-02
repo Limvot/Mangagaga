@@ -48,13 +48,11 @@ object MangaManager : AnkoLogger {
   var mainContext: Context? = null
   var isOffline: Boolean = false
   var currentManga: Manga? = null
-      set(manga) {
-        if (!isOffline)
-          ScriptManager.getCurrentSource().initManga(manga!!)
-        currentManga = manga
-      }
-  var currentChapter: Chapter? = null
+
+  var currentChapter_bac: Chapter? = null
+  var currentChapter: Chapter?
       set(current) { setCurrentChapterImpl(current) }
+      get() { return currentChapter_bac }
 
   var currentPage:Int = 0
   // Used for cacheing pages and the downloaded chapters
@@ -66,7 +64,7 @@ object MangaManager : AnkoLogger {
       for (pair in chapterPageMap)
         File(pair.value).delete()
     chapterPageMap.clear()
-    currentChapter = current
+    currentChapter_bac = current
     chapterHistory.add(0, current!!)
     for (i in SettingsManager.getHistorySize() until chapterHistory.size)
       chapterHistory.removeAt(i)
@@ -293,6 +291,10 @@ object MangaManager : AnkoLogger {
     Utilities.clearFolder(downloaded)
   }
 
+  fun initCurrentManga() {
+    if (!isOffline)
+      ScriptManager.getCurrentSource().initManga(currentManga!!)
+  }
 
   // THESE LOOK BACKWARDS
   // But they're not. Or they are. (Because Chapter 1 is at the 'end' of the list.)

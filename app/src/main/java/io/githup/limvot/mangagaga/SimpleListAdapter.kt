@@ -13,18 +13,20 @@ class SimpleListAdaptor(ctx: Context, items: List<TextListItem>) : ArrayAdapter<
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         val item = getItem(position)
         if (item != null) {
-            val view = convertView ?: item.createView(ankoContext)
-            item.applyView(view)
-            return view
+            // FORGET ABOUT EFFICENCY!
+            /*val view = convertView ?: item.createView(ankoContext)*/
+            /*item.applyView(view)*/
+            /*return view*/
+            return item.createView(ankoContext)
         } else return convertView
     }
 }
 
-class TextListItem(val internal_text: String = "empty") : AnkoComponent<SimpleListAdaptor> {
+class TextListItem(val internal_text: String = "empty", val func: () -> Unit) : AnkoComponent<SimpleListAdaptor> {
     override fun createView(ui: AnkoContext<SimpleListAdaptor>) = with(ui) {
         textView {
             text = internal_text
-            onClick { toast("you touched $internal_text") }
+            onClick { func() }
         }
     }
     fun applyView(convertView: View) {

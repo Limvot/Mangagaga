@@ -15,11 +15,12 @@ class SourceActivity : Activity(), AnkoLogger {
     var mangaList: MutableList<TextListItem>? = null
     var mangaListAdapter: SimpleListAdaptor? = null
     var sourceText: TextView? = null
+    var sourceNumber = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         /*dialog.dismiss()*/
-        mangaList = mutableListOf(TextListItem("placeholder"))
+        mangaList = mutableListOf(TextListItem("placeholder", { toast("why?") }))
         mangaListAdapter = SimpleListAdaptor(ctx, mangaList!!)
 
         verticalLayout{
@@ -33,21 +34,58 @@ class SourceActivity : Activity(), AnkoLogger {
             /*}*/
             listView {
                 adapter = mangaListAdapter
-            }.lparams(height=matchParent)
+            }.lparams(weight=0.1f)
+            button("Next") { onClick {
+                val dialog = indeterminateProgressDialog(title = "Fetching next page", message = "really should be fast...")
+                doAsync {
+                    val items = ScriptManager.getScript(sourceNumber)!!.getMangaListNextPage()
+                    info("These are the manga")
+                    items.forEach { info(it.toString()) }
+                    info("mangalist done")
+                    uiThread {
+                        dialog.dismiss()
+                        showMangaList(items)
+                    }
+                }
+            } }
+            button("Previous") { onClick {
+                val dialog = indeterminateProgressDialog(title = "Fetching previous page", message = "really should be fast...")
+                doAsync {
+                    val items = ScriptManager.getScript(sourceNumber)!!.getMangaListPreviousPage()
+                    uiThread {
+                        dialog.dismiss()
+                        showMangaList(items)
+                    }
+                }
+            } }
         }
         doSourcePopup()
     }
     fun doSourcePopup() {
         selector("Which Sourcce", ScriptManager.scriptList.map {it.name}) { dialog_interface, i-> 
+            sourceNumber = i
             sourceText!!.text = "Source: ${ScriptManager.scriptList[i].name}"
             val dialog = indeterminateProgressDialog(title = "Loading manga from source", message = "(may take 5 seconds to get through CloudFlare or something)")
             doAsync {
                 val items = ScriptManager.getScript(i)!!.getMangaListPage1()
-                mangaList!!.clear()
-                mangaList!!.addAll(items.map { TextListItem(it.toString()) })
-                mangaList!!.add(TextListItem("additional"))
-                uiThread { dialog.dismiss(); mangaListAdapter!!.notifyDataSetChanged(); toast("there are ${items.size} manga")} 
+                uiThread {
+                    dialog.dismiss()
+                    showMangaList(items)
+                }
             }
         }
+    }
+    fun showMangaList(items: List<Manga>) {
+        mangaList!!.clear()
+
+        mangaList!!.addAll(items.map { manga -> TextListItem(manga.toString(), {
+                                            ScriptManager.currentSource = sourceNumber
+                                            MangaManager.readingOffline(false)
+                                            MangaManager.currentManga = manga
+                                            startActivity<ChapterActivity>()
+                                        }) })
+        mangaList!!.add(TextListItem("additional", { toast("why additional?") }))
+        mangaListAdapter!!.notifyDataSetChanged()
+        toast("there are ${items.size} manga")
     }
 }

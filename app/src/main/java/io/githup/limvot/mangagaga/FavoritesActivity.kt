@@ -20,7 +20,7 @@ class FavoritesActivity : Activity(), AnkoLogger {
             }
 
             listView {
-                val listItems = MangaManager.getFavoriteList().map { TextListItem(it.toString()) }
+                val listItems = MangaManager.getFavoriteList().map { TextListItem(it.toString(), { toast("why favroites?") }) }
                 adapter = SimpleListAdaptor(ctx, listItems)
             }
         }

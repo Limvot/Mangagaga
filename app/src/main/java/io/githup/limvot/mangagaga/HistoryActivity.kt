@@ -16,7 +16,7 @@ class HistoryActivity : Activity() {
                 }
             }
             listView {
-                val listItems = MangaManager.getChapterHistoryList().map { TextListItem(it.toString()) }
+                val listItems = MangaManager.getChapterHistoryList().map { TextListItem(it.toString(), { toast("why history?") }) }
                 adapter = SimpleListAdaptor(ctx, listItems)
             }
         }
