@@ -133,6 +133,7 @@ function setUpChapter(manga, chapter)
            pageSource = apiObj:readFile(pagePath)
            -- get the image url
            _, _, pageImageURL = string.find(pageSource, imageRegex)
+           pageImageURL = 'https:' .. pageImageURL
            apiObj:note('pageImageURL: ' .. pageImageURL)
 
            daList[index] = {url = pageImageURL}

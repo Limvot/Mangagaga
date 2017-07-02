@@ -19,7 +19,6 @@ class SourceActivity : Activity(), AnkoLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /*dialog.dismiss()*/
         mangaList = mutableListOf(TextListItem("placeholder", { toast("why?") }))
         mangaListAdapter = SimpleListAdaptor(ctx, mangaList!!)
 
@@ -84,7 +83,6 @@ class SourceActivity : Activity(), AnkoLogger {
                                             MangaManager.currentManga = manga
                                             startActivity<ChapterActivity>()
                                         }) })
-        mangaList!!.add(TextListItem("additional", { toast("why additional?") }))
         mangaListAdapter!!.notifyDataSetChanged()
         toast("there are ${items.size} manga")
     }

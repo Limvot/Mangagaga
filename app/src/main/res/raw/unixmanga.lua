@@ -168,7 +168,7 @@ function setUpChapter(chapter)
        apiObj:note('THE PATH: ' .. path)
        apiObj:note('After download')
        pageSource = apiObj:readFile(path)
-       regex = '<.-http://ex5.(unixmanga.net/.-)">.-<.->'
+       regex = '<.-http://.-(unixmanga.net/.-)">.-<.->'
        apiObj:note('Page List Regex: ' .. regex)
        beginning, ending, pageURL = string.find(pageSource, regex)
        index = 0

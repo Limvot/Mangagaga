@@ -46,7 +46,6 @@ class ChapterActivity : Activity(), AnkoLogger {
                                                     MangaManager.setCurrentPageNum(0)
                                                     startActivity<ImageViewerActivity>()
                                                 }) })
-                chapterList.add(TextListItem("additional", { toast("why additional?") }))
                 chapterListAdapter.notifyDataSetChanged()
                 toast("there are ${items.size} chapters")
             }

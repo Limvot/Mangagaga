@@ -28,13 +28,10 @@ object ImageManager : AnkoLogger {
       info("ImageManager - load - begin")
       val textureSize = intArrayOf(0)
       GLES10.glGetIntegerv(GLES10.GL_MAX_TEXTURE_SIZE, textureSize, 0)
-      info("ImageManager - load - got textrue size")
       // Hardcode because sadness (the above won't work without an OpenGL context)
       textureSize[0] = 2048
 
-      info("ImageManager - load - gonna decode  file")
       val bm = BitmapFactory.decodeFile(path)
-      info("ImageManager - load - did decode  file")
       var width = bm.getWidth()
       var height = bm.getHeight()
       var finalScale:Float = 1.0f
@@ -44,12 +41,8 @@ object ImageManager : AnkoLogger {
         finalScale = if (scaledH < scaledW) scaledH
         else scaledW
       }
-      info("ImageManager - load - making matrix")
       val matrix = Matrix();
-      info("ImageManager - load - made matrix")
       matrix.postScale(finalScale, finalScale);
-      info("ImageManager - load - scaled matrix, gonna create bitmap");
-
       //val b = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
       info("ImageManager - load - created bitmap");
       //return b
