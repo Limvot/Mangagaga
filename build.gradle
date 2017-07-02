@@ -2,18 +2,12 @@
 
 buildscript {
 
-
     repositories {
         mavenCentral()
-        maven {
-            url "http://saturday06.github.io/gradle-android-scala-plugin/repository/snapshot"
-        }
         jcenter()
     }
     dependencies {
-        //classpath 'com.android.tools.build:gradle:1.1.0'
         classpath 'com.android.tools.build:gradle:2.3.2'
-        //classpath "jp.leafytree.gradle:gradle-android-scala-plugin:1.4"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.2-4"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -24,7 +18,6 @@ buildscript {
 repositories {
     mavenCentral()
 }
-
 
 allprojects {
     repositories {

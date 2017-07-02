@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-//apply plugin: "jp.leafytree.android-scala"
 apply plugin: "kotlin-android"
 
 
@@ -45,8 +44,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('libs/luaj-3.0/lib/luaj-jse-3.0.jar')
-    //compile 'org.scala-lang:scala-library:2.11.7'
-    //compile 'org.scaloid:scaloid_2.11:4.0+'
     compile 'com.android.support:support-v4:20.0.0'
     compile files('libs/gson-2.3.jar')
     compile files('libs/js.jar')

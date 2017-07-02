@@ -36,7 +36,6 @@ class ChapterActivity : Activity(), AnkoLogger {
         doAsync {
             MangaManager.initCurrentManga()
             uiThread {
-                dialog.dismiss()
                 description!!.text = currentManga.getDescription()
 
                 val items = MangaManager.getMangaChapterList()
@@ -51,6 +50,7 @@ class ChapterActivity : Activity(), AnkoLogger {
                                                     else MangaManager.removeSaved(chapter)
                                                 }) })
                 chapterListAdapter.notifyDataSetChanged()
+                dialog.dismiss()
                 toast("there are ${items.size} chapters")
             }
         }
