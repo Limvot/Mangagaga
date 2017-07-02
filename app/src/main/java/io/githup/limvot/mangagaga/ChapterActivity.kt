@@ -45,6 +45,10 @@ class ChapterActivity : Activity(), AnkoLogger {
                                                     MangaManager.currentChapter = chapter
                                                     MangaManager.setCurrentPageNum(0)
                                                     startActivity<ImageViewerActivity>()
+                                                }, "Saved: ", MangaManager.isSaved(chapter),
+                                                    {checked ->
+                                                    if (checked) MangaManager.addSaved(chapter)
+                                                    else MangaManager.removeSaved(chapter)
                                                 }) })
                 chapterListAdapter.notifyDataSetChanged()
                 toast("there are ${items.size} chapters")

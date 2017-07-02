@@ -29,12 +29,10 @@ import org.luaj.vm2.LuaTable
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FileWriter
-/*import java.util.ArrayList*/
-/*import java.util.Arrays*/
-/*import java.util.List*/
 
 /**
  * Created by nathan on 8/25/14.
+ * Ported to Kotlin by nathan on 7/30/17.
  */
 object MangaManager : AnkoLogger {
   fun instance() = this

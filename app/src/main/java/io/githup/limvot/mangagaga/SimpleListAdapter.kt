@@ -4,6 +4,7 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 import android.widget.ArrayAdapter
+import android.widget.CheckBox
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
@@ -22,12 +23,23 @@ class SimpleListAdaptor(ctx: Context, items: List<TextListItem>) : ArrayAdapter<
     }
 }
 
-class TextListItem(val internal_text: String = "empty", val func: () -> Unit) : AnkoComponent<SimpleListAdaptor> {
+class TextListItem(val internal_text: String = "empty", val func: () -> Unit, val checkbox_text: String = "none", val checkbox_start: Boolean = false, val checkbox_func: (Boolean) -> Unit = {}) : AnkoComponent<SimpleListAdaptor> {
     override fun createView(ui: AnkoContext<SimpleListAdaptor>) = with(ui) {
-        textView {
-            text = internal_text
-            onClick { func() }
-        }
+        if (checkbox_text == "none")
+            textView {
+                text = internal_text
+                onClick { func() }
+            }
+        else
+            relativeLayout {
+                textView {
+                    text = internal_text
+                    onClick { func() }
+                }.lparams { alignParentRight() }
+                var box: CheckBox? = null
+                box = checkBox(checkbox_text) { onClick { checkbox_func(box!!.isChecked()) } }
+                box.setChecked(checkbox_start)
+            }
     }
     fun applyView(convertView: View) {
         println("apply convertView")

@@ -25,16 +25,19 @@ class SourceActivity : Activity(), AnkoLogger {
         mangaListAdapter = SimpleListAdaptor(ctx, mangaList!!)
 
         verticalLayout{
-            sourceText = textView("Source: ...") { textSize = 32f }
-            button("Change Source") { onClick { doSourcePopup() } }
-            typeText = textView("Type: ...") { textSize = 32f }
-            button("Change List Type") { onClick { doTypePopup() } }
+            relativeLayout {
+                sourceText = textView("Source: ...") { textSize = 22f }
+                button("Change Source") { onClick { doSourcePopup() } }.lparams {
+                    alignParentRight()
+                }
+            }
+            relativeLayout {
+                typeText = textView("Type: ...") { textSize = 22f }
+                button("Change List Type") { onClick { doTypePopup() } }.lparams {
+                    alignParentRight()
+                }
+            }
 
-            /*listView {*/
-                /*val items = ScriptManager.getScript(0)!!.getMangaListTypes()*/
-                /*val listItems = items.map { TextListItem(it.toString()) }*/
-                /*adapter = SimpleListAdaptor(ctx, listItems)*/
-            /*}*/
             listView {
                 adapter = mangaListAdapter
             }.lparams(weight=0.1f)
@@ -100,6 +103,5 @@ class SourceActivity : Activity(), AnkoLogger {
                                             startActivity<ChapterActivity>()
                                         }) })
         mangaListAdapter!!.notifyDataSetChanged()
-        toast("there are ${items.size} manga")
     }
 }
