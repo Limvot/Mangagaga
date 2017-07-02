@@ -21,8 +21,11 @@ function download_cf(str)
     result = apiObj:downloadWithRequestHeadersAndReferrer(str,'')
     print('result')
     print(result)
-    file_name = result['_1']
-    response_headers = result['_2']
+    print(result:getFirst())
+    file_name = result:getFirst()
+    response_headers = result:getSecond()
+    print(file_name)
+    print(response_headers)
     if response_headers:containsKey('X-Android-Response-Source') then
         if string.find(response_headers:get('X-Android-Response-Source'):get(0), escapeRegexStr('NETWORK 503'))
             and response_headers:containsKey('Server')
@@ -64,7 +67,7 @@ function download_cf(str)
             print('waiting...')
             apiObj:sleep(5000)
             print('done')
-            return apiObj:downloadWithRequestHeadersAndReferrer(submit,str)['_1']
+            return apiObj:downloadWithRequestHeadersAndReferrer(submit,str):getFirst()
         else
             print('NO CLOUDFLARE - no string ')
             print(find_string)

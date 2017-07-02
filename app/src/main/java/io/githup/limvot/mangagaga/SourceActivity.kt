@@ -11,30 +11,42 @@ import android.os.Bundle
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
-class SourceActivity : Activity() {
+class SourceActivity : Activity(), AnkoLogger {
+    var mangaList: MutableList<TextListItem>? = null
+    var mangaListAdapter: SimpleListAdaptor? = null
+    var sourceText: TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toast("Hello Kotlin listView")
 
-        /*val dialog = progressDialog(message = "please wait...", title = "making you wait")*/
-        val dialog = indeterminateProgressDialog(message = "please wait...", title = "making you wait")
         /*dialog.dismiss()*/
-        /*val options = listOf("first", "second", "third option")*/
-        /*selector("Choose an option!", options) {*/
-            /*dialog_interface, i-> toast("you chose ${options[i]}?")*/
-        /*}*/
+        mangaList = mutableListOf(TextListItem("placeholder"))
+        mangaListAdapter = SimpleListAdaptor(ctx, mangaList!!)
 
         verticalLayout{
-            toolbar {
-                title = "Something"
-                button("in toolbar")
-                button("in toolbar2")
-            }
+            sourceText = textView("Source: ...") { textSize = 32f }
+            button("Change Source") { onClick { doSourcePopup() } }
 
+            /*listView {*/
+                /*val items = ScriptManager.getScript(0)!!.getMangaListTypes()*/
+                /*val listItems = items.map { TextListItem(it.toString()) }*/
+                /*adapter = SimpleListAdaptor(ctx, listItems)*/
+            /*}*/
             listView {
-                val items = listOf("a", "b", "alpha", "one")
-                val listItems = items.map { TextListItem(it) }
-                adapter = SimpleListAdaptor(ctx, listItems)
+                adapter = mangaListAdapter
+            }.lparams(height=matchParent)
+        }
+        doSourcePopup()
+    }
+    fun doSourcePopup() {
+        selector("Which Sourcce", ScriptManager.scriptList.map {it.name}) { dialog_interface, i-> 
+            sourceText!!.text = "Source: ${ScriptManager.scriptList[i].name}"
+            val dialog = indeterminateProgressDialog(title = "Loading manga from source", message = "(may take 5 seconds to get through CloudFlare or something)")
+            doAsync {
+                val items = ScriptManager.getScript(i)!!.getMangaListPage1()
+                mangaList!!.clear()
+                mangaList!!.addAll(items.map { TextListItem(it.toString()) })
+                mangaList!!.add(TextListItem("additional"))
+                uiThread { dialog.dismiss(); mangaListAdapter!!.notifyDataSetChanged(); toast("there are ${items.size} manga")} 
             }
         }
     }

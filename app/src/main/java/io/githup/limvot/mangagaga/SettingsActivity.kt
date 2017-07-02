@@ -8,7 +8,6 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 class SettingsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toast("Hello Kotlin SettingsActivity")
 
         verticalLayout {
             button("Clear History")         { onClick { MangaManager.clearHistory() } }
