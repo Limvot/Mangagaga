@@ -30,12 +30,11 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FileWriter
 
-/**
+/*
  * Created by nathan on 8/25/14.
  * Ported to Kotlin by nathan on 7/30/17.
  */
 object MangaManager : AnkoLogger {
-  fun instance() = this
 
   val chapterDownloadMutex = Semaphore(1)
   val nextPageCachingMutex = Semaphore(1)
@@ -47,14 +46,14 @@ object MangaManager : AnkoLogger {
   var isOffline: Boolean = false
   var currentManga: Manga? = null
 
+  var currentPage = 0
+  // Used for cacheing pages and the downloaded chapters
+  val chapterPageMap = mutableMapOf<Int, String>()
+
   var currentChapter_bac: Chapter? = null
   var currentChapter: Chapter?
       set(current) { setCurrentChapterImpl(current) }
       get() { return currentChapter_bac }
-
-  var currentPage:Int = 0
-  // Used for cacheing pages and the downloaded chapters
-  val chapterPageMap = mutableMapOf<Int, String>()
 
   fun setCurrentChapterImpl(current: Chapter?) {
     // delete all of our cached pages before clearing the cache if we're reading online
@@ -70,11 +69,11 @@ object MangaManager : AnkoLogger {
   }
 
   fun setContext(ctx: Context) { mainContext = ctx }
-  fun readingOffline(isOffline:Boolean) { this.isOffline = isOffline }
+  fun readingOffline(isOffline: Boolean) { this.isOffline = isOffline }
 
   fun  loadHistory(): ArrayList<Chapter> {
     return try {
-      gson.fromJson<ArrayList<Chapter>>(File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/History.json").readText(),
+      gson.fromJson<ArrayList<Chapter>>(File(SettingsManager.mangagagaPath, "History.json").readText(),
                     object : TypeToken<ArrayList<Chapter>>() {}.type)
     } catch (e: Exception) {
       ArrayList<Chapter>()
@@ -84,17 +83,15 @@ object MangaManager : AnkoLogger {
   fun saveHistory() { doAsync { saveHistoryAsync(chapterHistory) } }
 
   fun saveHistoryAsync(toDownload: ArrayList<Chapter>) {
-    info("SAVE_HISTORY - BEGINNING")
     try {
-      val history = File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga", "History.json")
+      val history = File(SettingsManager.mangagagaPath, "History.json")
       history.createNewFile()
       val fw = FileWriter(history.getAbsoluteFile());
       val bw = BufferedWriter(fw)
       bw.write(gson.toJson(toDownload))
       bw.close()
-      info("SAVE_HISTORY - SAVED")
     } catch (e: Exception) {
-      info("SAVE_HISTORY - Problem")
+      info("SAVE_HISTORY - Problem $e")
     }
   }
 
@@ -104,23 +101,22 @@ object MangaManager : AnkoLogger {
   }
 
   fun saveFavorites() {
-    info("SAVE_FAVORITES - BEGINNING")
     try {
-      val favorites = File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga", "Favorites.json")
+      val favorites = File(SettingsManager.mangagagaPath, "Favorites.json")
       favorites.createNewFile()
       val fw = FileWriter(favorites.getAbsoluteFile())
       val bw = BufferedWriter(fw)
       bw.write(gson.toJson(favoriteManga))
       bw.close()
-      info("SAVE_FAVORITES - SAVED")
     } catch (e: Exception) {
-      info("SAVE_FAVORITES - Problem")
+      info("SAVE_FAVORITES - Problem $e")
     }
   }
 
   fun loadFavorites(): ArrayList<Manga> {
     return try {
-      gson.fromJson(File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Favorites.json").readText(), object : TypeToken<ArrayList<Manga>>() {}.type)
+      gson.fromJson(File(SettingsManager.mangagagaPath, "Favorites.json").readText(),
+                    object : TypeToken<ArrayList<Manga>>() {}.type)
     } catch (e: Exception) {
       info("Caught exception while trying to load favorites - $e")
       ArrayList<Manga>()
@@ -130,13 +126,11 @@ object MangaManager : AnkoLogger {
   fun getFavoriteList(): ArrayList<Manga> = favoriteManga
   fun isFavorite(manga: Manga): Boolean = favoriteManga.contains(manga)
 
-  fun addFavorite(manga: Manga) {
-    favoriteManga.add(manga)
-    saveFavorites()
-  }
-
-  fun removeFavorite(manga: Manga) {
-    favoriteManga.remove(manga)
+  fun setFavorite(manga: Manga, add: Boolean) {
+    if (add)
+        favoriteManga.add(manga)
+    else
+        favoriteManga.remove(manga)
     saveFavorites()
   }
 
@@ -146,7 +140,8 @@ object MangaManager : AnkoLogger {
   }
 
   fun isSaved(chapter: Chapter): Boolean {
-    val savedDir = File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Downloaded/" + chapter.parentManga.getTitle() + "/" + chapter.getTitle())
+    val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" +
+                        chapter.parentManga.getTitle() + "/" + chapter.getTitle())
     return savedDir.exists()
   }
 
@@ -184,14 +179,14 @@ object MangaManager : AnkoLogger {
 
           for (chapter in toDownload) {
             val parentManga = chapter.parentManga
-            val savedDir = File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Downloaded/")
+            initManga(parentManga)
+            val savedDir = File(SettingsManager.mangagagaPath, "Downloaded/")
             val mangaDir = File(savedDir, parentManga.getTitle())
             val chapterDir = File(mangaDir, chapter.getTitle())
             mangaDir.mkdir()
             chapterDir.mkdir()
 
             // Save the Manga object and the Chapter object
-            info("SAVE_CHAPTER - SAVING MANGA")
             try {
               val mangaJson = File(mangaDir, "manga.json")
               if (!mangaJson.exists()) {
@@ -200,9 +195,6 @@ object MangaManager : AnkoLogger {
                 val bw = BufferedWriter(fw)
                 bw.write(gson.toJson(parentManga))
                 bw.close()
-                info("SAVE_CHAPTER_MANgA - new SAVED")
-              } else {
-                info("SAVE_CHAPTER_MANgA - already existed")
               }
 
               val chapterJson = File(chapterDir, "chapter.json")
@@ -212,13 +204,9 @@ object MangaManager : AnkoLogger {
                 val bw = BufferedWriter(fw)
                 bw.write(gson.toJson(chapter))
                 bw.close()
-                info("SAVE_CHAPTER_Chapter - new SAVED")
-              } else {
-                info("SAVE_CHAPTER_Chapter - already existed")
               }
-              info("SAVE_CHAPTER_MANgA_Chapter - SAVED success")
             } catch (e: Exception) {
-              info("SAVE_CHAPTER_MANgA_chapter - problem/exception")
+              info("SAVE_CHAPTER_MANgA_chapter - problem/exception $e")
             }
 
             val numPages = getNumPages(parentManga, chapter)
@@ -245,53 +233,42 @@ object MangaManager : AnkoLogger {
   }
 
   fun removeSaved(chapter: Chapter) {
-    val savedDir = File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Downloaded/" + chapter.parentManga.getTitle() + "/" + chapter.getTitle())
+    val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" + chapter.parentManga.getTitle() + "/" + chapter.getTitle())
     if (savedDir.exists())
       Utilities.deleteFolder(savedDir)
   }
 
   fun getSavedManga(): List<Manga> {
     val list = mutableListOf<Manga>()
-    val savedDir = File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Downloaded/")
+    val savedDir = File(SettingsManager.mangagagaPath, "Downloaded/")
     for (dir in savedDir.list()) {
-      info("Get Saved Manga $dir")
       val mangaDir = File(savedDir, dir)
       val mangaFile = File(mangaDir, "manga.json")
-      try {
-        val manga = gson.fromJson(mangaFile.readText(), Manga::class.java)
-        list.add(manga)
-      } catch (e: Exception) {
-        info("GetSaved - Exception: $e")
-      }
+      val manga = gson.fromJson(mangaFile.readText(), Manga::class.java)
+      list.add(manga)
     }
     return list
   }
 
   fun getSavedChapters(manga: Manga): List<Chapter> {
     val list = mutableListOf<Chapter>()
-    val savedDir = File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Downloaded/" + manga.getTitle())
-    for (dir in savedDir.list()) {
-      info("Get Saved Chapters $dir")
-      val chapterDir = File(savedDir, dir)
-      val chapterFile = File(chapterDir, "chapter.json")
-      try {
-        val chapter = gson.fromJson(chapterFile.readText(), Chapter::class.java)
-        list.add(chapter)
-      } catch (e: Exception) {
-        info("GetSaved Chapters Chapters - Exception")
-      }
+    val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" + manga.getTitle())
+    for (dir in savedDir.listFiles().filter { it.isDirectory() }) {
+      val chapterFile = File(dir, "chapter.json")
+      val chapter = gson.fromJson(chapterFile.readText(), Chapter::class.java)
+      list.add(chapter)
     }
     return list.reversed()
   }
   fun clearSaved() {
-    info("MANGA_MANAGER - Clearing Saved!")
-    val downloaded = File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Downloaded/")
+    val downloaded = File(SettingsManager.mangagagaPath, "Downloaded/")
     Utilities.clearFolder(downloaded)
   }
 
-  fun initCurrentManga() {
+  fun initCurrentManga() { initManga(currentManga!!) }
+  fun initManga(manga: Manga) {
     if (!isOffline)
-      ScriptManager.getCurrentSource().initManga(currentManga!!)
+      ScriptManager.getCurrentSource().initManga(manga)
   }
 
   // THESE LOOK BACKWARDS
@@ -344,29 +321,14 @@ object MangaManager : AnkoLogger {
   fun getCurrentPageNum(): Int = currentPage
   fun getCurrentPage(): String = getCurrentPage(currentManga!!, currentChapter!!, currentPage)
   fun getCurrentPage(manga: Manga, chapter: Chapter, page: Int): String { 
-    /*val single = doAsync {*/
       nextPageCachingMutex.acquire() 
-      /*if (chapterPageMap.get(page) == null) {*/
       val single = if (chapterPageMap.get(page) == null) {
         nextPageCachingMutex.release() 
         addToChapterPageMap(manga, chapter, page)
       } else {
         nextPageCachingMutex.release() 
       }
-    /*}*/
 
-    /*try { */
-      /*//Await.result(single, 20 seconds)*/
-      /*[>Await.result(single, 5 seconds)<]*/
-      /*single.await()*/
-    /*} catch (e: TimeoutException) {*/
-      /*info("MangaManager - Timeout!!")*/
-      /*info("MangaManager", e.getMessage())*/
-    /*} catch (e: Exception) {*/
-      /*info("MangaManager - Some other exception!!")*/
-      /*info("MangaManager", e.getMessage())*/
-    /*} */
-    info("MangaManager - Finished awaiting!")
     doAsync {
       try {
         for (i in 0 until SettingsManager.getCacheSize()) {
@@ -397,8 +359,8 @@ object MangaManager : AnkoLogger {
       nextPageCachingMutex.acquire() 
       chapterPageMap.clear()
       nextPageCachingMutex.release()
-      val chapterDirString =Environment.getExternalStorageDirectory().getAbsolutePath() +
-                            "/Mangagaga/Downloaded/" + manga.getTitle() + "/" + chapter.getTitle()
+      val chapterDirString = SettingsManager.mangagagaPath + "/Downloaded/" +
+                                          manga.getTitle() + "/" + chapter.getTitle()
       val savedDir = File(chapterDirString)
       for ((i, dir) in savedDir.list().filter{!it.endsWith(".json")}.withIndex()) {
         nextPageCachingMutex.acquire() 
@@ -408,4 +370,3 @@ object MangaManager : AnkoLogger {
     }
   }
 }
-

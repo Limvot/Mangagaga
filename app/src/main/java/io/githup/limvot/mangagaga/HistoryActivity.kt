@@ -1,9 +1,10 @@
 package io.githup.limvot.mangagaga
 
-import android.os.Bundle
-import android.app.Activity
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
+
+import android.os.Bundle
+import android.app.Activity
 
 class HistoryActivity : Activity() {
     var historyAdapter: SimpleListAdaptor? = null
@@ -12,10 +13,12 @@ class HistoryActivity : Activity() {
 
         verticalLayout {
             listView {
-                val listItems = MangaManager.getChapterHistoryList().map { chapter -> TextListItem(chapter.toString(), {
+                val listItems = MangaManager.getChapterHistoryList().map { chapter ->
+                                                TextListItem(chapter.toString(), {
                                                     MangaManager.readingOffline(false)
                                                     MangaManager.currentManga = chapter.parentManga
-                                                    ScriptManager.currentSource = chapter.parentManga.sourceNumber
+                                                    ScriptManager.currentSource =
+                                                        chapter.parentManga.sourceNumber
                                                     MangaManager.currentChapter = chapter
                                                     MangaManager.setCurrentPageNum(0)
                                                     startActivity<ImageViewerActivity>()

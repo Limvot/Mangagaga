@@ -48,6 +48,7 @@
             android:name=".DownloadedActivity"
             android:label="@string/title_activity_downloaded" >
         </activity>
+        <activity android:name=".LogCatActivity"></activity>
     </application>
 
 </manifest>

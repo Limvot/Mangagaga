@@ -18,12 +18,6 @@ import android.util.Log;
  */
 object ImageManager : AnkoLogger {
 
-    fun instance() = this
-
-    fun getNext(path: String) : Bitmap = load(path)
-
-    fun getPrevious(path: String) : Bitmap = load(path)
-
     fun load(path: String) : Bitmap {
       info("ImageManager - load - begin")
       val textureSize = intArrayOf(0)

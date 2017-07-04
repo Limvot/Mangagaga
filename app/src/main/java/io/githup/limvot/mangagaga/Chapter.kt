@@ -3,7 +3,6 @@ package io.githup.limvot.mangagaga;
 import org.luaj.vm2.LuaTable;
 
 class Chapter(val parentManga:Manga , val backingTable:LuaTable?, val num:Int) {
-
     // for compatibility with old saved json
     val table: LuaTable?
         get() { return backingTable }

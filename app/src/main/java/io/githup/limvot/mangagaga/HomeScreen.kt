@@ -20,10 +20,11 @@ class HomeScreen : Activity(), AnkoLogger {
             button("History")        { onClick { startActivity<HistoryActivity>() } }
             button("Downloaded")     { onClick { startActivity<DownloadedActivity>() } }
             button("Settings")       { onClick { startActivity<SettingsActivity>() } }
+            button("LogCat")         { onClick { startActivity<LogCatActivity>() } }
         }
 
         // Setup our main folder
-        val mainFolder = File(Environment.getExternalStorageDirectory(), "Mangagaga")
+        val mainFolder = File(SettingsManager.mangagagaPath)
         try {
           if (!mainFolder.exists())
             mainFolder.mkdir()

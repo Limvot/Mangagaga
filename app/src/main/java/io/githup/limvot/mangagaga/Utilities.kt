@@ -162,7 +162,7 @@ object Utilities : AnkoLogger {
                   error("filename:")
                   error(filename)
                 }
-                var dest : String = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Mangagaga/Cache/"
+                var dest : String = SettingsManager.mangagagaPath + "/Cache/"
 
                 if (filename.contains("?")) {
                     filename = filename.replace('?', '_')
@@ -238,7 +238,7 @@ object Utilities : AnkoLogger {
 
     fun clearCache()
     {
-        var cache : File = File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Mangagaga/Cache/")
+        var cache : File = File(SettingsManager.mangagagaPath + "/Cache/")
         clearFolder(cache)
     }
 

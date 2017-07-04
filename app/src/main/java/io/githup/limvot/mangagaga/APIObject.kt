@@ -11,20 +11,17 @@ object APIObject : AnkoLogger {
   fun instance() = this
   fun note(theNote: String) = info(theNote)
 
-
   fun doDaJS(to_eval: String): String {
-    note("string to eval")
-    note(to_eval)
+    info("js string to eval: $to_eval")
     var result = ""
     try {
-      // yep, new one every time! (because this function can be called from not the main thread, and contexts are associated with threads)
+      // yep, new one every time! (because this function can be called from not the main thread,
+      // and contexts are associated with threads)
       var rhino = Context.enter()
       rhino.setOptimizationLevel(-1)
       var scope = rhino.initStandardObjects();
-      var temp = rhino.evaluateString(scope, to_eval, "<cmd>", 1, null)
-      note("before toString")
-      note(temp.toString())
-      result = temp.toString()
+      result = rhino.evaluateString(scope, to_eval, "<cmd>", 1, null).toString()
+      info("js result: $result")
       Context.exit()
     } catch (e: Exception) {
       error("evaluateString: "+e.toString())
@@ -33,16 +30,16 @@ object APIObject : AnkoLogger {
   }
   
   fun download(filePath: String): String {
-    info("Downloading" + filePath)
+    info("Downloading $filePath")
     return Utilities.download(filePath)
   }
+
   fun downloadWithRequestHeadersAndReferrer(filePath: String, referer: String): Pair<String, MutableMap<String,List<String>>> {
-    info("Downloading" + filePath)
+    info("Downloading $filePath")
     return Utilities.downloadWithRequestHeadersAndReferrer(filePath, referer)
   }
 
   fun readFile(absolutePath: String): String {
-    info("Reader Path is: " + absolutePath)
     try {
       return File(absolutePath).readText()
     } catch (e: Exception) {

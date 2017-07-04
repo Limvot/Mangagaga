@@ -4,7 +4,6 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 import android.os.Bundle
-import android.os.Environment;
 import android.app.Activity
 import android.widget.TextView
 import android.widget.CheckBox
@@ -15,21 +14,16 @@ class ChapterActivity : Activity(), AnkoLogger {
         val currentManga = MangaManager.currentManga!!
         var description: TextView? = null
         var favoriteBox: CheckBox? = null
-        var chapterList = mutableListOf(TextListItem("placeholder", { toast("why?") }))
+        var chapterList = mutableListOf<TextListItem>()
         var chapterListAdapter = SimpleListAdaptor(ctx, chapterList)
 
         verticalLayout {
-            textView("${MangaManager.currentManga}:") { textSize = 32f }
-            favoriteBox = checkBox("Favorite?") { onClick {
-                if (favoriteBox!!.isChecked())
-                    MangaManager.addFavorite(currentManga)
-                else
-                    MangaManager.removeFavorite(currentManga)
+            textView("$currentManga:") { textSize = 32f }
+            favoriteBox = checkBox("Favorite") { onClick {
+                    MangaManager.setFavorite(currentManga, favoriteBox!!.isChecked())
             } }
             description = textView("description...")
-            listView {
-                adapter = chapterListAdapter
-            }.lparams(weight=0.1f)
+            listView { adapter = chapterListAdapter }.lparams(weight=0.1f)
         }
         favoriteBox!!.setChecked(MangaManager.isFavorite(currentManga))
         val dialog = indeterminateProgressDialog(title = "Initing Manga", message = "(may take a little bit if script sets up pages)")
@@ -56,4 +50,3 @@ class ChapterActivity : Activity(), AnkoLogger {
         }
     }
 }
-

@@ -65,31 +65,27 @@ class SourceActivity : Activity(), AnkoLogger {
         doSourcePopup()
     }
     fun doSourcePopup() {
-        selector("Which Source", ScriptManager.scriptList.map {it.name}) { dialog_interface, i-> 
+        selector("Source", ScriptManager.scriptList.map {it.name}) { _, i ->
             sourceNumber = i
             sourceText!!.text = "Source: ${ScriptManager.scriptList[i].name}"
-            val dialog = indeterminateProgressDialog(title = "Loading manga from source", message = "(may take 5 seconds to get through CloudFlare or something)")
-            doAsync {
-                val items = ScriptManager.getScript(sourceNumber)!!.getMangaListPage1()
-                uiThread {
-                    dialog.dismiss()
-                    showMangaList(items)
-                }
-            }
+            updateMangaList()
         }
     }
     fun doTypePopup() {
-        selector("Sorted How", ScriptManager.getScript(sourceNumber)!!.getMangaListTypes()) { dialog_interface, i-> 
+        selector("Sorted", ScriptManager.getScript(sourceNumber)!!.getMangaListTypes()) { _, i ->
             mangaListType = ScriptManager.getScript(sourceNumber)!!.getMangaListTypes()[i]
             typeText!!.text = "List Type: $mangaListType"
-            val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
-            doAsync {
-                ScriptManager.getCurrentSource().setMangaListType(mangaListType)
-                val items = ScriptManager.getScript(sourceNumber)!!.getMangaListPage1()
-                uiThread {
-                    dialog.dismiss()
-                    showMangaList(items)
-                }
+            updateMangaList()
+        }
+    }
+    fun updateMangaList() {
+        val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
+        doAsync {
+            ScriptManager.getCurrentSource().setMangaListType(mangaListType)
+            val items = ScriptManager.getScript(sourceNumber)!!.getMangaListPage1()
+            uiThread {
+                dialog.dismiss()
+                showMangaList(items)
             }
         }
     }
