@@ -49,6 +49,7 @@
             android:label="@string/title_activity_downloaded" >
         </activity>
         <activity android:name=".LogCatActivity"></activity>
+        <activity android:name=".ScriptEditActivity"></activity>
     </application>
 
 </manifest>

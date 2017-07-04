@@ -21,6 +21,7 @@ class HomeScreen : Activity(), AnkoLogger {
             button("Downloaded")     { onClick { startActivity<DownloadedActivity>() } }
             button("Settings")       { onClick { startActivity<SettingsActivity>() } }
             button("LogCat")         { onClick { startActivity<LogCatActivity>() } }
+            button("Edit Scripts")   { onClick { startActivity<ScriptEditActivity>() } }
         }
 
         // Setup our main folder

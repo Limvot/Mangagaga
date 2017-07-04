@@ -14,9 +14,10 @@ object ScriptManager : AnkoLogger {
   val scriptList = mutableListOf<Script>()
 
   // Init because of context. Ugh
-  fun init(context:Context) {
-      luaPrequal = context.getResources().openRawResource(R.raw.script_prequal)
-                                         .bufferedReader().use { it.readText() }
+  fun init(context: Context) {
+    scriptList.clear()
+    luaPrequal = context.getResources().openRawResource(R.raw.script_prequal)
+                                       .bufferedReader().use { it.readText() }
 
     val scriptDir = File(SettingsManager.mangagagaPath, "Scripts/")
     for (name in listOf("kiss_manga", "unixmanga", "read_panda", "manga_stream")) {
