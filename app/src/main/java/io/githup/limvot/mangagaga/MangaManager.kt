@@ -216,10 +216,7 @@ object MangaManager : AnkoLogger {
               val fromFile = ScriptManager.getCurrentSource().downloadPage(parentManga, chapter, i)
               try {
                 val filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."))
-                //Files.move(Paths.get(fromFile), Paths.get(chapterDir.getAbsolutePath() + "/" + filename), REPLACE_EXISTING)
-                val in_stream = FileInputStream(fromFile)
-                val os = FileOutputStream(chapterDir.getAbsolutePath() + "/" + filename)
-                Utilities.copyStreams(in_stream, os)
+                File(chapterDir, filename).writeBytes(File(fromFile).readBytes())
                 File(fromFile).delete()
               } catch (e: Exception) {
                 error("Save Chapter ERROR $fromFile e: $e")

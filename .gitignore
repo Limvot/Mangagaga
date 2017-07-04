@@ -13,3 +13,4 @@ manual.sh
 ScriptTester/class
 ScriptTester/project
 ScriptTester/target
+*.swo

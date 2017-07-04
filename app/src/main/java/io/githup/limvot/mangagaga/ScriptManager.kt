@@ -23,8 +23,6 @@ object ScriptManager : AnkoLogger {
         val newScript = File(scriptDir, name)
         // For testing we want to always copy over scripts
         // on every update
-        newScript.createNewFile()
-        val fos = FileOutputStream(newScript)
         val rawResource = context.getResources().openRawResource( when(name) {
           "kiss_manga"   -> R.raw.kiss_manga
           "unixmanga"    -> R.raw.unixmanga
@@ -32,8 +30,7 @@ object ScriptManager : AnkoLogger {
           "manga_stream" -> R.raw.manga_stream
           else           -> 0
         })
-        Utilities.copyStreams(rawResource, fos)
-        fos.close()
+        newScript.writeBytes(rawResource.readBytes())
     }
 
     for ((index, script) in scriptDir.listFiles().withIndex()) {

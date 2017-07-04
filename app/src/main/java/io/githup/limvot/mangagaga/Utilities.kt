@@ -48,11 +48,7 @@ object Utilities : AnkoLogger {
     var id = 0
     fun getID() = synchronized(this) { id += 1; id }
 
-    fun checkForUpdates(ctx : Context) {
-        doAsync {
-            checkForUpdatesAsync(ctx)
-        }
-    }
+    fun checkForUpdates(ctx : Context) { doAsync { checkForUpdatesAsync(ctx) } }
     fun checkForUpdatesAsync(ctx : Context) {
         var updateURL : String = "http://mangagaga.room409.xyz/app-debug.apk"
         var siteApkDate : Date = getModifiedTime(updateURL)
@@ -77,168 +73,94 @@ object Utilities : AnkoLogger {
         info("Url to grab modified time from $source")
         var modifiedTime : Long = 0
         try {
-            var url : URL = URL(source)
-            var connection : HttpURLConnection = url.openConnection() as HttpURLConnection
+            var connection = URL(source).openConnection() as HttpURLConnection
             connection.setRequestMethod("HEAD")
             connection.connect()
             modifiedTime = connection.getLastModified()
             connection.disconnect()
         } catch(e : Exception) {
-            error("getModifiedTime "+e.toString())
+            info("getModifiedTime "+e.toString())
             modifiedTime = 0
         }
         if (modifiedTime.toInt() == 0)
-            error("Could not get modified time, Nope couldn't get it")
+            info("Could not get modified time, Nope couldn't get it")
         return Date(modifiedTime)
     }
 
-    fun download(source : String) : String = downloadWithRequestHeadersAndReferrer(source, "").first
+    fun download(source : String) = downloadWithRequestHeadersAndReferrer(source, "").first
     fun downloadWithRequestHeadersAndReferrer(source : String, referer: String) : Pair<String, MutableMap<String,List<String>>> {
-        /*try {*/
-
-            /*val f = Future[(String, java.util.Map[String,java.util.List[String]])] {*/
-            val f = DownloadSource(source, referer)
-            /*val f = bg {*/
-                /*DownloadSource(source, referer)*/
-            /*}*/
-            //Should Probably make the app handle timeouts a bit better
-            /*return Await.result(f,20 seconds).asInstanceOf[(String, java.util.Map[String,java.util.List[String]])]*/
-            return f
-            /*return f.await()*/
-            //return Await.result(f,100 millis).asInstanceOf[String]
-        /*}*/
-        /*catch (e : ExecutionException) {*/
-            /*error("Download: Error with Async Source Download!!!")*/
-            /*error(e.getMessage())*/
-            /*var err = ""*/
-            /*for(x in e.getStackTrace()) {*/
-                /*err += x.toString()+"\n"*/
-            /*}*/
-            /*error(err)*/
-            /*return Pair("Error Async!", null)*/
-        /*}*/
-        /*catch (e : InterruptedException) {*/
-            /*error("Download: Interrupted Exception!!!")*/
-            /*error(e.getMessage())*/
-            /*return Pair("Error Interrupted!", null)*/
-        /*}*/
-        /*catch (e : TimeoutException) {*/
-            /*error("Download: Timeout Exception!!!")*/
-            /*error(e.getMessage())*/
-            /*return Pair("Error Timeout!", null)*/
-        /*}*/
+        // Removed a lot of try/catch/timeout stuff here.
+        // We should add it back if we need it
+        return DownloadSource(source, referer)
     }
-
 
     fun DownloadSource(source : String, referer: String) : Pair<String, MutableMap<String,List<String>>> {
         var filename : String = ""
         var resultingPath : String = ""
-        /*var resultingHeaders : java.util.Map<java.lang.String,java.util.List<java.lang.String>>? = null*/
         var resultingHeaders : MutableMap<String,List<String>>? = null
-        var sourceSite : URL? = null
-        if(!source.isEmpty()) {
-            debug("DownloadSource: $source")
-            var urlcon : HttpURLConnection? = null
-            try {
-                error("DownloadSource: URL is: $source")
-                sourceSite = URL(source)
-                if (sourceSite == null) {
-                  error("HUGE ERROR!!!")
-                }
-                urlcon = sourceSite.openConnection() as HttpURLConnection
-                urlcon.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0");
-                if (referer.length > 0)
-                  urlcon.setRequestProperty("Referer", referer);
-                //urlcon.setRequestProperty("User-Agent", "Mangagaga");
-                error("user agent is ${urlcon.getRequestProperty("User-Agent")}")
-                error("following is ${urlcon.getInstanceFollowRedirects()}")
-                urlcon.setInstanceFollowRedirects(true)
-                error("following is ${urlcon.getInstanceFollowRedirects()}")
-                error("TYPE IS... ${urlcon.getContentType()}")       
-                filename = source.substring((source.lastIndexOf('/') + 1))
-                if (referer.length > 0) {
-                  error("Using referer instead: $referer")
-                  filename = referer.substring((source.lastIndexOf('/') + 1))
-                  error("filename:")
-                  error(filename)
-                }
-                var dest : String = SettingsManager.mangagagaPath + "/Cache/"
-
-                if (filename.contains("?")) {
-                    filename = filename.replace('?', '_')
-                    debug("DownloadSource: Removed '?' and renamed file to: $filename")
-                }
-                // Prepend an ID to the file name so different files do not conflict
-                filename = "${getID()}_$filename"
-
-                resultingPath = dest + filename
-                var file : File = File(dest, filename)
-                info("DownloadSource: resulting file: $file")
-                try {
-                    file.createNewFile()
-                }
-                catch (e : IOException) {
-                    error("DownloadSource: Couldn't make file!!!")
-                    error("DownloadSource: $e")
-                }
-                
-                resultingHeaders = urlcon.getHeaderFields()
-                error("Request Headers: $resultingHeaders")
-                error("here we go")
-                error(urlcon.getResponseMessage())
-
-                var fos : FileOutputStream = FileOutputStream(file)
-                var ist : InputStream? = null
-                // RRRARRRARARGH you gave to do getErrorStream if it's returned an error
-                // and getResponseMessage doesn't work if it returned an error
-                if (200 <= urlcon.getResponseCode() && urlcon.getResponseCode() <= 299)
-                  ist = urlcon.getInputStream()
-                else
-                  ist = urlcon.getErrorStream()
-                var bis : BufferedInputStream = BufferedInputStream(ist)
-                var buffer : ByteArrayBuffer = ByteArrayBuffer(500)
-
-                var chunk : Int = bis.read()
-                while (chunk != -1) {
-                  buffer.append(chunk)
-                  chunk = bis.read()
-                }
-                debug("DownloadSource: Writing Image")
-                fos.write(buffer.toByteArray())
-                fos.flush()
-                fos.close()
+        debug("DownloadSource: $source")
+        var urlcon : HttpURLConnection? = null
+        try {
+            info("DownloadSource: URL is: $source")
+            urlcon = URL(source).openConnection() as HttpURLConnection
+            urlcon.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0");
+            if (referer.length > 0)
+              urlcon.setRequestProperty("Referer", referer);
+            //urlcon.setRequestProperty("User-Agent", "Mangagaga");
+            info("user agent is ${urlcon.getRequestProperty("User-Agent")}")
+            urlcon.setInstanceFollowRedirects(true)
+            info("TYPE IS... ${urlcon.getContentType()}")       
+            filename = source.substring((source.lastIndexOf('/') + 1))
+            if (referer.length > 0) {
+              info("Using referer instead: $referer")
+              filename = referer.substring((source.lastIndexOf('/') + 1))
             }
-            catch (e : MalformedURLException) {
-                error("DownloadSource: Error opening page!")
-                return Pair("Error 1 - malformed url", resultingHeaders!!)
-            }
-            catch (e : IOException) {
-                error("DownloadSource: Error With Reader/Writer! (returning getResponseMessage as the string instead of the file path)")
-                error("DownloadSource: $e")
-                return Pair("Error 2 error with reader writer", resultingHeaders!!)
-            }
-            finally {
-              if (urlcon != null)
-                urlcon.disconnect()
-            }
+
+            if (filename.contains("?"))
+                filename = filename.replace('?', '_')
+            info("filename: $filename")
+
+            var dest = SettingsManager.mangagagaPath + "/Cache/"
+            // Prepend an ID to the file name so different files do not conflict
+            filename = "${getID()}_$filename"
+
+            resultingPath = dest + filename
+            var file = File(dest, filename)
+            info("DownloadSource: resulting file: $file")
+            file.createNewFile()
+            
+            resultingHeaders = urlcon.getHeaderFields()
+            info("Request Headers: $resultingHeaders")
+            info("here we go")
+            info(urlcon.getResponseMessage())
+
+            // RRRARRRARARGH you gave to do getErrorStream if it's returned an info
+            // and getResponseMessage doesn't work if it returned an info
+            val ist = if (200 <= urlcon.getResponseCode() && urlcon.getResponseCode() <= 299)
+              urlcon.getInputStream()
+            else
+              urlcon.getErrorStream()
+            file.writeBytes(ist.readBytes())
+        }
+        catch (e : MalformedURLException) {
+            info("DownloadSource: Error opening page!")
+            return Pair("Error 1 - malformed url", resultingHeaders!!)
+        }
+        catch (e : IOException) {
+            info("DownloadSource: Error With Reader/Writer! (returning getResponseMessage as the string instead of the file path)")
+            info("DownloadSource: $e")
+            return Pair("Error 2 info with reader writer", resultingHeaders!!)
+        }
+        finally {
+          if (urlcon != null)
+            urlcon.disconnect()
         }
 
         return Pair(resultingPath, resultingHeaders!!)
     }
 
-    fun copyStreams(ins : InputStream, outs : OutputStream) {
-        var buffer = ByteArray(1024);
-        var readBytes : Int = ins.read(buffer)
-        while(readBytes != -1) {
-            outs.write(buffer, 0, readBytes)
-            readBytes = ins.read(buffer)
-        }
-        return
-    }
-
-    fun clearCache()
-    {
-        var cache : File = File(SettingsManager.mangagagaPath + "/Cache/")
+    fun clearCache() {
+        var cache = File(SettingsManager.mangagagaPath + "/Cache/")
         clearFolder(cache)
     }
 
@@ -250,17 +172,11 @@ object Utilities : AnkoLogger {
     }
 
     fun clearFolder(folder : File) {
-
-        if(!folder.exists())
-        {
-            error("clear saved: Error clearing saved, directory doesn't exist")
-        }else {
-            for (child in folder.list()) {
-                val childFile : File = File(folder, child)
-                if (childFile.isDirectory())
-                    clearFolder(childFile)
-                childFile.delete()
-            }
+        for (child in folder.list()) {
+            val childFile : File = File(folder, child)
+            if (childFile.isDirectory())
+                clearFolder(childFile)
+            childFile.delete()
         }
     }
 }
