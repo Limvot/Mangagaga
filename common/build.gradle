@@ -1,0 +1,12 @@
+apply plugin: "kotlin"
+
+
+
+dependencies {
+    compile fileTree(dir: '../libs', include: ['*.jar'])
+    compile files('../libs/luaj-3.0/lib/luaj-jse-3.0.jar')
+    compile files('../libs/gson-2.3.jar')
+    compile files('../libs/js.jar')
+
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.2-4'
+}

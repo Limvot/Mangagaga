@@ -8,7 +8,7 @@ import android.app.Activity
 import android.widget.TextView
 import android.widget.CheckBox
 
-class ChapterActivity : Activity(), AnkoLogger {
+class ChapterActivity : Activity(), GenericLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val currentManga = MangaManager.currentManga!!

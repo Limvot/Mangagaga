@@ -7,8 +7,9 @@ import android.app.Activity
 import android.widget.ImageView
 import android.view.GestureDetector
 import android.view.MotionEvent;
+import android.graphics.BitmapFactory;
 
-class ImageViewerActivity : Activity(), AnkoLogger, GestureDetector.OnGestureListener {
+class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGestureListener {
     var image : ImageView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +21,7 @@ class ImageViewerActivity : Activity(), AnkoLogger, GestureDetector.OnGestureLis
     }
     fun updateImage() {
         doAsync {
-            val bm = ImageManager.load(MangaManager.getCurrentPage())
+            val bm = BitmapFactory.decodeFile(MangaManager.getCurrentPage())
             uiThread { image!!.setImageBitmap(bm) }
         }
     }

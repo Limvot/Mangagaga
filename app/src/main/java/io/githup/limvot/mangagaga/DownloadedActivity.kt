@@ -6,7 +6,7 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import android.os.Bundle
 import android.app.Activity
 
-class DownloadedActivity : Activity(), AnkoLogger {
+class DownloadedActivity : Activity(), GenericLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

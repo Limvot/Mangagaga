@@ -7,7 +7,7 @@ import android.os.Bundle
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
-class LogCatActivity : Activity(), AnkoLogger {
+class LogCatActivity : Activity(), GenericLogger {
     var lgText: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

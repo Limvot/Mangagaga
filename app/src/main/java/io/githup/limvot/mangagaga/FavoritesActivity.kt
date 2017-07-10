@@ -5,7 +5,7 @@ import org.jetbrains.anko.*
 import android.os.Bundle
 import android.app.Activity
 
-class FavoritesActivity : Activity(), AnkoLogger {
+class FavoritesActivity : Activity(), GenericLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

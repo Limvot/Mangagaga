@@ -42,11 +42,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile files('libs/luaj-3.0/lib/luaj-jse-3.0.jar')
+    compile project(':common')
+
+    compile fileTree(dir: '../libs', include: ['*.jar'])
+    compile files('../libs/luaj-3.0/lib/luaj-jse-3.0.jar')
+    compile files('../libs/gson-2.3.jar')
+    compile files('../libs/js.jar')
+
     compile 'com.android.support:support-v4:20.0.0'
-    compile files('libs/gson-2.3.jar')
-    compile files('libs/js.jar')
 
     compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.2-4'
     compile 'org.jetbrains.anko:anko:0.10.0'

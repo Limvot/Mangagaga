@@ -10,7 +10,5 @@ signing.properties
 *.iml
 app/libs/luaj-src
 manual.sh
-ScriptTester/class
-ScriptTester/project
-ScriptTester/target
 *.swo
+gradle-files

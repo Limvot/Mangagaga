@@ -21,8 +21,6 @@ class SettingsActivity : Activity() {
                                                         MangaManager.clearFavorites()
                                                         MangaManager.clearSaved() } }
 
-            button("Check for Updates")     { onClick { Utilities.checkForUpdates(ctx) } }
-
             textView("Number of entries to save in history")
             val history_size_entry = editText(SettingsManager.getHistorySize().toString()) 
 

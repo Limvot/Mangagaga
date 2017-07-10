@@ -10,7 +10,7 @@ import android.content.DialogInterface
 import android.widget.EditText
 import android.os.Bundle
 
-class ScriptEditActivity : Activity(), AnkoLogger {
+class ScriptEditActivity : Activity(), GenericLogger {
     var scriptText: EditText? = null
     var filePath: String = ""
 
@@ -44,7 +44,7 @@ class ScriptEditActivity : Activity(), AnkoLogger {
             button("save") { onClick {
                 File(savePath.getText().toString()).writeText(scriptText!!.getText().toString())
                 filePath = savePath.getText().toString()
-                ScriptManager.init(ctx)
+                ScriptManager.init()
                 popup!!.dismiss()
             } }
             button("cancel") { onClick { popup!!.dismiss() } }

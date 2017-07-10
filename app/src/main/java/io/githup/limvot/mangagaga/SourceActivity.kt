@@ -11,7 +11,7 @@ import android.os.Bundle
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
-class SourceActivity : Activity(), AnkoLogger {
+class SourceActivity : Activity(), GenericLogger {
     var mangaList: MutableList<TextListItem>? = null
     var mangaListAdapter: SimpleListAdaptor? = null
     var sourceText: TextView? = null
