@@ -40,6 +40,7 @@ function getMangaListNextPage()
 end
 
 function getMangaListPage()
+    print('type is ' .. mangaListType)
     if mangaListType == 'All' then
         return getMangaList('http://kissmanga.com/MangaList?page=' .. pageNo)
     elseif mangaListType == 'Most Popular' then

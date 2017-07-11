@@ -2,6 +2,9 @@ apply plugin: "application"
 apply plugin: "kotlin"
 
 mainClassName = "io.githup.limvot.mangagaga.ScriptTester"
+run {
+    standardInput = System.in
+}
 
 dependencies {
     compile project(':common')

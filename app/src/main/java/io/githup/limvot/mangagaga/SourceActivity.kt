@@ -17,7 +17,7 @@ class SourceActivity : Activity(), GenericLogger {
     var sourceText: TextView? = null
     var sourceNumber = 0
     var typeText: TextView? = null
-    var mangaListType = "default type"
+    var mangaListType = "All"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

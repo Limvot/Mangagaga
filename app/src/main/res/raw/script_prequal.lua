@@ -17,7 +17,6 @@ end
 
 function download_cf(str)
     print('Downloading with CloudFlare passthrough ' .. str)
-    --result = apiObj:downloadWithRequestHeaders("http://mangagaga.room409.xyz/")
     result = apiObj:downloadWithRequestHeadersAndReferrer(str,'')
     print('result')
     print(result)
@@ -26,8 +25,8 @@ function download_cf(str)
     response_headers = result:getSecond()
     print(file_name)
     print(response_headers)
-    if response_headers:containsKey('X-Android-Response-Source') then
-        if string.find(response_headers:get('X-Android-Response-Source'):get(0), escapeRegexStr('NETWORK 503'))
+    if response_headers:containsKey(nil) then
+        if string.find(response_headers:get(nil):get(0), escapeRegexStr('503'))
             and response_headers:containsKey('Server')
             and string.find(response_headers:get('Server'):get(0), escapeRegexStr('cloudflare-nginx')) then
             print('CLOUDFLARE DETECTED')

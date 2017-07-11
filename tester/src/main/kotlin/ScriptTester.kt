@@ -3,7 +3,6 @@ package io.githup.limvot.mangagaga
 import java.io.File
 
 object ScriptTester {
-  var srcnum = 0
   var done = false
   @JvmStatic
   fun main(vararg args : String) {
@@ -58,7 +57,6 @@ object ScriptTester {
       } else {
         var num = ln.toInt()
         println("you chose the manga "+list[num].getTitle())
-        ScriptManager.currentSource = srcnum
         MangaManager.readingOffline(false)
         MangaManager.currentManga = list[num]
         chapterLoop()
@@ -159,7 +157,7 @@ object ScriptTester {
     if(num < 0) {
       println("Exiting")
     } else {
-      srcnum = num
+      ScriptManager.currentSource = num
     }
   }
   
@@ -173,7 +171,14 @@ object ScriptTester {
   fun changeSource() {
     printSources() 
     setSourceNumber(readLine()!!.toInt())
-    println("You chose source number $srcnum")
+    println("You chose source number ${ScriptManager.currentSource}")
+
+    val types = ScriptManager.getCurrentSource().getMangaListTypes()
+    for ((i, type) in types.withIndex()) println("$i - $type")
+    println("\nSelect a type")
+    val type_idx = readLine()!!.toInt()
+    println("You chose ${types[type_idx]}")
+    ScriptManager.getCurrentSource().setMangaListType(types[type_idx])
   }
   
   fun printMangaList(list : List<Manga>) {
@@ -205,14 +210,14 @@ object ScriptTester {
   }
 
   fun getMangaList() : List<Manga> {
-    return ScriptManager.getScript(srcnum)!!.getMangaListPage1()
+    return ScriptManager.getCurrentSource().getMangaListPage1()
   }
 
   fun getSourceNextPage() : List<Manga> {
-    return ScriptManager.getScript(srcnum)!!.getMangaListNextPage()
+    return ScriptManager.getCurrentSource().getMangaListNextPage()
   }
 
   fun getSourcePreviousPage() : List<Manga> {
-    return ScriptManager.getScript(srcnum)!!.getMangaListPreviousPage()
+    return ScriptManager.getCurrentSource().getMangaListPreviousPage()
   }
 }
