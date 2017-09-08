@@ -15,7 +15,6 @@ class SourceActivity : Activity(), GenericLogger {
     var mangaList: MutableList<TextListItem>? = null
     var mangaListAdapter: SimpleListAdaptor? = null
     var sourceText: TextView? = null
-    var sourceNumber = 0
     var typeText: TextView? = null
     var mangaListType = "All"
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +43,7 @@ class SourceActivity : Activity(), GenericLogger {
             button("Next") { onClick {
                 val dialog = indeterminateProgressDialog(title = "Fetching next page", message = "really should be fast...")
                 doAsync {
-                    val items = ScriptManager.getScript(sourceNumber)!!.getMangaListNextPage()
+                    val items = ScriptManager.getCurrentSource().getMangaListNextPage()
                     uiThread {
                         dialog.dismiss()
                         showMangaList(items)
@@ -54,7 +53,7 @@ class SourceActivity : Activity(), GenericLogger {
             button("Previous") { onClick {
                 val dialog = indeterminateProgressDialog(title = "Fetching previous page", message = "really should be fast...")
                 doAsync {
-                    val items = ScriptManager.getScript(sourceNumber)!!.getMangaListPreviousPage()
+                    val items = ScriptManager.getCurrentSource().getMangaListPreviousPage()
                     uiThread {
                         dialog.dismiss()
                         showMangaList(items)
@@ -66,14 +65,14 @@ class SourceActivity : Activity(), GenericLogger {
     }
     fun doSourcePopup() {
         selector("Source", ScriptManager.scriptList.map {it.name}) { _, i ->
-            sourceNumber = i
+            ScriptManager.currentSource = i
             sourceText!!.text = "Source: ${ScriptManager.scriptList[i].name}"
             updateMangaList()
         }
     }
     fun doTypePopup() {
-        selector("Sorted", ScriptManager.getScript(sourceNumber)!!.getMangaListTypes()) { _, i ->
-            mangaListType = ScriptManager.getScript(sourceNumber)!!.getMangaListTypes()[i]
+        selector("Sorted", ScriptManager.getCurrentSource().getMangaListTypes()) { _, i ->
+            mangaListType = ScriptManager.getCurrentSource().getMangaListTypes()[i]
             typeText!!.text = "List Type: $mangaListType"
             updateMangaList()
         }
@@ -82,7 +81,7 @@ class SourceActivity : Activity(), GenericLogger {
         val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
         doAsync {
             ScriptManager.getCurrentSource().setMangaListType(mangaListType)
-            val items = ScriptManager.getScript(sourceNumber)!!.getMangaListPage1()
+            val items = ScriptManager.getCurrentSource().getMangaListPage1()
             uiThread {
                 dialog.dismiss()
                 showMangaList(items)
@@ -93,7 +92,6 @@ class SourceActivity : Activity(), GenericLogger {
         mangaList!!.clear()
 
         mangaList!!.addAll(items.map { manga -> TextListItem(manga.toString(), {
-                                            ScriptManager.currentSource = sourceNumber
                                             MangaManager.readingOffline(false)
                                             MangaManager.currentManga = manga
                                             startActivity<ChapterActivity>()
