@@ -108,10 +108,15 @@ function setUpChapter(manga, chapter)
        while ending and nextPageChapterNum == thisChapterNum do
            apiObj:note('DOWNLOADING MANGA CONTAINER PAGE')
            apiObj:note('pageURL: ' .. pageURL)
+           apiObj:status('downloading page continer ' .. index)
            pagePath = download_cf(pageURL)
            pageSource = apiObj:readFile(pagePath)
            -- get the image url
            _, _, pageImageURL = string.find(pageSource, image_regex)
+           -- happens on final page of most recent chapter, as 1 beyond end page redirects to main listing
+           if not pageImageURL then
+               break
+           end
            if page_image_url_prefix ~= '' then
                pageImageURL = page_image_url_prefix .. pageImageURL
            end
@@ -130,5 +135,6 @@ function setUpChapter(manga, chapter)
        chapter['pageList'] = daList
        chapter['chapterSetUp'] = true
        apiObj:note('set up chapter with ' .. index .. ' pages!')
+       apiObj:status('set up chapter with ' .. index .. ' pages')
 end
 

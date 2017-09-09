@@ -6,7 +6,6 @@ class Notification(title_in: String) {
 }
 
 interface GenericLogger {
-    fun info(it: String) {
-    }
+    fun info(it: String) = println(it)
     fun notify(title: String) = Notification(title)
 }

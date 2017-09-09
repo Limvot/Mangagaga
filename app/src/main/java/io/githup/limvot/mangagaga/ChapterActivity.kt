@@ -16,9 +16,9 @@ class ChapterActivity : Activity(), GenericLogger {
         var favoriteBox: CheckBox? = null
         var chapterList = mutableListOf<TextListItem>()
         var chapterListAdapter = SimpleListAdaptor(ctx, chapterList)
+        getActionBar().title = "$currentManga:"
 
         verticalLayout {
-            textView("$currentManga:") { textSize = 32f }
             favoriteBox = checkBox("Favorite") { onClick {
                     MangaManager.setFavorite(currentManga, favoriteBox!!.isChecked())
             } }

@@ -8,6 +8,8 @@ import org.mozilla.javascript.*
 object APIObject : GenericLogger {
   fun instance() = this
   fun note(theNote: String) = info(theNote)
+  var onStatus = { text:String -> note("status: $text") }
+  fun status(text: String) = onStatus(text)
 
   fun doDaJS(to_eval: String): String {
     info("js string to eval: $to_eval")

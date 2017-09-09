@@ -7,6 +7,7 @@ import android.app.Activity
 import android.widget.ImageView
 import android.view.GestureDetector
 import android.view.MotionEvent;
+import android.widget.TextView
 import android.graphics.BitmapFactory;
 
 class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGestureListener {
@@ -14,6 +15,9 @@ class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGesture
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getActionBar().hide()
+        getActionBar().title = ""
+        APIObject.onStatus = { text -> doAsync { uiThread { getActionBar().show()
+                                                            getActionBar().subtitle = text } } }
         frameLayout { image = imageView() }
         val detector = GestureDetector(this, this)
         image!!.setOnTouchListener({ view, motionEvent -> detector.onTouchEvent(motionEvent);true})
