@@ -1,21 +1,25 @@
-print 'Hello from Lua!!!! MangaStream woop woop'
+print "Hello from Lua!!!! Jamini's Box woop woop"
 
 mangaListType = 'All'
+manga_list_url = 'https://jaiminisbox.com/reader/directory'
 
---<td><strong><a href="http://mangastream.com/manga/air_gear">Air Gear</a></strong></td>
-manga_list_regex = '<td><strong><a href="(.-)">(.-)</a></strong></td>'
+--<div class="title"><a href="https://jaiminisbox.com/reader/series/bakuman/" title="Bakuman">Bakuman</a> <span class="meta"></span></div>
+manga_list_regex = '<div class="title"><a href="(.-)" title=".-">(.-)</a>'
 
---<td><a href="http://mangastream.com/r/air_gear/358/3139/1">358 - Trick 358</a></td>
-chapter_list_regex = '<td><a href="(.-)">(.-)</a></td>'
+--<a class="gbutton fright" href="https://jaiminisbox.com/reader/directory/2/">Next »</a>
+manga_list_next_page_regex = '>Last »»</a>.-<a class="gbutton fright" href="(.-)">Next »</a>'
+--<div class="title"><a href="https://jaiminisbox.com/reader/read/black_clover/en/0/123/" title="Page 123: The commoner's trap">Page 123: The commoner's trap</a></div>
+chapter_list_regex = '<div class="title"><a href="(.-)" title=".-">(.-)</a></div>'
 
---<li class="next"><a href="http://mangastream.com/r/toriko/389/3706/2">Next &rarr;</a></li>
-next_page_regex = '<li class="next"><a href="(.-)">.-</a></li>'
+--<a href="https://jaiminisbox.com/reader/read/black_clover/en/0/112/page/2" onClick="return nextPage();">
+next_page_regex = '<a href="([^"]-)" onClick="return nextPage%(%);">'
 
 -- http://mangastream.com/r/toriko/389/3706/2, we want the 3706 part
-chapter_number_regex = 'mangastream.com/r/.-/.-/(.-)/.-'
+chapter_number_regex = 'jaiminisbox.com/reader/read/.-/.-/.-/(.-)/'
 
---<img id="manga-page" src="http://img.mangastream.com/cdn/manga/98/3704/005.png"/></a>
-image_regex = '" src="(.-)"'
+--<img class="open" src="https://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=604800&url=https://jaiminisbox.com/reader/content/comics/black_clover_55f3d2ec5caf2/112-0-royal-knights-selection-exam_592ff6a8f3d1b/m0001.jpg"/>
+image_regex = '<img class="open" src=".-&url=(.-)"/>'
+page_image_url_prefix = ''
 
 function getMangaListTypes()
     titleList = { }
@@ -25,27 +29,33 @@ function getMangaListTypes()
 end
 
 function getMangaListPage(type)
-   url = 'http://mangastream.com/manga'
    print('About to getMangaList!')
-   path = download_cf(url)
-   pageSource = apiObj:readFile(path)
-   apiObj:note('LuaScript downloaded (for manga): ' .. path)
+   current_page_url = manga_list_url
    daList = {}
-   beginning, ending, mangaURL, mangaTitle = string.find(pageSource, manga_list_regex)
    index = 0
-   while ending do
-       daList[index] = {title = mangaTitle, url = mangaURL}
-       beginning, ending, mangaURL, mangaTitle = string.find(pageSource, manga_list_regex, ending+1)
-       index = index + 1
-   end
+   repeat
+       apiObj:note('DOWNLOADING MANGA LIST PAGE')
+       path = download_cf(current_page_url)
+       pageSource = apiObj:readFile(path)
+       ending = -1
+       repeat
+           beginning, ending, mangaURL, mangaTitle = string.find(pageSource, manga_list_regex, ending+1)
+           daList[index] = {title = mangaTitle, url = mangaURL}
+           index = index + 1
+       until not ending
+       -- take off final nil entry
+       index = index - 1
+       -- get the next page if it exists
+       _, _, current_page_url = string.find(pageSource, manga_list_next_page_regex)
+   until not current_page_url
    daList['numManga'] = index
    return daList
 end
 
 function initManga(manga)
    apiObj:note('Manga Path: ' .. manga['url'])
+   apiObj:note('DOWNLOADING MANGA CHAPTER LIST PAGE')
    path = download_cf(manga['url'])
-
    pageSource = apiObj:readFile(path)
 
    -- Set up manga description and other nicities
@@ -80,6 +90,7 @@ function getMangaChapterPage(manga, chapter, page)
    if not chapter['chapterSetUp'] then
        setUpChapter(manga, chapter)
    end
+   apiObj:note('DOWNLOADING MANGA REAL PAGE')
    return download_cf(chapter['pageList'][page]['url'])
 end
 
@@ -89,17 +100,21 @@ function setUpChapter(manga, chapter)
        apiObj:note('The chapter first page URL is: ' .. pageURL)
        _, _, thisChapterNum = string.find(pageURL, chapter_number_regex)
        nextPageChapterNum = thisChapterNum
+       apiObj:note('The chapters number is : ' .. thisChapterNum)
 
        index = 0
        daList = {}
        ending = 0
        while ending and nextPageChapterNum == thisChapterNum do
+           apiObj:note('DOWNLOADING MANGA CONTAINER PAGE')
            apiObj:note('pageURL: ' .. pageURL)
            pagePath = download_cf(pageURL)
            pageSource = apiObj:readFile(pagePath)
            -- get the image url
            _, _, pageImageURL = string.find(pageSource, image_regex)
-           pageImageURL = 'https:' .. pageImageURL
+           if page_image_url_prefix ~= '' then
+               pageImageURL = page_image_url_prefix .. pageImageURL
+           end
            apiObj:note('pageImageURL: ' .. pageImageURL)
 
            daList[index] = {url = pageImageURL}

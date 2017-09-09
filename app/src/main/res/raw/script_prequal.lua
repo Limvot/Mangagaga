@@ -2,16 +2,11 @@ print('Lua prequal!')
 
 apiObj = 0
 function init(apiObjIn)
-   print('Doing init')
-   print(apiObjIn)
    apiObj = apiObjIn
-   print(apiObj)
 end
 
 function escapeRegexStr(theStr)
-   print('Escaping ' .. theStr)
    newStr = (theStr:gsub('[%-%.%+%[%]%(%)%$$^%%%?%*]', '%%%1'):gsub('%z','%%z'))
-   print('Done Escaping ' .. theStr .. ' as ' .. newStr)
    return newStr
 end
 
@@ -19,12 +14,12 @@ function download_cf(str)
     print('Downloading with CloudFlare passthrough ' .. str)
     result = apiObj:downloadWithRequestHeadersAndReferrer(str,'')
     print('result')
-    print(result)
-    print(result:getFirst())
+    --print(result)
+    --print(result:getFirst())
     file_name = result:getFirst()
     response_headers = result:getSecond()
-    print(file_name)
-    print(response_headers)
+    --print(file_name)
+    --print(response_headers)
     if response_headers:containsKey(nil) then
         if string.find(response_headers:get(nil):get(0), escapeRegexStr('503'))
             and response_headers:containsKey('Server')

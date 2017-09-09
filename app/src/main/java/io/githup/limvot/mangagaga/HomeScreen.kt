@@ -51,7 +51,7 @@ class HomeScreen : Activity(), GenericLogger {
         File(scriptDir, "script_prequal").writeText(getResources()
                                          .openRawResource(R.raw.script_prequal)
                                          .bufferedReader().use { it.readText() })
-        for (name in listOf("kiss_manga", "unixmanga", "read_panda", "manga_stream")) {
+        for (name in listOf("kiss_manga", "unixmanga", "read_panda", "manga_stream", "jaiminis_box")) {
             val newScript = File(scriptDir, name)
             // For testing we want to always copy over scripts
             // on every update
@@ -60,6 +60,7 @@ class HomeScreen : Activity(), GenericLogger {
               "unixmanga"    -> R.raw.unixmanga
               "read_panda"   -> R.raw.read_panda
               "manga_stream" -> R.raw.manga_stream
+              "jaiminis_box" -> R.raw.jaiminis_box
               else           -> 0
             })
             newScript.writeBytes(rawResource.readBytes())

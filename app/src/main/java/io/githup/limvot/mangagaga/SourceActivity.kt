@@ -37,29 +37,7 @@ class SourceActivity : Activity(), GenericLogger {
                 }
             }
 
-            listView {
-                adapter = mangaListAdapter
-            }.lparams(weight=0.1f)
-            button("Next") { onClick {
-                val dialog = indeterminateProgressDialog(title = "Fetching next page", message = "really should be fast...")
-                doAsync {
-                    val items = ScriptManager.getCurrentSource().getMangaListNextPage()
-                    uiThread {
-                        dialog.dismiss()
-                        showMangaList(items)
-                    }
-                }
-            } }
-            button("Previous") { onClick {
-                val dialog = indeterminateProgressDialog(title = "Fetching previous page", message = "really should be fast...")
-                doAsync {
-                    val items = ScriptManager.getCurrentSource().getMangaListPreviousPage()
-                    uiThread {
-                        dialog.dismiss()
-                        showMangaList(items)
-                    }
-                }
-            } }
+            listView { adapter = mangaListAdapter }.lparams(weight=0.1f)
         }
         doSourcePopup()
     }
@@ -80,22 +58,17 @@ class SourceActivity : Activity(), GenericLogger {
     fun updateMangaList() {
         val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
         doAsync {
-            ScriptManager.getCurrentSource().setMangaListType(mangaListType)
-            val items = ScriptManager.getCurrentSource().getMangaListPage1()
+            val items = ScriptManager.getCurrentSource().getMangaList(mangaListType)
             uiThread {
                 dialog.dismiss()
-                showMangaList(items)
+                mangaList!!.clear()
+                mangaList!!.addAll(items.map { manga -> TextListItem(manga.toString(), {
+                                                    MangaManager.readingOffline(false)
+                                                    MangaManager.currentManga = manga
+                                                    startActivity<ChapterActivity>()
+                                                }) })
+                mangaListAdapter!!.notifyDataSetChanged()
             }
         }
-    }
-    fun showMangaList(items: List<Manga>) {
-        mangaList!!.clear()
-
-        mangaList!!.addAll(items.map { manga -> TextListItem(manga.toString(), {
-                                            MangaManager.readingOffline(false)
-                                            MangaManager.currentManga = manga
-                                            startActivity<ChapterActivity>()
-                                        }) })
-        mangaListAdapter!!.notifyDataSetChanged()
     }
 }

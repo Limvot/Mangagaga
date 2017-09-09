@@ -4,6 +4,7 @@ import java.io.File
 
 object ScriptTester {
   var done = false
+  var mangaListType = "unset"
   @JvmStatic
   fun main(vararg args : String) {
     println("Hello! This is a world of Kotlin!!!")
@@ -13,7 +14,7 @@ object ScriptTester {
     val scriptDir = File(SettingsManager.mangagagaPath, "Scripts/")
     val rawFolder = File("../app/src/main/res/raw/")
     File(scriptDir, "script_prequal").writeText(File(rawFolder, "script_prequal.lua").readText())
-    for (name in listOf("kiss_manga", "unixmanga", "read_panda", "manga_stream")) {
+    for (name in listOf("kiss_manga", "unixmanga", "read_panda", "manga_stream", "jaiminis_box")) {
         val newScript = File(scriptDir, name)
         // For testing we want to always copy over scripts
         // on every update
@@ -22,6 +23,7 @@ object ScriptTester {
           "unixmanga"    -> "unixmanga.lua"
           "read_panda"   -> "read_panda.lua"
           "manga_stream" -> "manga_stream.lua"
+          "jaiminis_box" -> "jaiminis_box.lua"
           else           -> ""
         })
         newScript.writeBytes(from.readBytes())
@@ -43,15 +45,11 @@ object ScriptTester {
     var list = getMangaList()
     while(mloop) {
       printMangaList(list)
-      println("Next page (n), Previous page (p), Back (b), Quit (q), or Manga Number:")
+      println("Back (b), Quit (q), or Manga Number:")
       val ln = readLine()!!
       if(ln[0] == 'q') {
         println("Exiting!!")
         System.exit(0)
-      } else if(ln[0] == 'n') {
-        list = getSourceNextPage()
-      } else if(ln[0] == 'p') {
-        list = getSourcePreviousPage()
       } else if(ln[0] == 'b') {
         mloop = false
       } else {
@@ -176,9 +174,8 @@ object ScriptTester {
     val types = ScriptManager.getCurrentSource().getMangaListTypes()
     for ((i, type) in types.withIndex()) println("$i - $type")
     println("\nSelect a type")
-    val type_idx = readLine()!!.toInt()
-    println("You chose ${types[type_idx]}")
-    ScriptManager.getCurrentSource().setMangaListType(types[type_idx])
+    mangaListType = types[readLine()!!.toInt()]
+    println("You chose $mangaListType")
   }
   
   fun printMangaList(list : List<Manga>) {
@@ -210,14 +207,6 @@ object ScriptTester {
   }
 
   fun getMangaList() : List<Manga> {
-    return ScriptManager.getCurrentSource().getMangaListPage1()
-  }
-
-  fun getSourceNextPage() : List<Manga> {
-    return ScriptManager.getCurrentSource().getMangaListNextPage()
-  }
-
-  fun getSourcePreviousPage() : List<Manga> {
-    return ScriptManager.getCurrentSource().getMangaListPreviousPage()
+    return ScriptManager.getCurrentSource().getMangaList(mangaListType)
   }
 }
