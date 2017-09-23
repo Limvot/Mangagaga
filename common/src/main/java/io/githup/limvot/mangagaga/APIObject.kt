@@ -24,7 +24,7 @@ object APIObject : GenericLogger {
       info("js result: $result")
       Context.exit()
     } catch (e: Exception) {
-      error("evaluateString: "+e.toString())
+      error("evaluateString: $e")
     }
     return result
   }

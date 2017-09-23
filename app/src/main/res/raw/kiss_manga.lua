@@ -44,10 +44,6 @@ function getMangaListPage()
     if mangaListType == 'All' then
         return getMangaList('http://kissmanga.com/MangaList?page=' .. pageNo)
     elseif mangaListType == 'Most Popular' then
-        apiObj:note("before doDaJS")
-        js_result = apiObj:doDaJS('1+2')
-        apiObj:note(js_result)
-        apiObj:note('that was the result')
         return getMangaList('http://kissmanga.com/MangaList/MostPopular?page=' .. pageNo)
     elseif mangaListType == 'Latest Update' then
         return getMangaList('http://kissmanga.com/MangaList/LatestUpdate?page=' .. pageNo)
@@ -64,7 +60,6 @@ function getMangaList(url)
    print('About to getMangaList!')
    print(apiObj)
    path = download_cf(url)
-   --path = download_cf(url)
    pageSource = apiObj:readFile(path)
    apiObj:note('LuaScript downloaded (for manga): ' .. path)
    daList = {}
@@ -137,6 +132,15 @@ end
 
 
 function setUpChapter(manga, chapter)
+
+       pageURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '/' .. chapter['url']
+
+       apiObj:note('The Page URL is: ' .. pageURL)
+       path = download_cf(pageURL)
+       apiObj:note('After download')
+       pageSource = apiObj:readFile(path)
+
+
        --let's get with it
        --this won't stop us
        --they encode their links now, so we download all their crypto js
@@ -145,14 +149,20 @@ function setUpChapter(manga, chapter)
        ca_js = apiObj:readFile(path)
        path = download_cf('http://kissmanga.com/Scripts/lo.js')
        lo_js = apiObj:readFile(path)
-       pageJS = ca_js .. ';' .. lo_js .. ';var message = "no message"; function alert(a) { message = a };'
+       pageJS = ca_js .. ';' .. lo_js
 
-       pageURL = 'http://kissmanga.com/Manga' .. '/' .. manga['url'] .. '/' .. chapter['url']
+--var _0xa5a2 = ["\x37\x32\x6E\x6E\x61\x73\x64\x61\x73\x64\x39\x61\x73\x    64\x6E\x31\x32\x33"]; chko = _0xa5a2[0]; key = CryptoJS.SHA256(chko)
+--var _0x2c7e = ["\x6E\x61\x73\x64\x62\x61\x73\x64\x36\x31\x32\x62\x61\x    73\x64"]; chko = chko + _0x2c7e[0]; key = CryptoJS.SHA256(chko)
 
-       apiObj:note('The Page URL is: ' .. pageURL)
-       path = download_cf(pageURL)
-       apiObj:note('After download')
-       pageSource = apiObj:readFile(path)
+       keyjs_regex = '(var _[%a%d]- = %["[^"]-"%]; -chko = %a- -+? -_[%a%d]-%[0%]; -key = CryptoJS.SHA256%(chko%))'
+       beginning, ending, keyjs = string.find(pageSource, keyjs_regex)
+       while ending do
+           pageJS = pageJS .. ';' .. keyjs
+           beginning, ending, keyjs = string.find(pageSource, keyjs_regex, ending+1)
+       end
+       pageJS = pageJS .. ';var message = "no message"; function alert(a) { message = a };'
+
+
        regex = 'lstImages%.push%((.-)%);'
        apiObj:note('Page List Regex: ' .. regex)
        beginning, ending, pageURL = string.find(pageSource, regex)
