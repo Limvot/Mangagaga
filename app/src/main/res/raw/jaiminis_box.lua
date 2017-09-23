@@ -18,7 +18,8 @@ next_page_regex = '<a href="([^"]-)" onClick="return nextPage%(%);">'
 chapter_number_regex = 'jaiminisbox.com/reader/read/.-/.-/.-/(.-)/'
 
 --<img class="open" src="https://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=604800&url=https://jaiminisbox.com/reader/content/comics/black_clover_55f3d2ec5caf2/112-0-royal-knights-selection-exam_592ff6a8f3d1b/m0001.jpg"/>
-image_regex = '<img class="open" src=".-&url=(.-)"/>'
+--image_regex = '<img class="open" src=".-&url=(.-)"/>'
+image_regex = '<img class="open" src="(.-)"'
 page_image_url_prefix = ''
 
 function getMangaListTypes()

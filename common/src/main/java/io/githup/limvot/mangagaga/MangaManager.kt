@@ -55,6 +55,123 @@ object MangaManager : GenericLogger {
     saveHistory()
   }
 
+  fun initCurrentManga() { initManga(currentManga!!) }
+  fun initManga(manga: Manga) {
+    if (!isOffline)
+      ScriptManager.getCurrentSource().initManga(manga)
+  }
+
+  fun getMangaChapterList(): List<Chapter> {
+    if (isOffline)
+      return getSavedChapters(currentManga!!)
+    else
+      return ScriptManager.getCurrentSource().getMangaChapterList(currentManga!!)
+  }
+  fun getChapterHistoryList(): List<Chapter> = chapterHistory
+
+  // THESE LOOK BACKWARDS
+  // But they're not. Or they are. (Because Chapter 1 is at the 'end' of the list.)
+  // Make this script decidable later
+  fun previousChapter(): Boolean {
+    val mangaChapterList = getMangaChapterList()
+    val nextIndex = mangaChapterList.indexOf(currentChapter)+1
+    if (nextIndex < mangaChapterList.size)
+      setCurrentChapterImpl(mangaChapterList.get(nextIndex))
+    else
+      return false
+    return true
+  }
+
+  fun nextChapter(): Boolean {
+    val mangaChapterList = getMangaChapterList()
+    val nextIndex = mangaChapterList.indexOf(currentChapter)-1
+    if (nextIndex > -1)
+      setCurrentChapterImpl(mangaChapterList.get(nextIndex))
+    else
+      return false
+    return true
+  }
+
+  fun getNumPages(): Int = getNumPages(currentManga!!, currentChapter!!)
+  fun getNumPages(manga: Manga, chapter: Chapter): Int {
+    return if (!isOffline) {
+      ScriptManager.getCurrentSource().getNumPages(manga, chapter)
+    } else {
+      // This is a bit hacky..... If the size is zero we assume that we haven't laoded the chapter
+      // and we load it
+      if (chapterPageMap.size == 0)
+        addToChapterPageMap(manga, chapter, 0)
+      chapterPageMap.size
+    }
+  }
+  fun move(forwards: Boolean) {
+    if(forwards) {
+        if(currentPage < getNumPages()-1) {
+            currentPage++
+        } else {
+            nextChapter()
+            currentPage = 0
+        }
+    } else {
+        if(currentPage > 0) {
+            currentPage--
+        } else {
+            previousChapter()
+            currentPage = getNumPages() - 1
+        }
+    }
+  }
+  fun getCurrentPage(): String = getCurrentPage(currentManga!!, currentChapter!!, currentPage)
+  fun getCurrentPage(manga: Manga, chapter: Chapter, page: Int): String {
+    nextPageCachingMutex.acquire()
+    if (chapterPageMap.get(page) == null) {
+      nextPageCachingMutex.release()
+      addToChapterPageMap(manga, chapter, page)
+    } else {
+      nextPageCachingMutex.release()
+    }
+
+    thread {
+      try {
+        for (i in 0 until SettingsManager.getCacheSize()) {
+          nextPageCachingMutex.acquire()
+          if (chapterPageMap.get(page+i) == null && page+i < getNumPages()) {
+            nextPageCachingMutex.release()
+            addToChapterPageMap(manga, chapter, page+i)
+          } else {
+            nextPageCachingMutex.release()
+          }
+        }
+      } finally {
+        nextPageCachingMutex.release()
+      }
+    }
+    return chapterPageMap[page]!!
+  }
+
+  fun addToChapterPageMap(manga: Manga, chapter: Chapter, page: Int) {
+    if (!isOffline) {
+      val returned_page = ScriptManager.getCurrentSource().downloadPage(manga, chapter, page)
+      nextPageCachingMutex.acquire()
+      chapterPageMap[page] = returned_page
+      nextPageCachingMutex.release()
+    } else {
+      // As we load all downloaded pages, we must not have loaded this chapter yet
+      // Do this now
+      nextPageCachingMutex.acquire()
+      chapterPageMap.clear()
+      nextPageCachingMutex.release()
+      val chapterDirString = SettingsManager.mangagagaPath + "/Downloaded/" +
+                                          manga.getTitle() + "/" + chapter.getTitle()
+      val savedDir = File(chapterDirString)
+      for ((i, dir) in savedDir.list().filter{!it.endsWith(".json")}.withIndex()) {
+        nextPageCachingMutex.acquire()
+        chapterPageMap[i] = chapterDirString + "/" + dir.toString()
+        nextPageCachingMutex.release()
+      }
+    }
+  }
+
   fun readingOffline(isOffline: Boolean) { this.isOffline = isOffline }
 
   fun  loadHistory(): ArrayList<Chapter> {
@@ -229,110 +346,5 @@ object MangaManager : GenericLogger {
   fun clearSaved() {
     val downloaded = File(SettingsManager.mangagagaPath, "Downloaded/")
     Utilities.clearFolder(downloaded)
-  }
-
-  fun initCurrentManga() { initManga(currentManga!!) }
-  fun initManga(manga: Manga) {
-    if (!isOffline)
-      ScriptManager.getCurrentSource().initManga(manga)
-  }
-
-  // THESE LOOK BACKWARDS
-  // But they're not. Or they are. (Because Chapter 1 is at the 'end' of the list.)
-  // Make this script decidable later
-  fun previousChapter(): Boolean {
-    val mangaChapterList = getMangaChapterList()
-    info("PREVOUS CHAPTER ${currentChapter?.num}")
-    info("PREVIOUS CHAPTER: size ${mangaChapterList.size-1}")
-    val nextIndex = mangaChapterList.indexOf(currentChapter)+1
-    if (nextIndex < mangaChapterList.size)
-      setCurrentChapterImpl(mangaChapterList.get(nextIndex))
-    else
-      return false
-    return true
-  }
-
-  fun nextChapter(): Boolean {
-    val mangaChapterList = getMangaChapterList()
-    info("NEXT CHAPTER ${currentChapter?.num}")
-    val nextIndex = mangaChapterList.indexOf(currentChapter)-1
-    if (nextIndex > -1)
-      setCurrentChapterImpl(mangaChapterList.get(nextIndex))
-    else
-      return false
-    return true
-  }
-
-  fun getMangaChapterList(): List<Chapter> {
-    if (isOffline)
-      return getSavedChapters(currentManga!!)
-    else
-      return ScriptManager.getCurrentSource().getMangaChapterList(currentManga!!)
-  }
-  fun getChapterHistoryList(): List<Chapter> = chapterHistory
-
-  fun getNumPages(): Int = getNumPages(currentManga!!, currentChapter!!)
-  fun getNumPages(manga: Manga, chapter: Chapter): Int { 
-    return if (!isOffline) {
-      ScriptManager.getCurrentSource().getNumPages(manga, chapter)
-    } else {
-      // This is a bit hacky..... If the size is zero we assume that we haven't laoded the chapter
-      // and we load it
-      if (chapterPageMap.size == 0)
-        addToChapterPageMap(manga, chapter, 0)
-      chapterPageMap.size
-    }
-  }
-  fun setCurrentPageNum(page: Int) { currentPage = page }
-  fun getCurrentPageNum(): Int = currentPage
-  fun getCurrentPage(): String = getCurrentPage(currentManga!!, currentChapter!!, currentPage)
-  fun getCurrentPage(manga: Manga, chapter: Chapter, page: Int): String { 
-      nextPageCachingMutex.acquire() 
-      val single = if (chapterPageMap.get(page) == null) {
-        nextPageCachingMutex.release() 
-        addToChapterPageMap(manga, chapter, page)
-      } else {
-        nextPageCachingMutex.release() 
-      }
-
-    thread {
-      try {
-        for (i in 0 until SettingsManager.getCacheSize()) {
-          nextPageCachingMutex.acquire() 
-          if (chapterPageMap.get(page+i) == null && page+i < getNumPages()) {
-            nextPageCachingMutex.release()
-            addToChapterPageMap(manga, chapter, page+i)
-          } else {
-            nextPageCachingMutex.release()
-          }
-        }
-      } finally {
-        nextPageCachingMutex.release()
-      }
-    }
-    return chapterPageMap[page]!!
-  }
-
-  fun addToChapterPageMap(manga: Manga, chapter: Chapter, page: Int) { 
-    if (!isOffline) {
-      val returned_page = ScriptManager.getCurrentSource().downloadPage(manga, chapter, page)
-      nextPageCachingMutex.acquire() 
-      chapterPageMap[page] = returned_page
-      nextPageCachingMutex.release()
-    } else {
-      // As we load all downloaded pages, we must not have loaded this chapter yet
-      // Do this now
-      nextPageCachingMutex.acquire() 
-      chapterPageMap.clear()
-      nextPageCachingMutex.release()
-      val chapterDirString = SettingsManager.mangagagaPath + "/Downloaded/" +
-                                          manga.getTitle() + "/" + chapter.getTitle()
-      val savedDir = File(chapterDirString)
-      for ((i, dir) in savedDir.list().filter{!it.endsWith(".json")}.withIndex()) {
-        nextPageCachingMutex.acquire() 
-        chapterPageMap[i] = chapterDirString + "/" + dir.toString()
-        nextPageCachingMutex.release()
-      }
-    }
   }
 }

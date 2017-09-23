@@ -30,22 +30,7 @@ class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGesture
         }
     }
     fun move(forwards: Boolean): Boolean {
-        val i = MangaManager.getCurrentPageNum()
-        if(forwards) {
-            if(i < MangaManager.getNumPages()-1) {
-                MangaManager.setCurrentPageNum(i+1)
-            } else {
-                MangaManager.nextChapter()
-                MangaManager.setCurrentPageNum(0)
-            }
-        } else {
-            if(i > 0) {
-                MangaManager.setCurrentPageNum(i-1)
-            } else {
-                MangaManager.previousChapter()
-                MangaManager.setCurrentPageNum(MangaManager.getNumPages() - 1)
-            }
-        }
+        MangaManager.move(forwards)
         updateImage()
         return true
     }

@@ -36,7 +36,7 @@ class ChapterActivity : Activity(), GenericLogger {
                 chapterList.clear()
                 chapterList.addAll(items.map { chapter -> TextListItem(chapter.toString(), {
                                                     MangaManager.currentChapter = chapter
-                                                    MangaManager.setCurrentPageNum(0)
+                                                    MangaManager.currentPage = 0
                                                     startActivity<ImageViewerActivity>()
                                                 }, "Saved: ", MangaManager.isSaved(chapter),
                                                     {checked ->

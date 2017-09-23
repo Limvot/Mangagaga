@@ -20,7 +20,7 @@ class HistoryActivity : Activity() {
                                                     ScriptManager.currentSource =
                                                         chapter.parentManga.sourceNumber
                                                     MangaManager.currentChapter = chapter
-                                                    MangaManager.setCurrentPageNum(0)
+                                                    MangaManager.currentPage = 0
                                                     startActivity<ImageViewerActivity>()
                                                 }) }
                 historyAdapter = SimpleListAdaptor(ctx, listItems)

@@ -1,6 +1,13 @@
 package io.githup.limvot.mangagaga
 
+import java.awt.FlowLayout
+import java.awt.image.BufferedImage
 import java.io.File
+import java.io.IOException
+import javax.imageio.ImageIO
+import javax.swing.ImageIcon
+import javax.swing.JFrame
+import javax.swing.JLabel
 
 object ScriptTester {
   var done = false
@@ -57,6 +64,7 @@ object ScriptTester {
         println("you chose the manga "+list[num].getTitle())
         MangaManager.readingOffline(false)
         MangaManager.currentManga = list[num]
+        MangaManager.initManga(MangaManager.currentManga!!)
         chapterLoop()
       }
     }
@@ -80,7 +88,7 @@ object ScriptTester {
         var num = ln.toInt()
         println("you chose the chapter "+list[num].getTitle())
         MangaManager.currentChapter = list[num]
-        MangaManager.setCurrentPageNum(0)
+        MangaManager.currentPage = 0
         println("Debug String 1")
         imageLoop()
       }
@@ -89,44 +97,51 @@ object ScriptTester {
   }
   
   fun imageLoop() {
-    var iloop = true
     var list : MutableList<String> = mutableListOf()
     var current = updateImage()
     var total = MangaManager.getNumPages()
-    list.add(current)
-    while(iloop) {
-      println("Images downloaded: ")
-      printImageList(list)
+
+    val frame = JFrame()
+    frame.layout = FlowLayout()
+    frame.setSize(200,300)
+    val lbl = JLabel()
+    frame.add(lbl)
+    frame.setVisible(true)
+
+    while(true) {
+      val img = ImageIO.read(File(current))
+      val icon = ImageIcon(img)
+      lbl.icon = icon
+      frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+
       println("Back (b), Quit (q), Next image (n), Previous Image (p):")
       val ln = readLine()!!
       if(ln[0] == 'q') {
         System.exit(0)
       } else if(ln[0] == 'b') {
-        iloop = false
+          break
       } else if(ln[0] == 'n') {
         //get next image!
-        var i = MangaManager.getCurrentPageNum()
+        var i = MangaManager.currentPage
         if(i < total-1) {
-          MangaManager.setCurrentPageNum(i+1)
+          MangaManager.currentPage = i+1
         } else {
           if(MangaManager.nextChapter()) {
-            MangaManager.setCurrentPageNum(0)
+            MangaManager.currentPage = 0
           }
         }
         current = updateImage()
-        list.add(current)
       } else if(ln[0] == 'p') {
         //get previoust image!
-        var i = MangaManager.getCurrentPageNum()
+        var i = MangaManager.currentPage
         if(i > 0) {
-          MangaManager.setCurrentPageNum(i-1)
+          MangaManager.currentPage = i-1
         } else {
           if(MangaManager.previousChapter()) {
-            MangaManager.setCurrentPageNum(MangaManager.getNumPages() - 1)
+            MangaManager.currentPage = MangaManager.getNumPages() - 1
           }
         }
         current = updateImage()
-        list.add(current)
       } else {
         println("Error, unrecognized command!")
       }
