@@ -21,6 +21,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.Executor;
 import java.util.Date;
 
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+
 object Utilities : GenericLogger {
 
     init {
@@ -147,5 +150,33 @@ object Utilities : GenericLogger {
                 clearFolder(childFile)
             childFile.delete()
         }
+    }
+
+    fun gitToScripts() {
+        val to = File(SettingsManager.mangagagaPath, "Scripts/")
+        val git_temp = File(SettingsManager.mangagagaPath, "GitTemp/")
+        Utilities.deleteFolder(git_temp)
+        val result = Git.cloneRepository().setURI(SettingsManager.getGitURL())
+                                          .setDirectory(git_temp)
+                                          .call()
+
+        for ((index, script) in git_temp.listFiles().filter { it.isFile() }.withIndex()) {
+            File(to, script.name).writeText(File(script.absolutePath).readText())
+        }
+    }
+
+    fun scriptToGit(script: File, username: String, password: String, commit_msg: String) {
+        val from = File(SettingsManager.mangagagaPath, "Scripts/")
+        val git_temp = File(SettingsManager.mangagagaPath, "GitTemp/")
+        Utilities.deleteFolder(git_temp)
+        val result = Git.cloneRepository().setURI(SettingsManager.getGitURL())
+                                          .setDirectory(git_temp)
+                                          .call()
+
+        File(git_temp, script.name).writeText(script.readText())
+        result.add().addFilepattern(script.name).call()
+        result.commit().setMessage(commit_msg).call()
+        result.push().setCredentialsProvider(
+                UsernamePasswordCredentialsProvider(username, password)).call()
     }
 }

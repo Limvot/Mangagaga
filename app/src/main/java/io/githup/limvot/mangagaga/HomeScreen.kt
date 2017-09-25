@@ -16,17 +16,6 @@ class HomeScreen : Activity(), GenericLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Homescreen GUI
-        verticalLayout {
-            button("Browse Sources") { onClick { startActivity<SourceActivity>() } }
-            button("Favroitess")     { onClick { startActivity<FavoritesActivity>() } }
-            button("History")        { onClick { startActivity<HistoryActivity>() } }
-            button("Downloaded")     { onClick { startActivity<DownloadedActivity>() } }
-            button("Settings")       { onClick { startActivity<SettingsActivity>() } }
-            button("LogCat")         { onClick { startActivity<LogCatActivity>() } }
-            button("Edit Scripts")   { onClick { startActivity<ScriptEditActivity>() } }
-        }
-
         SettingsManager.mangagagaPath = Environment.getExternalStorageDirectory()
                                             .getAbsolutePath() + "/Mangagaga"
         // Setup our main folder
@@ -43,40 +32,31 @@ class HomeScreen : Activity(), GenericLogger {
           info("OnCreate exception: $e")
         }
 
-        // Clean out the cache folder
-        Utilities.clearCache()
-
-        // Overwrite all scripts
-        val scriptDir = File(SettingsManager.mangagagaPath, "Scripts/")
-        File(scriptDir, "script_prequal").writeText(getResources()
-                                         .openRawResource(R.raw.script_prequal)
-                                         .bufferedReader().use { it.readText() })
-        for (name in listOf("kiss_manga", "unixmanga", "read_panda", "manga_stream", "jaiminis_box")) {
-            val newScript = File(scriptDir, name)
-            // For testing we want to always copy over scripts
-            // on every update
-            val rawResource = getResources().openRawResource( when(name) {
-              "kiss_manga"   -> R.raw.kiss_manga
-              "unixmanga"    -> R.raw.unixmanga
-              "read_panda"   -> R.raw.read_panda
-              "manga_stream" -> R.raw.manga_stream
-              "jaiminis_box" -> R.raw.jaiminis_box
-              else           -> 0
-            })
-            newScript.writeBytes(rawResource.readBytes())
+        // Homescreen GUI
+        verticalLayout {
+            button("Browse Sources") { onClick { startActivity<SourceActivity>() } }
+            button("Favroitess")     { onClick { startActivity<FavoritesActivity>() } }
+            button("History")        { onClick { startActivity<HistoryActivity>() } }
+            button("Downloaded")     { onClick { startActivity<DownloadedActivity>() } }
+            button("Settings")       { onClick { startActivity<SettingsActivity>() } }
+            button("LogCat")         { onClick { startActivity<LogCatActivity>() } }
+            button("Edit Scripts")   { onClick { startActivity<ScriptEditActivity>() } }
         }
 
-        // Init ScriptManager
-        ScriptManager.init()
-
         doAsync {
+            //This is needed to load the settings file from memory
+            //and to make sure SettingsManager isn't null
+            SettingsManager.loadSettings()
+
+            // Clean out the cache folder
+            Utilities.clearCache()
+
+            // Init ScriptManager
+            ScriptManager.init()
+
             // Check for updates
             var updateURL : String = "http://mangagaga.room409.xyz/app-debug.apk"
             var siteApkDate : Date = Utilities.getModifiedTime(updateURL)
-            
-            //This is needed to load the settings file from memory
-            //and to make sure SettingsManager isn't null
-            SettingsManager.loadSettings();
             
             info("Does this need updates? $siteApkDate")
             if (siteApkDate.after(SettingsManager.getApkDate())) {

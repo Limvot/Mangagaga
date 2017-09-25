@@ -12,7 +12,7 @@ object ScriptManager : GenericLogger {
     scriptList.clear()
 
     val scriptDir = File(SettingsManager.mangagagaPath, "Scripts/")
-    luaPrequal = File(scriptDir, "script_prequal").readText()
+    luaPrequal = File(scriptDir, "script_prequal.lua").readText()
 
     for ((index, script) in scriptDir.listFiles().withIndex()) {
       scriptList.add(Script(script.getName(), File(script.getAbsolutePath()).readText(), index))

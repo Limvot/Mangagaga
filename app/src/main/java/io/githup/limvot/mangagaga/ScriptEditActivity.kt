@@ -18,13 +18,14 @@ class ScriptEditActivity : Activity(), GenericLogger {
         super.onCreate(savedInstanceState)
         
         verticalLayout {
-            relativeLayout {
-                button("load")      { onClick { load() } }.lparams { alignParentLeft() }
-                button("save as")   { onClick { save() } }.lparams { alignParentRight() }
+            linearLayout {
+                button("load")      { onClick { load() } }
+                button("save as")   { onClick { save() } }
+                button("push")      { onClick { push() } }
                 button("delete")    { onClick {
                     File(filePath).delete()
                     load()
-                } }.lparams { centerInParent() }
+                } }
             }
             scrollView { scriptText = editText("placeholder") { textSize = 10f } }
         }
@@ -45,6 +46,23 @@ class ScriptEditActivity : Activity(), GenericLogger {
                 File(savePath.getText().toString()).writeText(scriptText!!.getText().toString())
                 filePath = savePath.getText().toString()
                 ScriptManager.init()
+                popup!!.dismiss()
+            } }
+            button("cancel") { onClick { popup!!.dismiss() } }
+        } } }.show()
+    }
+    fun push() {
+        var popup: DialogInterface? = null
+        popup = alert { customView { verticalLayout {
+            val username = editText("username")
+            val password = editText("password")
+            val commit_msg = editText("commit message")
+            button("push") { onClick {
+                doAsync {
+                    Utilities.scriptToGit(File(filePath), username.getText().toString(),
+                                                          password.getText().toString(),
+                                                          commit_msg.getText().toString())
+                }
                 popup!!.dismiss()
             } }
             button("cancel") { onClick { popup!!.dismiss() } }

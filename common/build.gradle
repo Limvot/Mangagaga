@@ -8,5 +8,11 @@ dependencies {
     compile files('../libs/gson-2.3.jar')
     compile files('../libs/js.jar')
 
+    compile files('../libs/jsch-0.1.54.jar')
+    compile files('../libs/slf4j-api-1.7.25.jar')
+    compile files('../libs/slf4j-nop-1.7.25.jar')
+    compile files('../libs/jgit.jar')
+
+
     compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.2-4'
 }

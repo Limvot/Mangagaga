@@ -13,6 +13,7 @@ object SettingsManager : GenericLogger {
         var historySize = 10;
         var cacheAmmount = 5
         var apkDate = Date()
+        var gitURL = "https://github.com/Limvot/MangagagaScripts.git"
     }
     
     var mangagagaPath = "_uninit_"
@@ -21,10 +22,12 @@ object SettingsManager : GenericLogger {
     fun setHistorySize(size: Int)   { settingsMan.historySize  = size;  saveSettings() }
     fun setCacheSize(size: Int)     { settingsMan.cacheAmmount = size;  saveSettings() }
     fun setApkDate(date: Date)      { settingsMan.apkDate      = date;  saveSettings() }
+    fun setGitURL(url: String)      { settingsMan.gitURL       = url;   saveSettings() }
 
     fun getHistorySize() = settingsMan.historySize
     fun getCacheSize()   = settingsMan.cacheAmmount
     fun getApkDate()     = settingsMan.apkDate
+    fun getGitURL()      = settingsMan.gitURL
 
     fun loadSettings() {
         val settingsFile  = File(mangagagaPath, "Settings.json");
