@@ -11,7 +11,7 @@ import android.widget.CheckBox
 class ChapterActivity : Activity(), GenericLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val currentManga = MangaManager.currentManga!!
+        val currentManga = Boss.currentManga
         var description: TextView? = null
         var favoriteBox: CheckBox? = null
         var chapterList = mutableListOf<TextListItem>()
@@ -20,28 +20,34 @@ class ChapterActivity : Activity(), GenericLogger {
 
         verticalLayout {
             favoriteBox = checkBox("Favorite") { onClick {
-                    MangaManager.setFavorite(currentManga, favoriteBox!!.isChecked())
+                    Boss.setFavorite(currentManga, favoriteBox!!.isChecked())
             } }
             description = textView("description...")
             listView { adapter = chapterListAdapter }.lparams(weight=0.1f)
         }
-        favoriteBox!!.setChecked(MangaManager.isFavorite(currentManga))
+        favoriteBox!!.setChecked(Boss.isFavorite(currentManga))
         val dialog = indeterminateProgressDialog(title = "Initing Manga", message = "(may take a little bit if script sets up pages)")
         doAsync {
-            MangaManager.initCurrentManga()
+            var req = Request()
+            req.source = ScriptManager.getCurrentSource().name
+            req.manga = Boss.currentManga
+            val description_chapter_list = ScriptManager.getCurrentSource().makeRequest(req)
+            //MangaManager.initCurrentManga()
             uiThread {
-                description!!.text = currentManga.getDescription()
+                description!!.text = description_chapter_list[0]
+                val items : List<String> =
+                description_chapter_list.subList(1,description_chapter_list.size)
+                Boss.currentChapterList = items
 
-                val items = MangaManager.getMangaChapterList()
                 chapterList.clear()
-                chapterList.addAll(items.map { chapter -> TextListItem(chapter.toString(), {
-                                                    MangaManager.currentChapter = chapter
-                                                    MangaManager.currentPage = 0
+                chapterList.addAll(items.map { chapter -> TextListItem(chapter, {
+                                                    Boss.currentChapter = chapter
+                                                    Boss.currentPage = 0
                                                     startActivity<ImageViewerActivity>()
-                                                }, "Saved: ", MangaManager.isSaved(chapter),
+                                                }, "Saved: ", Boss.isSaved(chapter),
                                                     {checked ->
-                                                    if (checked) MangaManager.addSaved(chapter)
-                                                    else MangaManager.removeSaved(chapter)
+                                                    if (checked) Boss.addSaved(chapter)
+                                                    else Boss.removeSaved(chapter)
                                                 }) })
                 chapterListAdapter.notifyDataSetChanged()
                 dialog.dismiss()

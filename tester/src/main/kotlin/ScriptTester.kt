@@ -34,8 +34,15 @@ object ScriptTester {
   }
 
   fun mangaLoop() {
+
+    val script = ScriptManager.getCurrentSource()
+    var test_request = Request();
+    test_request.source = script.name;
+    test_request.filter = mangaListType
+    val manga_list = script.makeRequest(test_request);
+
     var mloop = true
-    var list = getMangaList()
+    var list : List<String> = manga_list
     while (mloop) {
       printMangaList(list)
       println("Back (b), Quit (q), or Manga Number:")
@@ -47,10 +54,10 @@ object ScriptTester {
         mloop = false
       } else {
         var num = ln.toInt()
-        println("you chose the manga "+list[num].getTitle())
-        MangaManager.readingOffline(false)
-        MangaManager.currentManga = list[num]
-        MangaManager.initManga(MangaManager.currentManga!!)
+        var index = num
+        println("you chose the manga "+list[index])
+        Boss.readingOffline(false)
+        Boss.currentManga = list[index]
         chapterLoop()
       }
     }
@@ -58,9 +65,17 @@ object ScriptTester {
 
   fun chapterLoop() {
     var cloop = true
-    val manga = MangaManager.currentManga!!
-    var list = MangaManager.getMangaChapterList()
-    println("Description: "+manga.getDescription())
+    //val manga = MangaManager.currentManga!!
+    //TODO(marcus): this has different behavior based on online/offline reading
+    //var list = MangaManager.getMangaChapterList()
+
+    val script = ScriptManager.getCurrentSource()
+    var req = Request()
+    req.manga = Boss.currentManga
+    var list = script.makeRequest(req)
+    Boss.currentChapterList = list
+
+    println("Description: "+list[0])
     while (cloop){
       printChapterList(list)
       println("Back (b), Quit (q), or Chapter Number:")
@@ -72,20 +87,32 @@ object ScriptTester {
         cloop = false
       } else {
         var num = ln.toInt()
-        println("you chose the chapter "+list[num].getTitle())
-        MangaManager.currentChapter = list[num]
-        MangaManager.currentPage = 0
+        println("you chose the chapter "+list[num+1])
+        Boss.currentChapter = list[num+1]
+        Boss.currentPage = 0
         println("Debug String 1")
         imageLoop()
+        return
       }
 
     }
   }
   
   fun imageLoop() {
-    var list : MutableList<String> = mutableListOf()
-    var current = updateImage()
-    var total = MangaManager.getNumPages()
+    //var list : MutableList<String> = mutableListOf()
+    //request number of pages
+    var req = Request()
+    req.manga = Boss.currentManga
+    req.chapter = Boss.currentChapter
+    val script = ScriptManager.getCurrentSource()
+    var num_page_list = script.makeRequest(req)
+    println("Num Pages "+num_page_list[0])
+
+    //request first page
+    req.page = "0"
+    var page = script.makeRequest(req)
+    var current = page[0];
+    var total = num_page_list[0].toInt()
 
     val frame = JFrame()
     frame.layout = FlowLayout()
@@ -108,26 +135,38 @@ object ScriptTester {
           break
       } else if (ln[0] == 'n') {
         //get next image!
-        var i = MangaManager.currentPage
+        var i = Boss.currentPage
         if (i < total-1) {
-          MangaManager.currentPage = i+1
+          Boss.currentPage = i+1
         } else {
-          if (MangaManager.nextChapter()) {
-            MangaManager.currentPage = 0
-          }
+            if (Boss.nextChapter()) {
+                req.chapter = Boss.currentChapterList[Boss.currentChapterList.indexOf(req.chapter)-1]
+                req.page = ""
+                var next_page_list = script.makeRequest(req)
+                total = next_page_list[0].toInt()
+                Boss.currentPage = 0
+            }
         }
-        current = updateImage()
+        req.page = Boss.currentPage.toString()
+        page = script.makeRequest(req)
+        current = page[0]
       } else if (ln[0] == 'p') {
         //get previoust image!
-        var i = MangaManager.currentPage
+        var i = Boss.currentPage
         if (i > 0) {
-          MangaManager.currentPage = i-1
+          Boss.currentPage = i-1
         } else {
-          if (MangaManager.previousChapter()) {
-            MangaManager.currentPage = MangaManager.getNumPages() - 1
-          }
+            if (Boss.previousChapter()) {
+                req.chapter = Boss.currentChapterList[Boss.currentChapterList.indexOf(req.chapter)+1]
+                req.page = ""
+                var prev_page_list = script.makeRequest(req)
+                total = prev_page_list[0].toInt()
+                Boss.currentPage = total - 1
+            }
         }
-        current = updateImage()
+        req.page = Boss.currentPage.toString()
+        page = script.makeRequest(req)
+        current = page[0]
       } else {
         println("Error, unrecognized command!")
       }
@@ -179,19 +218,24 @@ object ScriptTester {
     println("You chose $mangaListType")
   }
   
-  fun printMangaList(list : List<Manga>) {
-    var count = 0
-    for (i in list) {
-      println("$count: ${i.getTitle()}")
-      count += 1
-    }
+  fun printMangaList(list : List<String>) {
+      var count = 0
+      for (entry in list) {
+          println("$count: ${entry}")
+          count += 1
+      }
   }
   
-  fun printChapterList(list : List<Chapter>) {
+  fun printChapterList(list : List<String>) {
     var count = 0
+    var skip_descr = 0
     for (i in list) {
-      println("$count: ${i.getTitle()}")
-      count += 1
+        if(skip_descr == 0) {
+            skip_descr = 1
+            continue
+        }
+        println("$count: ${i}")
+        count += 1
     }
   }
 
