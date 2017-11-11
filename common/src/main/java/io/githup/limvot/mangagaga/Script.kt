@@ -21,6 +21,7 @@ class Script(val name : String, val luaCode : String, val scriptNumber : Int) : 
     val luaGetMangaChapterList      = globals.get("getMangaChapterList")
     val luaGetMangaChapterNumPages  = globals.get("getMangaChapterNumPages")
     val luaGetMangaChapterPage      = globals.get("getMangaChapterPage")
+    val luaMakeRequest              = globals.get("handleRequest")
 
     fun getMangaListTypes() : List<String> {
         val resTable = luaGetMangaListTypes.call().checktable()
@@ -46,4 +47,14 @@ class Script(val name : String, val luaCode : String, val scriptNumber : Int) : 
 
     fun downloadPage(manga : Manga, chapter : Chapter, page : Int) =
         luaGetMangaChapterPage.call(manga.table, chapter.table, LuaValue.valueOf(page)).toString()
+
+    fun makeRequest(request : Request) : List<String> {
+        println("Requesting... " + request.toString())
+        var req = CoerceJavaToLua.coerce(request);
+        var ret = luaMakeRequest.call(req).checktable()
+        var mylist = (0 until ret.length()).map { ret[it].tojstring() }
+        println("foo make request")
+        println(ret.length())
+        return mylist
+    }
 }
