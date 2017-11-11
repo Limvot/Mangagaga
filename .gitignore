@@ -12,3 +12,4 @@ app/libs/luaj-src
 manual.sh
 *.swo
 gradle-files
+/.idea
