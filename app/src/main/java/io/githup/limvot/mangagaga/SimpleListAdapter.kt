@@ -39,6 +39,7 @@ class TextListItem(val internal_text: String = "empty", val func: () -> Unit, va
                 var box: CheckBox? = null
                 box = checkBox(checkbox_text) { onClick { checkbox_func(box!!.isChecked()) } }
                 box.setChecked(checkbox_start)
+                onClick { func() }
             }
     }
     fun applyView(convertView: View) {
