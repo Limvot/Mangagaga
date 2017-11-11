@@ -14,5 +14,5 @@ dependencies {
     compile files('../libs/gson-2.3.jar')
     compile files('../libs/js.jar')
 
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.2-4'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.51'
 }

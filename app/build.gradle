@@ -51,7 +51,7 @@ dependencies {
 
     compile 'com.android.support:support-v4:20.0.0'
 
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.2-4'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.51'
     compile 'org.jetbrains.anko:anko:0.10.0'
     compile 'org.jetbrains.anko:anko-appcompat-v7-commons:0.10.0'
     compile 'org.jetbrains.anko:anko-appcompat-v7:0.10.0'

@@ -14,5 +14,5 @@ dependencies {
     compile files('../libs/jgit.jar')
 
 
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.2-4'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.51'
 }
