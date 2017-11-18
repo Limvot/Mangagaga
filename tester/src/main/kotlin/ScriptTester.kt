@@ -247,11 +247,4 @@ object ScriptTester {
     }
   }
   
-  fun updateImage() : String {
-    return MangaManager.getCurrentPage()
-  }
-
-  fun getMangaList() : List<Manga> {
-    return ScriptManager.getCurrentSource().getMangaList(mangaListType)
-  }
 }

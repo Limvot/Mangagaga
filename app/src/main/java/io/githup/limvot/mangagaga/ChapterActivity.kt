@@ -39,7 +39,6 @@ class ChapterActivity : Activity(), GenericLogger {
             req.source = currentSource
             req.manga = Boss.currentManga
             val description_chapter_list = ScriptManager.getCurrentSource().makeRequest(req)
-            //MangaManager.initCurrentManga()
             uiThread {
                 description!!.text = description_chapter_list[0]
                 val items : List<String> =
