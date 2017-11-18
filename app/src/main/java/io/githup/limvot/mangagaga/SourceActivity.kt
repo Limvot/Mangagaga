@@ -15,8 +15,6 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 class SourceActivity : Activity(), GenericLogger {
     var mangaList: MutableList<TextListItem>? = null
     var mangaListAdapter: SimpleListAdaptor? = null
-    var sourceText: TextView? = null
-    var typeText: TextView? = null
     var srcButton: Button? = null
     var listTypeButton: Button? = null
     var mangaListType = "All"
@@ -28,15 +26,11 @@ class SourceActivity : Activity(), GenericLogger {
 
         verticalLayout{
             relativeLayout {
-                sourceText = textView("Source: ...") { textSize = 22f }
                 srcButton = button("Change Source") {
                     onClick { doSourcePopup() }
                 }.lparams {
-                    alignParentRight()
+                    alignParentLeft()
                 }
-            }
-            relativeLayout {
-                typeText = textView("Type: ...") { textSize = 22f }
                 listTypeButton = button("Change List Type") { onClick { doTypePopup() } }.lparams {
                     alignParentRight()
                 }
@@ -49,7 +43,6 @@ class SourceActivity : Activity(), GenericLogger {
     fun doSourcePopup() {
         selector("Source", ScriptManager.scriptList.map {it.name}) { _, i ->
             ScriptManager.currentSource = i
-            sourceText!!.text = "Source: ${ScriptManager.scriptList[i].name}"
             srcButton!!.text = ScriptManager.scriptList[i].name
             updateMangaList()
         }
@@ -57,7 +50,6 @@ class SourceActivity : Activity(), GenericLogger {
     fun doTypePopup() {
         selector("Sorted", ScriptManager.getCurrentSource().getMangaListTypes()) { _, i ->
             mangaListType = ScriptManager.getCurrentSource().getMangaListTypes()[i]
-            typeText!!.text = "List Type: $mangaListType"
             listTypeButton!!.text = mangaListType
             updateMangaList()
         }
