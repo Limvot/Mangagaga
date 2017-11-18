@@ -1,7 +1,6 @@
 package io.githup.limvot.mangagaga;
 
 import java.io.File
-import java.io.FileOutputStream
 
 object ScriptManager : GenericLogger {
   var luaPrequal = ""

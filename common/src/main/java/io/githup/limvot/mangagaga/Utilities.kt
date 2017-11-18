@@ -7,8 +7,6 @@ package io.githup.limvot.mangagaga;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.luaj.vm2.LuaTable;
-
 import java.net.HttpURLConnection;
 import java.net.CookieHandler;
 import java.net.CookieManager;

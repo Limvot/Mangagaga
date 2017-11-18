@@ -1,6 +1,5 @@
 package io.githup.limvot.mangagaga;
 
-import org.luaj.vm2.*
 import org.luaj.vm2.lib.jse.*
 
 import java.io.StringReader;

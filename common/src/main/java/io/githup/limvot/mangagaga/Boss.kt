@@ -7,9 +7,6 @@ import java.util.concurrent.Semaphore
 import java.io.BufferedWriter
 import java.io.File
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.InstanceCreator
 import com.google.gson.reflect.TypeToken
 
 import java.io.FileWriter
@@ -216,7 +213,7 @@ import java.io.FileWriter
     fun previousChapter(): Boolean {
         val nextIndex = currentChapterList.indexOf(currentChapter)+1
         if (nextIndex < currentChapterList.size)
-          setCurrentChapterImpl(currentChapterList.get(nextIndex))
+          setCurrentChapterImpl(currentChapterList[nextIndex])
         else
           return false
         return true
@@ -225,7 +222,7 @@ import java.io.FileWriter
     fun nextChapter(): Boolean {
         val nextIndex = currentChapterList.indexOf(currentChapter)-1
         if (nextIndex > 0)
-          setCurrentChapterImpl(currentChapterList.get(nextIndex))
+          setCurrentChapterImpl(currentChapterList[nextIndex])
         else
           return false
         return true
