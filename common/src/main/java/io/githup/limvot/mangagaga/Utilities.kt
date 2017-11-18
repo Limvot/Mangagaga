@@ -34,7 +34,7 @@ object Utilities : GenericLogger {
     var gson_bac : Gson? = null
     fun getGson() : Gson {
         if (gson_bac == null)
-            gson_bac = GsonBuilder().registerTypeAdapter(LuaTable::class.java, LuaTableSerializer()).setPrettyPrinting().create()
+            gson_bac = GsonBuilder().setPrettyPrinting().create()
         return gson_bac!!
     }
 
