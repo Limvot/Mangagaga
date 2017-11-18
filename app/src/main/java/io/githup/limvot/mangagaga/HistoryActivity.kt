@@ -13,14 +13,13 @@ class HistoryActivity : Activity() {
 
         verticalLayout {
             listView {
-                val listItems = MangaManager.getChapterHistoryList().map { chapter ->
-                                                TextListItem(chapter.toString(), {
-                                                    MangaManager.readingOffline(false)
-                                                    MangaManager.currentManga = chapter.parentManga
-                                                    ScriptManager.currentSource =
-                                                        chapter.parentManga.sourceNumber
-                                                    MangaManager.currentChapter = chapter
-                                                    MangaManager.currentPage = 0
+                val listItems = Boss.getChapterHistoryList().map { chapter ->
+                                                TextListItem(chapter.chapter, {
+                                                    Boss.readingOffline(false)
+                                                    ScriptManager.setCurrentSource(chapter.source)
+                                                    Boss.currentManga = chapter.manga
+                                                    Boss.currentChapter = chapter.chapter
+                                                    Boss.currentPage = 0
                                                     startActivity<ImageViewerActivity>()
                                                 }) }
                 historyAdapter = SimpleListAdaptor(ctx, listItems)

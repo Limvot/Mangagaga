@@ -35,12 +35,17 @@ import java.io.FileWriter
     
     fun readingOffline(isOffline: Boolean) { this.isOffline = isOffline }
     
-    fun  loadHistory(): ArrayList<String> {
+    fun  loadHistory(): ArrayList<Request> {
         //TODO(marcus): implement
-        return ArrayList<String>()
+        return try {
+          gson.fromJson(File(SettingsManager.mangagagaPath, "History.json").readText(),
+                        object : TypeToken<ArrayList<Request>>() {}.type)
+        } catch (e: Exception) {
+          ArrayList<Request>()
+        }
     }
     
-    fun getChapterHistoryList(): List<String> = chapterHistory
+    fun getChapterHistoryList(): List<Request> = chapterHistory
     
     fun clearHistory() {
         chapterHistory.clear()
@@ -48,7 +53,7 @@ import java.io.FileWriter
     }
     fun saveHistory() { thread { saveHistoryAsync(chapterHistory) } }
 
-    fun saveHistoryAsync(toDownload: ArrayList<String>) {
+    fun saveHistoryAsync(toDownload: ArrayList<Request>) {
         try {
           val history = File(SettingsManager.mangagagaPath, "History.json")
           history.createNewFile()
@@ -61,15 +66,27 @@ import java.io.FileWriter
         }
     }
 
-    fun  loadFavorites(): ArrayList<String> {
-        //TODO(marcus): implement
-        return ArrayList<String>()
+    fun  loadFavorites(): ArrayList<Request> {
+        return try {
+          gson.fromJson(File(SettingsManager.mangagagaPath, "Favorites.json").readText(),
+                        object : TypeToken<ArrayList<Request>>() {}.type)
+        } catch (e: Exception) {
+          info("Caught exception while trying to load favorites - $e")
+          ArrayList<Request>()
+        }
     }
 
-    fun getFavoriteList(): ArrayList<String> = favoriteManga
-    fun isFavorite(manga: String): Boolean = favoriteManga.contains(manga)
+    fun getFavoriteList(): ArrayList<Request> = favoriteManga
+    //TODO(marcus): get a .equals method for request
+    fun isFavorite(manga: Request): Boolean = favoriteManga.contains(manga)
 
-    fun setFavorite(manga: String, add: Boolean) {
+    fun setFavorite(source : String, manga: String, add: Boolean) {
+        val req = Request()
+        req.source = source
+        req.manga = manga
+        setFavorite(req, add)
+    }
+    fun setFavorite(manga: Request, add: Boolean) {
         if (add)
             favoriteManga.add(manga)
         else
@@ -99,19 +116,32 @@ import java.io.FileWriter
         Utilities.clearFolder(downloaded)
     }
 
-    fun isSaved(chapter: String): Boolean {
-        //TODO(marcus): will we only ever call this method on chapters of the current manga?
+    fun isSaved(chapter: String, manga: String, source: String): Boolean {
+        val req = Request()
+        req.chapter = chapter
+        req.manga = manga
+        req.source = source
+        return isSaved(req)
+    }
+    fun isSaved(req : Request): Boolean {
         val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" +
-                            currentManga + "/" + chapter)
+                            req.manga + "/" + req.chapter)
         return savedDir.exists()
     }
 
-    fun addSaved(chapter: String) {
-        if (!isSaved(chapter)) {
+    fun addSaved(chapter: String, manga: String, source: String) {
+        val req = Request()
+        req.source = source
+        req.manga = manga
+        req.chapter = chapter
+        addSaved(req)
+    }
+    fun addSaved(req : Request) {
+        if (!isSaved(req)) {
           thread { 
             try {
               chapterDownloadMutex.acquire()
-              downloadChaptersAsync(listOf(chapter))
+              downloadChaptersAsync(listOf(req))
             } finally {
               chapterDownloadMutex.release()
             }
@@ -119,14 +149,14 @@ import java.io.FileWriter
         }
     }
 
-    fun removeSaved(chapter: String) {
+    fun removeSaved(chapter: String, manga: String, source: String) {
         //TODO(marcus): will we only ever call this method on chapters of the current manga?
         val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" + currentManga + "/" + chapter)
         if (savedDir.exists())
           Utilities.deleteFolder(savedDir)
     }
 
-    fun downloadChaptersAsync(toDownload: List<String>) {
+    fun downloadChaptersAsync(toDownload: List<Request>) {
         //TODO(marcus): implement this
         // Notification
         val notificationID = 0
@@ -208,18 +238,22 @@ import java.io.FileWriter
             File(pair.value).delete()
         chapterPageMap.clear()
         currentChapter = chapter
-        chapterHistory.add(0, chapter)
+        val req = Request()
+        req.source = ScriptManager.getCurrentSource().name
+        req.manga = currentManga
+        req.chapter = chapter
+        chapterHistory.add(0, req)
         for (i in SettingsManager.getHistorySize() until chapterHistory.size)
           chapterHistory.removeAt(i)
         saveHistory()
     }
     fun getNumPages(): Int {
         if(numChapPages <= 0) {
-            var req = Request()
+            val req = Request()
             req.manga = Boss.currentManga
             req.chapter = Boss.currentChapter
             val script = ScriptManager.getCurrentSource()
-            var num_page_list = script.makeRequest(req)
+            val num_page_list = script.makeRequest(req)
             numChapPages = num_page_list[0].toInt()
         }
         return numChapPages
@@ -250,5 +284,18 @@ import java.io.FileWriter
                 numChapPages = -1
             }
         }
+    }
+    fun getSavedManga(): List<Request> {
+        val list = mutableListOf<Request>()
+        val savedDir = File(SettingsManager.mangagagaPath, "Downloaded/")
+        /*
+        for (dir in savedDir.list()) {
+          val mangaDir = File(savedDir, dir)
+          val mangaFile = File(mangaDir, "manga.json")
+          val manga = gson.fromJson(mangaFile.readText(), Manga::class.java)
+          list.add(manga)
+        }
+        */
+        return list
     }
  }

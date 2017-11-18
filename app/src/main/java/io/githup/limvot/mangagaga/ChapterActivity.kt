@@ -20,16 +20,23 @@ class ChapterActivity : Activity(), GenericLogger {
 
         verticalLayout {
             favoriteBox = checkBox("Favorite") { onClick {
-                    Boss.setFavorite(currentManga, favoriteBox!!.isChecked())
+                    var fave_set_req = Request()
+                    fave_set_req.source = ScriptManager.getCurrentSource().name
+                    fave_set_req.manga = currentManga
+                    Boss.setFavorite(fave_set_req, favoriteBox!!.isChecked())
             } }
             description = textView("description...")
             listView { adapter = chapterListAdapter }.lparams(weight=0.1f)
         }
-        favoriteBox!!.setChecked(Boss.isFavorite(currentManga))
+        var fave_req = Request()
+        fave_req.source = ScriptManager.getCurrentSource().name
+        fave_req.manga = currentManga
+        favoriteBox!!.setChecked(Boss.isFavorite(fave_req))
         val dialog = indeterminateProgressDialog(title = "Initing Manga", message = "(may take a little bit if script sets up pages)")
+        val currentSource = ScriptManager.getCurrentSource().name
         doAsync {
             var req = Request()
-            req.source = ScriptManager.getCurrentSource().name
+            req.source = currentSource
             req.manga = Boss.currentManga
             val description_chapter_list = ScriptManager.getCurrentSource().makeRequest(req)
             //MangaManager.initCurrentManga()
@@ -44,10 +51,13 @@ class ChapterActivity : Activity(), GenericLogger {
                                                     Boss.currentChapter = chapter
                                                     Boss.currentPage = 0
                                                     startActivity<ImageViewerActivity>()
-                                                }, "Saved: ", Boss.isSaved(chapter),
+                                                }, "Saved: ",
+                                                Boss.isSaved(chapter,currentManga,currentSource),
                                                     {checked ->
-                                                    if (checked) Boss.addSaved(chapter)
-                                                    else Boss.removeSaved(chapter)
+                                                    if (checked)
+                                                    Boss.addSaved(chapter,currentManga,currentSource)
+                                                    else
+                                                    Boss.removeSaved(chapter,currentManga,currentSource)
                                                 }) })
                 chapterListAdapter.notifyDataSetChanged()
                 dialog.dismiss()

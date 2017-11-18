@@ -24,4 +24,19 @@ object ScriptManager : GenericLogger {
                                             scriptList[position]
                                          else null
   fun getCurrentSource(): Script = getScript(currentSource)!!
+
+  fun setCurrentSource(src : String) : Boolean {
+      //TODO(marcus): should we error if we can't find the script?
+      var i = currentSource
+      var ret = false
+      for ((index, s) in scriptList.withIndex()) {
+          if (s.name == src) {
+              ret = true
+              i = index
+              break
+          }
+      }
+      currentSource = i
+      return ret
+  }
 }

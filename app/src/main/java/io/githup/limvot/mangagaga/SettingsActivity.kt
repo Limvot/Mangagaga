@@ -12,18 +12,18 @@ class SettingsActivity : Activity() {
 
         verticalLayout {
 
-            button("Clear History")            { onClick { MangaManager.clearHistory() } }
+            button("Clear History")            { onClick { Boss.clearHistory() } }
             button("Clear Cache")              { onClick { Utilities.clearCache() } }
-            button("Clear Favorites")          { onClick { MangaManager.clearFavorites() } }
-            button("Clear Saved Chapters")     { onClick { MangaManager.clearSaved() } }
+            button("Clear Favorites")          { onClick { Boss.clearFavorites() } }
+            button("Clear Saved Chapters")     { onClick { Boss.clearSaved() } }
 
             button("Refresh Scripts from Git") { onClick { doAsync { Utilities.gitToScripts()
                                                                      ScriptManager.init() } } }
 
-            button("Clear All")                { onClick { MangaManager.clearHistory()
+            button("Clear All")                { onClick { Boss.clearHistory()
                                                            Utilities.clearCache()
-                                                           MangaManager.clearFavorites()
-                                                           MangaManager.clearSaved() } }
+                                                           Boss.clearFavorites()
+                                                           Boss.clearSaved() } }
 
             textView("Number of entries to save in history")
             val history_size_entry = editText(SettingsManager.getHistorySize().toString())

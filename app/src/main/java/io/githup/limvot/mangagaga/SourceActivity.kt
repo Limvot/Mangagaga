@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Button
 import android.os.Bundle
 
 import org.jetbrains.anko.*
@@ -16,6 +17,8 @@ class SourceActivity : Activity(), GenericLogger {
     var mangaListAdapter: SimpleListAdaptor? = null
     var sourceText: TextView? = null
     var typeText: TextView? = null
+    var srcButton: Button? = null
+    var listTypeButton: Button? = null
     var mangaListType = "All"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,13 +29,15 @@ class SourceActivity : Activity(), GenericLogger {
         verticalLayout{
             relativeLayout {
                 sourceText = textView("Source: ...") { textSize = 22f }
-                button("Change Source") { onClick { doSourcePopup() } }.lparams {
+                srcButton = button("Change Source") {
+                    onClick { doSourcePopup() }
+                }.lparams {
                     alignParentRight()
                 }
             }
             relativeLayout {
                 typeText = textView("Type: ...") { textSize = 22f }
-                button("Change List Type") { onClick { doTypePopup() } }.lparams {
+                listTypeButton = button("Change List Type") { onClick { doTypePopup() } }.lparams {
                     alignParentRight()
                 }
             }
@@ -45,6 +50,7 @@ class SourceActivity : Activity(), GenericLogger {
         selector("Source", ScriptManager.scriptList.map {it.name}) { _, i ->
             ScriptManager.currentSource = i
             sourceText!!.text = "Source: ${ScriptManager.scriptList[i].name}"
+            srcButton!!.text = ScriptManager.scriptList[i].name
             updateMangaList()
         }
     }
@@ -52,6 +58,7 @@ class SourceActivity : Activity(), GenericLogger {
         selector("Sorted", ScriptManager.getCurrentSource().getMangaListTypes()) { _, i ->
             mangaListType = ScriptManager.getCurrentSource().getMangaListTypes()[i]
             typeText!!.text = "List Type: $mangaListType"
+            listTypeButton!!.text = mangaListType
             updateMangaList()
         }
     }

@@ -11,11 +11,11 @@ class FavoritesActivity : Activity(), GenericLogger {
 
         verticalLayout{
             listView {
-                val listItems = MangaManager.getFavoriteList().map { manga ->
-                                            TextListItem(manga.toString(), {
-                                                MangaManager.readingOffline(false)
-                                                MangaManager.currentManga = manga
-                                                ScriptManager.currentSource = manga.sourceNumber
+                val listItems = Boss.getFavoriteList().map { manga ->
+                                            TextListItem(manga.manga, {
+                                                Boss.readingOffline(false)
+                                                Boss.currentManga = manga.manga
+                                                ScriptManager.setCurrentSource(manga.source)
                                                 startActivity<ChapterActivity>()
                                             }) }
                 adapter = SimpleListAdaptor(ctx, listItems)

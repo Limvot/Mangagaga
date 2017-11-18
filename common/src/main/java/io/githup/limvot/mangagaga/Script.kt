@@ -50,9 +50,9 @@ class Script(val name : String, val luaCode : String, val scriptNumber : Int) : 
 
     fun makeRequest(request : Request) : List<String> {
         println("Requesting... " + request.toString())
-        var req = CoerceJavaToLua.coerce(request);
-        var ret = luaMakeRequest.call(req).checktable()
-        var mylist = (0 until ret.length()).map { ret[it].tojstring() }
+        val req = CoerceJavaToLua.coerce(request);
+        val ret = luaMakeRequest.call(req).checktable()
+        val mylist = (0 until ret.length()).map { ret[it].tojstring() }
         println("foo make request")
         println(ret.length())
         return mylist
