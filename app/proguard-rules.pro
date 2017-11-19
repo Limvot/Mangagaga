@@ -9,17 +9,22 @@
 
 # Add any project specific keep options here:
 -keep class org.mozilla.javascript.** {*;}
+-keep class org.mozilla.classfile.** {*;}
 -keep class io.** {*;}
+-keep class kotlin.coroutines.**
+-keep class kotlin.jvm.**
+-keep class kotlinx.coroutines.**
+-keep class org.jetbrains.anko.**
+-keep class com.google.gson.** {*;}
 -dontoptimize
 -dontobfuscate
 -keepattributes Signature
--dontwarn scala.collection.**
--dontwarn scala.collection.mutable.**
 -dontwarn sun.misc.Unsafe
 -dontwarn java.beans.*
 -dontwarn java.lang.management.*
--dontwarn scala.reflect.internal.*
--dontwarn org.scaloid.common.*
+-dontwarn org.eclipse.jgit.**
+-dontwarn com.jcraft.jsch.**
+-dontwarn org.jetbrains.anko.**
 
 -dontwarn org.mozilla.javascript.**
 -dontwarn org.mozilla.classfile.**
