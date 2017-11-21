@@ -11,7 +11,6 @@ class Script(val name : String, val code : String, val scriptNumber : Int) : Gen
             scriptScope = cx.initStandardObjects()
             ScriptableObject.putProperty(scriptScope, "api", APIObject.instance())
             cx.evaluateString(scriptScope, ScriptManager.codePrequel, "<cmd>", 1, null)
-            println("Code is '$code'")
             cx.evaluateString(scriptScope, code, "<cmd>", 1, null)
         } finally {
             Context.exit()
