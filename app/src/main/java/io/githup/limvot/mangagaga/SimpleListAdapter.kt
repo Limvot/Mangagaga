@@ -13,24 +13,21 @@ class SimpleListAdaptor(ctx: Context, items: List<TextListItem>) : ArrayAdapter<
     private val ankoContext = AnkoContext.createReusable(ctx, this)
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         val item = getItem(position)
-        if (item != null) {
-            // FORGET ABOUT EFFICENCY!
-            /*val view = convertView ?: item.createView(ankoContext)*/
-            /*item.applyView(view)*/
-            /*return view*/
+        if (item != null)
             return item.createView(ankoContext)
-        } else return convertView
+        else
+            return convertView
     }
 }
 
 class TextListItem(val internal_text: String = "empty", val func: () -> Unit, val checkbox_text: String = "none", val checkbox_start: Boolean = false, val checkbox_func: (Boolean) -> Unit = {}) : AnkoComponent<SimpleListAdaptor> {
     override fun createView(ui: AnkoContext<SimpleListAdaptor>) = with(ui) {
-        if (checkbox_text == "none")
+        if (checkbox_text == "none") {
             textView {
                 text = internal_text
                 onClick { func() }
             }
-        else
+        } else {
             relativeLayout {
                 textView {
                     text = internal_text
@@ -41,8 +38,6 @@ class TextListItem(val internal_text: String = "empty", val func: () -> Unit, va
                 box.setChecked(checkbox_start)
                 onClick { func() }
             }
-    }
-    fun applyView(convertView: View) {
-        println("apply convertView")
+        }
     }
 }

@@ -29,9 +29,7 @@ class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGesture
             req.manga = Boss.currentManga
             req.chapter = Boss.currentChapter
             req.page = Boss.currentPage.toString()
-            val script = ScriptManager.getCurrentSource()
-            val page_list = script.makeRequest(req)
-
+            val page_list = ScriptManager.getCurrentSource().makeRequest(req)
             val bm = BitmapFactory.decodeFile(page_list[0])
             uiThread { image!!.setImageBitmap(bm) }
         }

@@ -34,13 +34,12 @@ object ScriptTester {
   fun mangaLoop() {
 
     val script = ScriptManager.getCurrentSource()
-    var test_request = Request();
-    test_request.source = script.name;
+    var test_request = Request()
+    test_request.source = script.name
     test_request.filter = mangaListType
-    val manga_list = script.makeRequest(test_request);
 
     var mloop = true
-    var list : List<String> = manga_list
+    var list = script.makeRequest(test_request)
     while (mloop) {
       printMangaList(list)
       println("Back (b), Quit (q), or Manga Number:")
@@ -63,14 +62,9 @@ object ScriptTester {
 
   fun chapterLoop() {
     var cloop = true
-    //val manga = MangaManager.currentManga!!
-    //TODO(marcus): this has different behavior based on online/offline reading
-    //var list = MangaManager.getMangaChapterList()
-
-    val script = ScriptManager.getCurrentSource()
     var req = Request()
     req.manga = Boss.currentManga
-    var list = script.makeRequest(req)
+    var list = ScriptManager.getCurrentSource().makeRequest(req)
     Boss.currentChapterList = list
 
     println("Description: "+list[0])
@@ -92,12 +86,10 @@ object ScriptTester {
         imageLoop()
         return
       }
-
     }
   }
   
   fun imageLoop() {
-    //var list : MutableList<String> = mutableListOf()
     //request number of pages
     var req = Request()
     req.manga = Boss.currentManga
@@ -236,13 +228,4 @@ object ScriptTester {
         count += 1
     }
   }
-
-  fun printImageList(list : List<String>) {
-    var count = 0
-    for (i in list) {
-      println("$count: $i")
-      count += 1
-    }
-  }
-  
 }

@@ -3,7 +3,7 @@ package io.githup.limvot.mangagaga;
 import java.io.File
 
 object ScriptManager : GenericLogger {
-  var luaPrequal = ""
+  var codePrequel = ""
   var currentSource = 0
   val scriptList = mutableListOf<Script>()
 
@@ -11,9 +11,9 @@ object ScriptManager : GenericLogger {
     scriptList.clear()
 
     val scriptDir = File(SettingsManager.mangagagaPath, "Scripts/")
-    luaPrequal = File(scriptDir, "script_prequal.lua").readText()
+    codePrequel = File(scriptDir, "script_prequel.js").readText()
 
-    for ((index, script) in scriptDir.listFiles().withIndex()) {
+    for ((index, script) in scriptDir.listFiles().filter { it.name.endsWith(".js") }.withIndex()) {
       scriptList.add(Script(script.getName(), File(script.getAbsolutePath()).readText(), index))
     }
   }

@@ -1,34 +1,31 @@
 package io.githup.limvot.mangagaga;
 
-import org.luaj.vm2.lib.jse.*
+import org.mozilla.javascript.*
 
-import java.io.StringReader;
+class Script(val name : String, val code : String, val scriptNumber : Int) : GenericLogger {
 
-class Script(val name : String, val luaCode : String, val scriptNumber : Int) : GenericLogger {
-
-    val globals = JsePlatform.standardGlobals()
+    private var scriptScope: Scriptable? = null
     init {
-        globals.load(StringReader(ScriptManager.luaPrequal), "luaPrequal").call()
-        // Call init function which saves this APIObject
-        globals.get("init").call(CoerceJavaToLua.coerce(APIObject.instance()))
-        globals.load(StringReader(luaCode), name).call()
+        val cx = Context.enter()
+        try {
+            scriptScope = cx.initStandardObjects()
+            ScriptableObject.putProperty(scriptScope, "api", APIObject.instance())
+            cx.evaluateString(scriptScope, ScriptManager.codePrequel, "<cmd>", 1, null)
+            println("Code is '$code'")
+            cx.evaluateString(scriptScope, code, "<cmd>", 1, null)
+        } finally {
+            Context.exit()
+        }
     }
-
-    val luaGetMangaListTypes        = globals.get("getMangaListTypes")
-    val luaMakeRequest              = globals.get("handleRequest")
-
-    fun getMangaListTypes() : List<String> {
-        val resTable = luaGetMangaListTypes.call().checktable()
-        return (0 .. resTable["numTypes"].toint()).map { resTable[it].toString() }
+    fun callHelper(function: String, params: Array<Any>): List<String> {
+        val cx = Context.enter()
+        try {
+            val function = (scriptScope!!.get(function, scriptScope) as org.mozilla.javascript.Function)
+            return function.call(cx, scriptScope, scriptScope, params) as List<String>
+        } finally {
+            Context.exit();
+        }
     }
-
-    fun makeRequest(request : Request) : List<String> {
-        println("Requesting... " + request.toString())
-        val req = CoerceJavaToLua.coerce(request);
-        val ret = luaMakeRequest.call(req).checktable()
-        val mylist = (0 until ret.length()).map { ret[it].tojstring() }
-        println("foo make request")
-        println(ret.length())
-        return mylist
-    }
+    fun getMangaListTypes()       = callHelper("getMangaListTypes", arrayOf<Any>())
+    fun makeRequest(req: Request) = callHelper("handleRequest",     arrayOf<Any>(req))
 }
