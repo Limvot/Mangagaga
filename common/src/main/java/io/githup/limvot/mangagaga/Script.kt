@@ -7,6 +7,7 @@ class Script(val name : String, val code : String, val scriptNumber : Int) : Gen
     private var scriptScope: Scriptable? = null
     init {
         val cx = Context.enter()
+        cx.setOptimizationLevel(-1)
         try {
             scriptScope = cx.initStandardObjects()
             ScriptableObject.putProperty(scriptScope, "api", APIObject.instance())
@@ -18,9 +19,12 @@ class Script(val name : String, val code : String, val scriptNumber : Int) : Gen
     }
     fun callHelper(function: String, params: Array<Any>): List<String> {
         val cx = Context.enter()
+        cx.setOptimizationLevel(-1)
         try {
             val function = (scriptScope!!.get(function, scriptScope) as org.mozilla.javascript.Function)
-            return function.call(cx, scriptScope, scriptScope, params) as List<String>
+            // Weirdly, it seems that NativeArray, while it implements List, throws OperationNotSupported
+            // on subList. Seems safer to copy it into a new list
+            return ArrayList(function.call(cx, scriptScope, scriptScope, params) as List<String>)
         } finally {
             Context.exit();
         }
