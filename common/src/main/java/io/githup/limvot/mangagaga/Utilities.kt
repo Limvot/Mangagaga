@@ -150,7 +150,7 @@ object Utilities : GenericLogger {
         }
     }
 
-    fun gitToScripts() {
+    fun gitScriptHelper(f_script: File?, username: String, password: String, commit_msg: String) {
         val to = File(SettingsManager.mangagagaPath, "Scripts/")
         val git_temp = File(SettingsManager.mangagagaPath, "GitTemp/")
         Utilities.deleteFolder(git_temp)
@@ -158,23 +158,26 @@ object Utilities : GenericLogger {
                                           .setDirectory(git_temp)
                                           .call()
 
-        for ((index, script) in git_temp.listFiles().filter { it.isFile() }.withIndex()) {
-            File(to, script.name).writeText(File(script.absolutePath).readText())
+        if(f_script == null) {
+            //gitToScripts()
+            for ((_, script) in git_temp.listFiles().filter { it.isFile() }.withIndex()) {
+                File(to, script.name).writeText(File(script.absolutePath).readText())
+            }
+        } else {
+            //scriptToGit()
+            val script = f_script
+            File(git_temp, script.name).writeText(script.readText())
+            result.add().addFilepattern(script.name).call()
+            result.commit().setMessage(commit_msg).call()
+            result.push().setCredentialsProvider(
+                    UsernamePasswordCredentialsProvider(username, password)).call()
         }
+    }
+    fun gitToScripts() {
+        gitScriptHelper(null,"","","")
     }
 
     fun scriptToGit(script: File, username: String, password: String, commit_msg: String) {
-        val from = File(SettingsManager.mangagagaPath, "Scripts/")
-        val git_temp = File(SettingsManager.mangagagaPath, "GitTemp/")
-        Utilities.deleteFolder(git_temp)
-        val result = Git.cloneRepository().setURI(SettingsManager.getGitURL())
-                                          .setDirectory(git_temp)
-                                          .call()
-
-        File(git_temp, script.name).writeText(script.readText())
-        result.add().addFilepattern(script.name).call()
-        result.commit().setMessage(commit_msg).call()
-        result.push().setCredentialsProvider(
-                UsernamePasswordCredentialsProvider(username, password)).call()
+        gitScriptHelper(script, username, password, commit_msg)
     }
 }

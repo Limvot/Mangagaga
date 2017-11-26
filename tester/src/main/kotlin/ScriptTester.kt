@@ -24,8 +24,7 @@ object ScriptTester {
   }
   
   fun sourceLoop() {
-    var sloop = true
-    while (sloop) {
+    while (true) {
       changeSource()
       mangaLoop()
     }
@@ -38,17 +37,15 @@ object ScriptTester {
     test_request.source = script.name
     test_request.filter = mangaListType
 
-    var mloop = true
     var list = script.makeRequest(test_request)
-    while (mloop) {
+    while (true) {
       printMangaList(list)
       println("Back (b), Quit (q), or Manga Number:")
       val ln = readLine()!!
       if (ln[0] == 'q') {
-        println("Exiting!!")
-        System.exit(0)
+        exitTester()
       } else if (ln[0] == 'b') {
-        mloop = false
+        break
       } else {
         var num = ln.toInt()
         var index = num
@@ -61,22 +58,20 @@ object ScriptTester {
   }
 
   fun chapterLoop() {
-    var cloop = true
     var req = Request()
     req.manga = Boss.currentManga
     var list = ScriptManager.getCurrentSource().makeRequest(req)
     Boss.currentChapterList = list
 
     println("Description: "+list[0])
-    while (cloop){
+    while (true){
       printChapterList(list)
       println("Back (b), Quit (q), or Chapter Number:")
       val ln = readLine()!!
       if (ln[0] == 'q') {
-        println("Exiting!!")
-        System.exit(0)
+          exitTester()
       } else if (ln[0] == 'b') {
-        cloop = false
+        break
       } else {
         var num = ln.toInt()
         println("you chose the chapter "+list[num+1])
@@ -120,7 +115,7 @@ object ScriptTester {
       println("Back (b), Quit (q), Next image (n), Previous Image (p):")
       val ln = readLine()!!
       if (ln[0] == 'q') {
-        System.exit(0)
+          exitTester()
       } else if (ln[0] == 'b') {
           break
       } else if (ln[0] == 'n') {
@@ -227,5 +222,10 @@ object ScriptTester {
         println("$count: ${i}")
         count += 1
     }
+  }
+
+  fun exitTester() {
+      println("Exiting!!")
+      System.exit(0)
   }
 }
