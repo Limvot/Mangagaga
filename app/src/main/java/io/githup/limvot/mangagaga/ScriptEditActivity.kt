@@ -45,7 +45,7 @@ class ScriptEditActivity : Activity(), GenericLogger {
             button("save") { onClick {
                 File(savePath.getText().toString()).writeText(scriptText!!.getText().toString())
                 filePath = savePath.getText().toString()
-                ScriptManager.init()
+                Boss.init()
                 popup!!.dismiss()
             } }
             button("cancel") { onClick { popup!!.dismiss() } }

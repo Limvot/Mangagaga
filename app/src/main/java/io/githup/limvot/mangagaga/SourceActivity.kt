@@ -41,15 +41,15 @@ class SourceActivity : Activity(), GenericLogger {
         doSourcePopup()
     }
     fun doSourcePopup() {
-        selector("Source", ScriptManager.scriptList.map {it.name}) { _, i ->
-            ScriptManager.currentSource = i
-            srcButton!!.text = ScriptManager.scriptList[i].name
+        selector("Source", Boss.scriptList.map {it.name}) { _, i ->
+            Boss.currentSource = i
+            srcButton!!.text = Boss.scriptList[i].name
             updateMangaList()
         }
     }
     fun doTypePopup() {
-        selector("Sorted", ScriptManager.getCurrentSource().getMangaListTypes()) { _, i ->
-            mangaListType = ScriptManager.getCurrentSource().getMangaListTypes()[i]
+        selector("Sorted", Boss.getCurrentSource().getMangaListTypes()) { _, i ->
+            mangaListType = Boss.getCurrentSource().getMangaListTypes()[i]
             listTypeButton!!.text = mangaListType
             updateMangaList()
         }
@@ -58,9 +58,9 @@ class SourceActivity : Activity(), GenericLogger {
         val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
         doAsync {
             val req = Request();
-            req.source = ScriptManager.getCurrentSource().name
+            req.source = Boss.getCurrentSource().name
             req.filter = mangaListType
-            val items = ScriptManager.getCurrentSource().makeRequest(req)
+            val items = Boss.getCurrentSource().makeRequest(req)
             uiThread {
                 dialog.dismiss()
                 mangaList!!.clear()

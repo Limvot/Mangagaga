@@ -19,7 +19,7 @@ object ScriptTester {
     // Overwrite all scripts
     Utilities.gitToScripts()
 
-    ScriptManager.init()
+    Boss.init()
     sourceLoop()
   }
   
@@ -32,7 +32,7 @@ object ScriptTester {
 
   fun mangaLoop() {
 
-    val script = ScriptManager.getCurrentSource()
+    val script = Boss.getCurrentSource()
     var test_request = Request()
     test_request.source = script.name
     test_request.filter = mangaListType
@@ -60,7 +60,7 @@ object ScriptTester {
   fun chapterLoop() {
     var req = Request()
     req.manga = Boss.currentManga
-    var list = ScriptManager.getCurrentSource().makeRequest(req)
+    var list = Boss.getCurrentSource().makeRequest(req)
     Boss.currentChapterList = list
 
     println("Description: "+list[0])
@@ -89,7 +89,7 @@ object ScriptTester {
     var req = Request()
     req.manga = Boss.currentManga
     req.chapter = Boss.currentChapter
-    val script = ScriptManager.getCurrentSource()
+    val script = Boss.getCurrentSource()
     var num_page_list = script.makeRequest(req)
     println("Num Pages "+num_page_list[0])
 
@@ -180,23 +180,23 @@ object ScriptTester {
     if (num < 0) {
       println("Exiting")
     } else {
-      ScriptManager.currentSource = num
+      Boss.currentSource = num
     }
   }
   
   fun printSources() {
     println("\nSelect a source")
-    for (i in 0 until ScriptManager.numSources()) {
-      println("$i: ${ScriptManager.getScript(i)!!.name}")
+    for (i in 0 until Boss.numSources()) {
+      println("$i: ${Boss.getScript(i)!!.name}")
     }
   }
   
   fun changeSource() {
     printSources() 
     setSourceNumber(readLine()!!.toInt())
-    println("You chose source number ${ScriptManager.currentSource}")
+    println("You chose source number ${Boss.currentSource}")
 
-    val types = ScriptManager.getCurrentSource().getMangaListTypes()
+    val types = Boss.getCurrentSource().getMangaListTypes()
     for ((i, type) in types.withIndex()) println("$i - $type")
     println("\nSelect a type")
     mangaListType = types[readLine()!!.toInt()]

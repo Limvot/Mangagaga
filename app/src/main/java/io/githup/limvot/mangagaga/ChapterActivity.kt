@@ -21,7 +21,7 @@ class ChapterActivity : Activity(), GenericLogger {
         verticalLayout {
             favoriteBox = checkBox("Favorite") { onClick {
                     val fave_set_req = Request()
-                    fave_set_req.source = ScriptManager.getCurrentSource().name
+                    fave_set_req.source = Boss.getCurrentSource().name
                     fave_set_req.manga = currentManga
                     Boss.setFavorite(fave_set_req, favoriteBox!!.isChecked())
             } }
@@ -29,16 +29,16 @@ class ChapterActivity : Activity(), GenericLogger {
             listView { adapter = chapterListAdapter }.lparams(weight=0.1f)
         }
         val fave_req = Request()
-        fave_req.source = ScriptManager.getCurrentSource().name
+        fave_req.source = Boss.getCurrentSource().name
         fave_req.manga = currentManga
         favoriteBox!!.setChecked(Boss.isFavorite(fave_req))
         val dialog = indeterminateProgressDialog(title = "Initing Manga", message = "(may take a little bit if script sets up pages)")
-        val currentSource = ScriptManager.getCurrentSource().name
+        val currentSource = Boss.getCurrentSource().name
         doAsync {
             val req = Request()
             req.source = currentSource
             req.manga = Boss.currentManga
-            val description_chapter_list = ScriptManager.getCurrentSource().makeRequest(req)
+            val description_chapter_list = Boss.getCurrentSource().makeRequest(req)
             uiThread {
                 description!!.text = description_chapter_list[0]
                 val items : List<String> =

@@ -29,7 +29,43 @@ import java.io.FileWriter
     var currentPage = 0
     var numChapPages = -1
     val chapterPageMap = mutableMapOf<Int, String>()
-    
+
+    var codePrequel = ""
+    var currentSource = 0
+    val scriptList = mutableListOf<Script>()
+
+    fun init() {
+        scriptList.clear()
+
+        val scriptDir = File(SettingsManager.mangagagaPath, "Scripts/")
+        codePrequel = File(scriptDir, "script_prequel.js").readText()
+
+        for ((index, script) in scriptDir.listFiles().filter { it.name.endsWith(".js") }.withIndex()) {
+          scriptList.add(Script(script.getName(), File(script.getAbsolutePath()).readText(), index))
+        }
+    }
+
+    fun numSources() = scriptList.size
+    fun getScript(position:Int): Script? = if (position >= 0 && position < numSources())
+                                            scriptList[position]
+                                         else null
+    fun getCurrentSource(): Script = getScript(currentSource)!!
+
+    fun setCurrentSource(src : String) : Boolean {
+      //TODO(marcus): should we error if we can't find the script?
+      var i = currentSource
+      var ret = false
+      for ((index, s) in scriptList.withIndex()) {
+          if (s.name == src) {
+              ret = true
+              i = index
+              break
+          }
+      }
+      currentSource = i
+      return ret
+    }
+
     fun readingOffline(isOffline: Boolean) { this.isOffline = isOffline }
     
     fun  loadHistory(): ArrayList<Request> {
@@ -236,7 +272,7 @@ import java.io.FileWriter
         chapterPageMap.clear()
         currentChapter = chapter
         val req = Request()
-        req.source = ScriptManager.getCurrentSource().name
+        req.source = getCurrentSource().name
         req.manga = currentManga
         req.chapter = chapter
         chapterHistory.add(0, req)
@@ -249,7 +285,7 @@ import java.io.FileWriter
             val req = Request()
             req.manga = Boss.currentManga
             req.chapter = Boss.currentChapter
-            val script = ScriptManager.getCurrentSource()
+            val script = getCurrentSource()
             val num_page_list = script.makeRequest(req)
             numChapPages = num_page_list[0].toInt()
         }

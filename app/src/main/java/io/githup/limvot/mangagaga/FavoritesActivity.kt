@@ -15,7 +15,7 @@ class FavoritesActivity : Activity(), GenericLogger {
                                             TextListItem(manga.manga, {
                                                 Boss.readingOffline(false)
                                                 Boss.currentManga = manga.manga
-                                                ScriptManager.setCurrentSource(manga.source)
+                                                Boss.setCurrentSource(manga.source)
                                                 startActivity<ChapterActivity>()
                                             }) }
                 adapter = SimpleListAdaptor(ctx, listItems)

@@ -51,8 +51,8 @@ class HomeScreen : Activity(), GenericLogger {
             // Clean out the cache folder
             Utilities.clearCache()
 
-            // Init ScriptManager
-            ScriptManager.init()
+            // Init Scripts
+            Boss.init()
 
             // Check for updates
             var updateURL : String = "http://mangagaga.room409.xyz/app-debug.apk"

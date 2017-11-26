@@ -18,7 +18,7 @@ class SettingsActivity : Activity() {
             button("Clear Saved Chapters")     { onClick { Boss.clearSaved() } }
 
             button("Refresh Scripts from Git") { onClick { doAsync { Utilities.gitToScripts()
-                                                                     ScriptManager.init() } } }
+                                                                     Boss.init() } } }
 
             button("Clear All")                { onClick { Boss.clearHistory()
                                                            Utilities.clearCache()
