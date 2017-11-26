@@ -13,11 +13,11 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 class SourceActivity : Activity(), GenericLogger {
-    var mangaList: MutableList<TextListItem>? = null
-    var mangaListAdapter: SimpleListAdaptor? = null
-    var srcButton: Button? = null
-    var listTypeButton: Button? = null
-    var mangaListType = "All"
+    private var mangaList: MutableList<TextListItem>? = null
+    private var mangaListAdapter: SimpleListAdaptor? = null
+    private var srcButton: Button? = null
+    private var listTypeButton: Button? = null
+    private var mangaListType = "All"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,21 +40,21 @@ class SourceActivity : Activity(), GenericLogger {
         }
         doSourcePopup()
     }
-    fun doSourcePopup() {
+    private fun doSourcePopup() {
         selector("Source", Boss.scriptList.map {it.name}) { _, i ->
             Boss.currentSource = i
             srcButton!!.text = Boss.scriptList[i].name
             updateMangaList()
         }
     }
-    fun doTypePopup() {
+    private fun doTypePopup() {
         selector("Sorted", Boss.getCurrentSource().getMangaListTypes()) { _, i ->
             mangaListType = Boss.getCurrentSource().getMangaListTypes()[i]
             listTypeButton!!.text = mangaListType
             updateMangaList()
         }
     }
-    fun updateMangaList() {
+    private fun updateMangaList() {
         val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
         doAsync {
             val req = Request();

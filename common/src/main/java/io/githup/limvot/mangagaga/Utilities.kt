@@ -13,10 +13,6 @@ import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.io.*;
-import java.net.URLConnection;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException; 
-import java.util.concurrent.Executor;
 import java.util.Date;
 
 import org.eclipse.jgit.api.Git
@@ -29,7 +25,7 @@ object Utilities : GenericLogger {
     }
 
     // Change to lazy?
-    var gson_bac : Gson? = null
+    private var gson_bac : Gson? = null
     fun getGson() : Gson {
         if (gson_bac == null)
             gson_bac = GsonBuilder().setPrettyPrinting().create()
@@ -43,7 +39,7 @@ object Utilities : GenericLogger {
         info("Url to grab modified time from $source")
         var modifiedTime : Long = 0
         try {
-            var connection = URL(source).openConnection() as HttpURLConnection
+            val connection = URL(source).openConnection() as HttpURLConnection
             connection.setRequestMethod("HEAD")
             connection.connect()
             modifiedTime = connection.getLastModified()
@@ -74,14 +70,14 @@ object Utilities : GenericLogger {
             info("DownloadSource: URL is: $source")
             urlcon = URL(source).openConnection() as HttpURLConnection
             urlcon.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0");
-            if (referer.length > 0)
+            if (referer.isNotEmpty())
               urlcon.setRequestProperty("Referer", referer);
             //urlcon.setRequestProperty("User-Agent", "Mangagaga");
             info("user agent is ${urlcon.getRequestProperty("User-Agent")}")
             urlcon.setInstanceFollowRedirects(true)
             info("TYPE IS... ${urlcon.getContentType()}")       
             filename = source.substring((source.lastIndexOf('/') + 1))
-            if (referer.length > 0) {
+            if (referer.isNotEmpty()) {
               info("Using referer instead: $referer")
               filename = referer.substring((source.lastIndexOf('/') + 1))
             }
@@ -90,12 +86,12 @@ object Utilities : GenericLogger {
                 filename = filename.replace('?', '_')
             info("filename: $filename")
 
-            var dest = SettingsManager.mangagagaPath + "/Cache/"
+            val dest = SettingsManager.mangagagaPath + "/Cache/"
             // Prepend an ID to the file name so different files do not conflict
             filename = "${getID()}_$filename"
 
             resultingPath = dest + filename
-            var file = File(dest, filename)
+            val file = File(dest, filename)
             info("DownloadSource: resulting file: $file")
             file.createNewFile()
             
@@ -106,8 +102,8 @@ object Utilities : GenericLogger {
 
             // RRRARRRARARGH you gave to do getErrorStream if it's returned an info
             // and getResponseMessage doesn't work if it returned an info
-            val ist = if (200 <= urlcon.getResponseCode() && urlcon.getResponseCode() <= 299)
-              urlcon.getInputStream()
+            val ist = if (urlcon.getResponseCode() in 200..299)
+                urlcon.getInputStream()
             else
               urlcon.getErrorStream()
             file.writeBytes(ist.readBytes())
@@ -130,7 +126,7 @@ object Utilities : GenericLogger {
     }
 
     fun clearCache() {
-        var cache = File(SettingsManager.mangagagaPath + "/Cache/")
+        val cache = File(SettingsManager.mangagagaPath + "/Cache/")
         clearFolder(cache)
     }
 
@@ -150,7 +146,7 @@ object Utilities : GenericLogger {
         }
     }
 
-    fun gitScriptHelper(f_script: File?, username: String, password: String, commit_msg: String) {
+    private fun gitScriptHelper(f_script: File?, username: String, password: String, commit_msg: String) {
         val to = File(SettingsManager.mangagagaPath, "Scripts/")
         val git_temp = File(SettingsManager.mangagagaPath, "GitTemp/")
         Utilities.deleteFolder(git_temp)
@@ -160,7 +156,7 @@ object Utilities : GenericLogger {
 
         if(f_script == null) {
             //gitToScripts()
-            for ((_, script) in git_temp.listFiles().filter { it.isFile() }.withIndex()) {
+            for (script in git_temp.listFiles().filter { it.isFile() }) {
                 File(to, script.name).writeText(File(script.absolutePath).readText())
             }
         } else {

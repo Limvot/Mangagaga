@@ -17,7 +17,7 @@ object SettingsManager : GenericLogger {
     }
     
     var mangagagaPath = "_uninit_"
-    var settingsMan   = SettingsManager()
+    private var settingsMan   = SettingsManager()
 
     fun setHistorySize(size: Int)   { settingsMan.historySize  = size;  saveSettings() }
     fun setCacheSize(size: Int)     { settingsMan.cacheAmmount = size;  saveSettings() }
@@ -37,7 +37,7 @@ object SettingsManager : GenericLogger {
                                                    SettingsManager::class.java);
     }
 
-    fun saveSettings() {
+    private fun saveSettings() {
         File(mangagagaPath, "Settings.json").writeText(Utilities.getGson().toJson(settingsMan))
     }
 }

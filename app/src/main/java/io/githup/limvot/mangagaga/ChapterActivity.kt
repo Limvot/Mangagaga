@@ -14,8 +14,8 @@ class ChapterActivity : Activity(), GenericLogger {
         val currentManga = Boss.currentManga
         var description: TextView? = null
         var favoriteBox: CheckBox? = null
-        var chapterList = mutableListOf<TextListItem>()
-        var chapterListAdapter = SimpleListAdaptor(ctx, chapterList)
+        val chapterList = mutableListOf<TextListItem>()
+        val chapterListAdapter = SimpleListAdaptor(ctx, chapterList)
         getActionBar().title = "$currentManga:"
 
         verticalLayout {

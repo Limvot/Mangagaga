@@ -8,7 +8,7 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 class LogCatActivity : Activity(), GenericLogger {
-    var lgText: TextView? = null
+    private var lgText: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,11 +22,11 @@ class LogCatActivity : Activity(), GenericLogger {
         }
         refreshText()
     }
-    fun clearLogCat() {
+    private fun clearLogCat() {
         Runtime.getRuntime().exec("logcat -c")
         refreshText()
     }
-    fun refreshText() {
+    private fun refreshText() {
         lgText!!.text = Runtime.getRuntime().exec("logcat -d").getInputStream().reader().readText()
         info("Called LogCat referesh ;D")
     }

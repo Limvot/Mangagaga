@@ -17,7 +17,7 @@ class Script(val name : String, val code : String, val scriptNumber : Int) : Gen
             Context.exit()
         }
     }
-    fun callHelper(function: String, params: Array<Any>): List<String> {
+    private fun callHelper(function: String, params: Array<Any>): List<String> {
         val cx = Context.enter()
         cx.setOptimizationLevel(-1)
         try {

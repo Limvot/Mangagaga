@@ -55,14 +55,14 @@ class HomeScreen : Activity(), GenericLogger {
             Boss.init()
 
             // Check for updates
-            var updateURL : String = "http://mangagaga.room409.xyz/app-debug.apk"
-            var siteApkDate : Date = Utilities.getModifiedTime(updateURL)
+            val updateURL : String = "http://mangagaga.room409.xyz/app-debug.apk"
+            val siteApkDate : Date = Utilities.getModifiedTime(updateURL)
             
             info("Does this need updates? $siteApkDate")
             if (siteApkDate.after(SettingsManager.getApkDate())) {
                 info("Ask user to update after downloading new apk!")
-                var downloadedApk : File = File(Utilities.download(updateURL))
-                var promptInstall : Intent = Intent(Intent.ACTION_VIEW)
+                val downloadedApk : File = File(Utilities.download(updateURL))
+                val promptInstall : Intent = Intent(Intent.ACTION_VIEW)
                         .setDataAndType(Uri.fromFile(downloadedApk),
                                 "application/vnd.android.package-archive")
                 startActivity(promptInstall)

@@ -11,8 +11,8 @@ import android.widget.EditText
 import android.os.Bundle
 
 class ScriptEditActivity : Activity(), GenericLogger {
-    var scriptText: EditText? = null
-    var filePath: String = ""
+    private var scriptText: EditText? = null
+    private var filePath: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,14 +31,14 @@ class ScriptEditActivity : Activity(), GenericLogger {
         }
         load()
     }
-    fun load() {
+    private fun load() {
         val scriptFiles = File(SettingsManager.mangagagaPath, "Scripts").listFiles()
         selector("Load", scriptFiles.map { it.getAbsolutePath() }) { _, i ->
             filePath = scriptFiles[i].getAbsolutePath()
             scriptText!!.setText(scriptFiles[i].readText())
         }
     }
-    fun save() {
+    private fun save() {
         var popup: DialogInterface? = null
         popup = alert { customView { verticalLayout {
             val savePath = editText(filePath)
@@ -51,7 +51,7 @@ class ScriptEditActivity : Activity(), GenericLogger {
             button("cancel") { onClick { popup!!.dismiss() } }
         } } }.show()
     }
-    fun push() {
+    private fun push() {
         var popup: DialogInterface? = null
         popup = alert { customView { verticalLayout {
             val username = editText("username")

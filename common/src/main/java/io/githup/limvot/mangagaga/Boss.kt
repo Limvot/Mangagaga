@@ -15,10 +15,10 @@ import java.io.FileWriter
  * Created by marcus on 11/04/17.
  */
  object Boss : GenericLogger {
-     val chapterDownloadMutex = Semaphore(1)
-    val gson = Utilities.getGson()
-    val chapterHistory = loadHistory()
-    val favoriteManga = loadFavorites()
+    private val chapterDownloadMutex = Semaphore(1)
+    private val gson = Utilities.getGson()
+    private val chapterHistory = loadHistory()
+    private val favoriteManga = loadFavorites()
 
     var isOffline: Boolean = false
     var currentManga: String = ""
@@ -27,8 +27,8 @@ import java.io.FileWriter
     var currentChapterList : List<String> = listOf()
 
     var currentPage = 0
-    var numChapPages = -1
-    val chapterPageMap = mutableMapOf<Int, String>()
+    private var numChapPages = -1
+    private val chapterPageMap = mutableMapOf<Int, String>()
 
     var codePrequel = ""
     var currentSource = 0
@@ -68,8 +68,7 @@ import java.io.FileWriter
 
     fun readingOffline(isOffline: Boolean) { this.isOffline = isOffline }
     
-    fun  loadHistory(): ArrayList<Request> {
-        //TODO(marcus): implement
+    private fun  loadHistory(): ArrayList<Request> {
         return try {
           gson.fromJson(File(SettingsManager.mangagagaPath, "History.json").readText(),
                         object : TypeToken<ArrayList<Request>>() {}.type)
@@ -84,9 +83,9 @@ import java.io.FileWriter
         chapterHistory.clear()
         saveHistory()
     }
-    fun saveHistory() { thread { saveHistoryAsync(chapterHistory) } }
+    private fun saveHistory() { thread { saveHistoryAsync(chapterHistory) } }
 
-    fun saveHistoryAsync(toDownload: ArrayList<Request>) {
+    private fun saveHistoryAsync(toDownload: ArrayList<Request>) {
         try {
           val history = File(SettingsManager.mangagagaPath, "History.json")
           history.createNewFile()
@@ -99,7 +98,7 @@ import java.io.FileWriter
         }
     }
 
-    fun  loadFavorites(): ArrayList<Request> {
+    private fun  loadFavorites(): ArrayList<Request> {
         return try {
           gson.fromJson(File(SettingsManager.mangagagaPath, "Favorites.json").readText(),
                         object : TypeToken<ArrayList<Request>>() {}.type)
@@ -113,12 +112,6 @@ import java.io.FileWriter
     //TODO(marcus): get a .equals method for request
     fun isFavorite(manga: Request): Boolean = favoriteManga.contains(manga)
 
-    fun setFavorite(source : String, manga: String, add: Boolean) {
-        val req = Request()
-        req.source = source
-        req.manga = manga
-        setFavorite(req, add)
-    }
     fun setFavorite(manga: Request, add: Boolean) {
         if (add)
             favoriteManga.add(manga)
@@ -131,7 +124,7 @@ import java.io.FileWriter
         saveFavorites()
     }
 
-    fun saveFavorites() {
+    private fun saveFavorites() {
         try {
           val favorites = File(SettingsManager.mangagagaPath, "Favorites.json")
           favorites.createNewFile()
@@ -264,7 +257,7 @@ import java.io.FileWriter
         return true
     }
     
-    fun setCurrentChapterImpl(chapter : String) {
+    private fun setCurrentChapterImpl(chapter : String) {
         // delete all of our cached pages before clearing the cache if we're reading online
         if (!isOffline)
           for (pair in chapterPageMap)

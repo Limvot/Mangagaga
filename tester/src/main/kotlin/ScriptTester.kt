@@ -8,7 +8,6 @@ import javax.swing.JFrame
 import javax.swing.JLabel
 
 object ScriptTester {
-  var done = false
   var mangaListType = "unset"
   @JvmStatic
   fun main(vararg args : String) {

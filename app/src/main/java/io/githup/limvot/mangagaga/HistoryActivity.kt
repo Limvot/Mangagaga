@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.app.Activity
 
 class HistoryActivity : Activity() {
-    var historyAdapter: SimpleListAdaptor? = null
+    private var historyAdapter: SimpleListAdaptor? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

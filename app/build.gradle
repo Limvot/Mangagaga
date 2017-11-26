@@ -22,7 +22,7 @@ android {
     buildToolsVersion "25.0.1"
     defaultConfig {
         applicationId "io.githup.limvot.mangagaga"
-        minSdkVersion 10
+        minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"

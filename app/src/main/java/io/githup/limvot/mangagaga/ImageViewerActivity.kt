@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.graphics.BitmapFactory;
 
 class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGestureListener {
-    var image : ImageView? = null
+    private var image : ImageView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getActionBar().hide()
@@ -22,7 +22,7 @@ class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGesture
         image!!.setOnTouchListener({ view, motionEvent -> detector.onTouchEvent(motionEvent);true})
         updateImage()
     }
-    fun updateImage() {
+    private fun updateImage() {
         doAsync {
             Boss.getNumPages()
             val req = Request()
@@ -34,7 +34,7 @@ class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGesture
             uiThread { image!!.setImageBitmap(bm) }
         }
     }
-    fun move(forwards: Boolean): Boolean {
+    private fun move(forwards: Boolean): Boolean {
         Boss.move(forwards)
         updateImage()
         return true

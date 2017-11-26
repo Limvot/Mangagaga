@@ -2,14 +2,11 @@
 <resources>
 
     <string name="app_name">Mangagaga</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
     <string name="title_activity_source">Browse Sources</string>
     <string name="title_activity_chapter">ChapterActivity</string>
     <string name="title_activity_image_viewer">ImageViewerActivity</string>
     <string name="forward_button">Next</string>
     <string name="back_button">Back</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_history">Chapter History</string>
     <string name="title_activity_favorites">Favroites</string>
     <string name="title_activity_settings">Settings</string>
