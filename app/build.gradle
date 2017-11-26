@@ -45,7 +45,6 @@ dependencies {
     compile project(':common')
 
     compile fileTree(dir: '../libs', include: ['*.jar'])
-    compile files('../libs/luaj-3.0/lib/luaj-jse-3.0.jar')
     compile files('../libs/gson-2.3.jar')
     compile files('../libs/js.jar')
 
