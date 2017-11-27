@@ -23,16 +23,13 @@ class SimpleListAdaptor(ctx: Context, items: List<TextListItem>) : ArrayAdapter<
 class TextListItem(val internal_text: String = "empty", val func: () -> Unit, val checkbox_text: String = "none", val checkbox_start: Boolean = false, val checkbox_func: (Boolean) -> Unit = {}) : AnkoComponent<SimpleListAdaptor> {
     override fun createView(ui: AnkoContext<SimpleListAdaptor>) = with(ui) {
         if (checkbox_text == "none") {
-            textView {
-                text = internal_text
+            relativeLayout {
+                textView { text = internal_text }
                 onClick { func() }
             }
         } else {
             relativeLayout {
-                textView {
-                    text = internal_text
-                    onClick { func() }
-                }.lparams { alignParentRight() }
+                textView { text = internal_text }.lparams { alignParentRight() }
                 var box: CheckBox? = null
                 box = checkBox(checkbox_text) { onClick { checkbox_func(box!!.isChecked()) } }
                 box.setChecked(checkbox_start)

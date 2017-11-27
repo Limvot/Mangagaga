@@ -11,38 +11,29 @@ import android.widget.CheckBox
 class ChapterActivity : Activity(), GenericLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val currentManga = Boss.currentManga
+        val thisReq = Request(source = Boss.getCurrentSource().name, manga = Boss.currentManga)
         var description: TextView? = null
         var favoriteBox: CheckBox? = null
         val chapterList = mutableListOf<TextListItem>()
         val chapterListAdapter = SimpleListAdaptor(ctx, chapterList)
-        getActionBar().title = "$currentManga:"
+        getActionBar().title = "${Boss.currentManga}:"
 
         verticalLayout {
             favoriteBox = checkBox("Favorite") { onClick {
-                    val fave_set_req = Request()
-                    fave_set_req.source = Boss.getCurrentSource().name
-                    fave_set_req.manga = currentManga
-                    Boss.setFavorite(fave_set_req, favoriteBox!!.isChecked())
+                    Boss.setFavorite(thisReq, favoriteBox!!.isChecked())
             } }
             description = textView("description...")
             listView { adapter = chapterListAdapter }.lparams(weight=0.1f)
         }
-        val fave_req = Request()
-        fave_req.source = Boss.getCurrentSource().name
-        fave_req.manga = currentManga
-        favoriteBox!!.setChecked(Boss.isFavorite(fave_req))
+        favoriteBox!!.setChecked(Boss.isFavorite(thisReq))
         val dialog = indeterminateProgressDialog(title = "Initing Manga", message = "(may take a little bit if script sets up pages)")
         val currentSource = Boss.getCurrentSource().name
         doAsync {
-            val req = Request()
-            req.source = currentSource
-            req.manga = Boss.currentManga
+            val req = Request(source = currentSource, manga = Boss.currentManga)
             val description_chapter_list = Boss.getCurrentSource().makeRequest(req)
             uiThread {
                 description!!.text = description_chapter_list[0]
-                val items : List<String> =
-                description_chapter_list.subList(1,description_chapter_list.size)
+                val items = description_chapter_list.subList(1,description_chapter_list.size)
                 Boss.currentChapterList = items
 
                 chapterList.clear()
@@ -51,12 +42,12 @@ class ChapterActivity : Activity(), GenericLogger {
                                                     Boss.currentPage = 0
                                                     startActivity<ImageViewerActivity>()
                                                 }, "Saved: ",
-                                                Boss.isSaved(chapter,currentManga,currentSource),
+                                                Boss.isSaved(thisReq.copy(chapter = chapter)),
                                                     {checked ->
                                                     if (checked)
-                                                    Boss.addSaved(chapter,currentManga,currentSource)
+                                                        Boss.addSaved(thisReq.copy(chapter = chapter))
                                                     else
-                                                    Boss.removeSaved(chapter,currentManga,currentSource)
+                                                        Boss.removeSaved(thisReq.copy(chapter = chapter))
                                                 }) })
                 chapterListAdapter.notifyDataSetChanged()
                 dialog.dismiss()

@@ -142,26 +142,12 @@ import java.io.FileWriter
         Utilities.clearFolder(downloaded)
     }
 
-    fun isSaved(chapter: String, manga: String, source: String): Boolean {
-        val req = Request()
-        req.chapter = chapter
-        req.manga = manga
-        req.source = source
-        return isSaved(req)
-    }
     fun isSaved(req : Request): Boolean {
         val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" +
                             req.manga + "/" + req.chapter)
         return savedDir.exists()
     }
 
-    fun addSaved(chapter: String, manga: String, source: String) {
-        val req = Request()
-        req.source = source
-        req.manga = manga
-        req.chapter = chapter
-        addSaved(req)
-    }
     fun addSaved(req : Request) {
         if (!isSaved(req)) {
           thread { 
@@ -175,9 +161,9 @@ import java.io.FileWriter
         }
     }
 
-    fun removeSaved(chapter: String, manga: String, source: String) {
+    fun removeSaved(req: Request) {
         //TODO(marcus): will we only ever call this method on chapters of the current manga?
-        val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" + currentManga + "/" + chapter)
+        val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" + req.manga + "/" + req.chapter)
         if (savedDir.exists())
           Utilities.deleteFolder(savedDir)
     }
@@ -236,6 +222,15 @@ import java.io.FileWriter
 
           notification.title = "Done!"
     }
+    fun getSavedManga(): List<Request> {
+        val list = mutableListOf<Request>()
+        val savedDir = File(SettingsManager.mangagagaPath, "Downloaded/")
+        for (dir in savedDir.list()) {
+            val mangaDir = File(savedDir, dir)
+            list.add(Request())
+        }
+        return list
+    }
     // THESE LOOK BACKWARDS
     // But they're not. Or they are. (Because Chapter 1 is at the 'end' of the list.)
     // Make this script decidable later
@@ -264,10 +259,7 @@ import java.io.FileWriter
             File(pair.value).delete()
         chapterPageMap.clear()
         currentChapter = chapter
-        val req = Request()
-        req.source = getCurrentSource().name
-        req.manga = currentManga
-        req.chapter = chapter
+        val req = Request(source = getCurrentSource().name, manga = currentManga, chapter = chapter)
         chapterHistory.add(0, req)
         for (i in SettingsManager.getHistorySize() until chapterHistory.size)
           chapterHistory.removeAt(i)
@@ -275,9 +267,7 @@ import java.io.FileWriter
     }
     fun getNumPages(): Int {
         if(numChapPages <= 0) {
-            val req = Request()
-            req.manga = Boss.currentManga
-            req.chapter = Boss.currentChapter
+            val req = Request(manga = Boss.currentManga, chapter = Boss.currentChapter)
             val script = getCurrentSource()
             val num_page_list = script.makeRequest(req)
             numChapPages = num_page_list[0].toInt()
@@ -286,9 +276,6 @@ import java.io.FileWriter
     }
     fun move(forwards: Boolean) {
         if(forwards) {
-            println("Moving forward")
-            println(numChapPages-1)
-            println(currentPage)
             if(currentPage < getNumPages()-1) {
                 currentPage++
             } else {
@@ -310,18 +297,5 @@ import java.io.FileWriter
                 numChapPages = -1
             }
         }
-    }
-    fun getSavedManga(): List<Request> {
-        val list = mutableListOf<Request>()
-        val savedDir = File(SettingsManager.mangagagaPath, "Downloaded/")
-        /*
-        for (dir in savedDir.list()) {
-          val mangaDir = File(savedDir, dir)
-          val mangaFile = File(mangaDir, "manga.json")
-          val manga = gson.fromJson(mangaFile.readText(), Manga::class.java)
-          list.add(manga)
-        }
-        */
-        return list
     }
  }

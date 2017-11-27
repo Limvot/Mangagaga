@@ -57,9 +57,7 @@ class SourceActivity : Activity(), GenericLogger {
     private fun updateMangaList() {
         val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
         doAsync {
-            val req = Request();
-            req.source = Boss.getCurrentSource().name
-            req.filter = mangaListType
+            val req = Request(source = Boss.getCurrentSource().name, filter = mangaListType);
             val items = Boss.getCurrentSource().makeRequest(req)
             uiThread {
                 dialog.dismiss()

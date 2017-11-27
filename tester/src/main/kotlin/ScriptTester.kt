@@ -30,13 +30,9 @@ object ScriptTester {
   }
 
   fun mangaLoop() {
-
     val script = Boss.getCurrentSource()
-    var test_request = Request()
-    test_request.source = script.name
-    test_request.filter = mangaListType
+    var list = script.makeRequest(Request(source = script.name, filter = mangaListType))
 
-    var list = script.makeRequest(test_request)
     while (true) {
       printMangaList(list)
       println("Back (b), Quit (q), or Manga Number:")
@@ -57,9 +53,7 @@ object ScriptTester {
   }
 
   fun chapterLoop() {
-    var req = Request()
-    req.manga = Boss.currentManga
-    var list = Boss.getCurrentSource().makeRequest(req)
+    var list = Boss.getCurrentSource().makeRequest(Request(manga = Boss.currentManga))
     Boss.currentChapterList = list
 
     println("Description: "+list[0])
@@ -85,15 +79,13 @@ object ScriptTester {
   
   fun imageLoop() {
     //request number of pages
-    var req = Request()
-    req.manga = Boss.currentManga
-    req.chapter = Boss.currentChapter
+    var req = Request(manga = Boss.currentManga, chapter = Boss.currentChapter)
     val script = Boss.getCurrentSource()
     var num_page_list = script.makeRequest(req)
     println("Num Pages "+num_page_list[0])
 
     //request first page
-    req.page = "0"
+    req = req.copy(page = "0")
     var page = script.makeRequest(req)
     var current = page[0];
     var total = num_page_list[0].toInt()
@@ -124,14 +116,13 @@ object ScriptTester {
           Boss.currentPage = i+1
         } else {
             if (Boss.nextChapter()) {
-                req.chapter = Boss.currentChapterList[Boss.currentChapterList.indexOf(req.chapter)-1]
-                req.page = ""
+                req = req.copy(chapter = Boss.currentChapterList[Boss.currentChapterList.indexOf(req.chapter)-1], page = "")
                 var next_page_list = script.makeRequest(req)
                 total = next_page_list[0].toInt()
                 Boss.currentPage = 0
             }
         }
-        req.page = Boss.currentPage.toString()
+        req = req.copy(page = Boss.currentPage.toString())
         page = script.makeRequest(req)
         current = page[0]
       } else if (ln[0] == 'p') {
@@ -141,14 +132,13 @@ object ScriptTester {
           Boss.currentPage = i-1
         } else {
             if (Boss.previousChapter()) {
-                req.chapter = Boss.currentChapterList[Boss.currentChapterList.indexOf(req.chapter)+1]
-                req.page = ""
+                req = req.copy(chapter = Boss.currentChapterList[Boss.currentChapterList.indexOf(req.chapter)+1], page = "")
                 var prev_page_list = script.makeRequest(req)
                 total = prev_page_list[0].toInt()
                 Boss.currentPage = total - 1
             }
         }
-        req.page = Boss.currentPage.toString()
+        req = req.copy(page = Boss.currentPage.toString())
         page = script.makeRequest(req)
         current = page[0]
       } else {
