@@ -290,11 +290,7 @@ import java.io.FileWriter
             } else {
                 previousChapter()
                 numChapPages = -1
-                //TODO(marcus): this call causes an exception in app because it is on main thread
-                //currentPage = getNumPages() - 1
-                //TODO(marcus):  for now we just jump back to the beginning of the last chapter
-                currentPage = 0
-                numChapPages = -1
+                currentPage = getNumPages() - 1
             }
         }
     }

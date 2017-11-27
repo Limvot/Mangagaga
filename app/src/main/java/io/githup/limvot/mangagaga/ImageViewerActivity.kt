@@ -32,8 +32,12 @@ class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGesture
         }
     }
     private fun move(forwards: Boolean): Boolean {
-        Boss.move(forwards)
-        updateImage()
+        doAsync {
+            Boss.move(forwards)
+            uiThread {
+                updateImage()
+            }
+        }
         return true
     }
     override fun onShowPress(event: MotionEvent) {}
