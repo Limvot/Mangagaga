@@ -24,10 +24,7 @@ class ImageViewerActivity : Activity(), GenericLogger, GestureDetector.OnGesture
     }
     private fun updateImage() {
         doAsync {
-            val req = Request(manga = Boss.currentManga, chapter = Boss.currentChapter,
-                              page = Boss.currentPage.toString())
-            val page_list = Boss.getCurrentSource().makeRequest(req)
-            val bm = BitmapFactory.decodeFile(page_list[0])
+            val bm = BitmapFactory.decodeFile(Boss.getCurrentPagePath())
             uiThread { image!!.setImageBitmap(bm) }
         }
     }

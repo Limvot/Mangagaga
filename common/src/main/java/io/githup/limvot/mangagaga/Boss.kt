@@ -28,6 +28,8 @@ import java.io.FileWriter
     var codePrequel = ""
     var scripts = mapOf<String, Script>()
 
+    val reqCache = mutableMapOf<Request, List<String>>()
+
     fun init() {
         val scriptDir = File(SettingsManager.mangagagaPath, "Scripts/")
         codePrequel = File(scriptDir, "script_prequel.js").readText()
@@ -38,6 +40,43 @@ import java.io.FileWriter
     }
 
     fun getCurrentSource(): Script = scripts[currentSource]!!
+    fun getCurrentPagePath(): String {
+        val req = Request(source = currentSource, manga = currentManga, chapter = currentChapter,
+                          page = currentPage.toString())
+        if (req !in reqCache)
+            reqCache[req] = getCurrentSource().makeRequest(req)
+
+        // this is probably thread unsafe.
+        // a problem for the next refactor session!
+        thread {
+            // start at current page which is def cached to make code easier
+            var cacheChapter = currentChapter
+            var cachePage = currentPage
+            for (i in 0..SettingsManager.getCacheSize()) {
+                val req = Request(source = currentSource, manga = currentManga,
+                        chapter = cacheChapter, page = cachePage.toString())
+                if (req !in reqCache)
+                    reqCache[req] = getCurrentSource().makeRequest(req)
+
+                // increment, into the next chapter if necessary
+                if (cachePage + 1 < getNumPages(chapter = cacheChapter)) {
+                    cachePage++
+                } else {
+                    cacheChapter = chapterDelta(currentSource, currentManga, cacheChapter, -1)
+                    cachePage = 0
+                }
+            }
+            val maxPage = minOf(getNumPages(), currentPage + SettingsManager.getCacheSize())
+            for (i in (currentPage + 1) until maxPage) {
+                val req = Request(source = currentSource, manga = currentManga,
+                        chapter = currentChapter, page = i.toString())
+                if (req !in reqCache)
+                    reqCache[req] = getCurrentSource().makeRequest(req)
+            }
+        }
+
+        return reqCache[req]!![0]
+    }
 
     private fun  loadHistory(): ArrayList<Request> {
         return try {
@@ -168,14 +207,21 @@ import java.io.FileWriter
     // Make this script decidable later
     fun previousChapter() = setCurrentChapterImpl(1)
     fun nextChapter() = setCurrentChapterImpl(-1)
-    
-    private fun setCurrentChapterImpl(delta: Int): Boolean {
-        val chapterList = getCurrentSource().makeRequest(Request(source = currentSource, manga = currentManga))
-        val oldIdx = chapterList.indexOf(currentChapter)
+
+    private fun chapterDelta(source: String, manga: String, chapter: String, delta: Int): String {
+        val chapterList = getCurrentSource().makeRequest(Request(source = source, manga = manga))
+        val oldIdx = chapterList.indexOf(chapter)
         val newIdx = maxOf(0, minOf(chapterList.size -1, oldIdx + delta))
         if (oldIdx == newIdx)
+            return chapter
+        return chapterList[newIdx]
+    }
+    
+    private fun setCurrentChapterImpl(delta: Int): Boolean {
+        val newChapter = chapterDelta(currentSource, currentManga, currentChapter, delta)
+        if (newChapter == currentChapter)
             return false
-        currentChapter = chapterList[newIdx]
+        currentChapter = newChapter
 
         val req = Request(source = getCurrentSource().name, manga = currentManga, chapter = currentChapter)
         chapterHistory.add(0, req)
@@ -185,8 +231,11 @@ import java.io.FileWriter
         return true
     }
 
-    fun getNumPages(manga: String = Boss.currentManga, chapter: String = Boss.currentChapter): Int {
-        return getCurrentSource().makeRequest(Request(manga = manga, chapter = chapter))[0].toInt()
+    fun getNumPages(source: String = currentSource, manga: String = Boss.currentManga, chapter: String = Boss.currentChapter): Int {
+        val req = Request(source = source, manga = manga, chapter = chapter)
+        if (req !in reqCache)
+            reqCache[req] = getCurrentSource().makeRequest(req)
+        return reqCache[req]!![0].toInt()
     }
 
     fun move(forwards: Boolean) {

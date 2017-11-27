@@ -85,7 +85,7 @@ object ScriptTester {
     //request first page
     req = req.copy(page = "0")
     var page = script.makeRequest(req)
-    var current = page[0];
+    var current = Boss.getCurrentPagePath();
     var total = num_page_list[0].toInt()
 
     val frame = JFrame()
@@ -110,15 +110,11 @@ object ScriptTester {
       } else if (ln[0] == 'n') {
         //get next image!
         Boss.move(true)
-        val req = Request(manga = Boss.currentManga, chapter = Boss.currentChapter,
-                page = Boss.currentPage.toString())
-        current = Boss.getCurrentSource().makeRequest(req)[0]
+        current = Boss.getCurrentPagePath();
       } else if (ln[0] == 'p') {
         //get previoust image!
         Boss.move(false)
-        val req = Request(manga = Boss.currentManga, chapter = Boss.currentChapter,
-                page = Boss.currentPage.toString())
-        current = Boss.getCurrentSource().makeRequest(req)[0]
+        current = Boss.getCurrentPagePath();
       } else {
         println("Error, unrecognized command!")
       }
