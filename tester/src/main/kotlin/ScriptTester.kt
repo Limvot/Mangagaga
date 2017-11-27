@@ -16,7 +16,7 @@ object ScriptTester {
     initFolders()
     SettingsManager.loadSettings()
     // Overwrite all scripts
-    Utilities.gitToScripts()
+    //Utilities.gitToScripts()
 
     Boss.init()
     sourceLoop()
@@ -45,7 +45,6 @@ object ScriptTester {
         var num = ln.toInt()
         var index = num
         println("you chose the manga "+list[index])
-        Boss.readingOffline(false)
         Boss.currentManga = list[index]
         chapterLoop()
       }
@@ -54,7 +53,6 @@ object ScriptTester {
 
   fun chapterLoop() {
     var list = Boss.getCurrentSource().makeRequest(Request(manga = Boss.currentManga))
-    Boss.currentChapterList = list
 
     println("Description: "+list[0])
     while (true){
@@ -111,36 +109,16 @@ object ScriptTester {
           break
       } else if (ln[0] == 'n') {
         //get next image!
-        var i = Boss.currentPage
-        if (i < total-1) {
-          Boss.currentPage = i+1
-        } else {
-            if (Boss.nextChapter()) {
-                req = req.copy(chapter = Boss.currentChapterList[Boss.currentChapterList.indexOf(req.chapter)-1], page = "")
-                var next_page_list = script.makeRequest(req)
-                total = next_page_list[0].toInt()
-                Boss.currentPage = 0
-            }
-        }
-        req = req.copy(page = Boss.currentPage.toString())
-        page = script.makeRequest(req)
-        current = page[0]
+        Boss.move(true)
+        val req = Request(manga = Boss.currentManga, chapter = Boss.currentChapter,
+                page = Boss.currentPage.toString())
+        current = Boss.getCurrentSource().makeRequest(req)[0]
       } else if (ln[0] == 'p') {
         //get previoust image!
-        var i = Boss.currentPage
-        if (i > 0) {
-          Boss.currentPage = i-1
-        } else {
-            if (Boss.previousChapter()) {
-                req = req.copy(chapter = Boss.currentChapterList[Boss.currentChapterList.indexOf(req.chapter)+1], page = "")
-                var prev_page_list = script.makeRequest(req)
-                total = prev_page_list[0].toInt()
-                Boss.currentPage = total - 1
-            }
-        }
-        req = req.copy(page = Boss.currentPage.toString())
-        page = script.makeRequest(req)
-        current = page[0]
+        Boss.move(false)
+        val req = Request(manga = Boss.currentManga, chapter = Boss.currentChapter,
+                page = Boss.currentPage.toString())
+        current = Boss.getCurrentSource().makeRequest(req)[0]
       } else {
         println("Error, unrecognized command!")
       }
@@ -165,25 +143,17 @@ object ScriptTester {
     }
   }
   
-  fun setSourceNumber(num: Int) {
-    if (num < 0) {
-      println("Exiting")
-    } else {
-      Boss.currentSource = num
-    }
-  }
-  
   fun printSources() {
     println("\nSelect a source")
-    for (i in 0 until Boss.numSources()) {
-      println("$i: ${Boss.getScript(i)!!.name}")
+    for ((i, name) in Boss.scripts.keys.sorted().withIndex()) {
+      println("$i: $name")
     }
   }
   
   fun changeSource() {
     printSources() 
-    setSourceNumber(readLine()!!.toInt())
-    println("You chose source number ${Boss.currentSource}")
+    Boss.currentSource = Boss.scripts.keys.sorted()[readLine()!!.toInt()]
+    println("You chose source number ${Boss.currentSource} out of ${Boss.scripts.keys.sorted()}")
 
     val types = Boss.getCurrentSource().getMangaListTypes()
     for ((i, type) in types.withIndex()) println("$i - $type")

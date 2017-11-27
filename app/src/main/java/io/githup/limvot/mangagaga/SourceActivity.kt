@@ -41,9 +41,9 @@ class SourceActivity : Activity(), GenericLogger {
         doSourcePopup()
     }
     private fun doSourcePopup() {
-        selector("Source", Boss.scriptList.map {it.name}) { _, i ->
-            Boss.currentSource = i
-            srcButton!!.text = Boss.scriptList[i].name
+        selector("Source", Boss.scripts.keys.sorted()) { _, i ->
+            Boss.currentSource = Boss.scripts.keys.sorted()[i]
+            srcButton!!.text = Boss.scripts.keys.sorted()[i]
             updateMangaList()
         }
     }
@@ -63,7 +63,6 @@ class SourceActivity : Activity(), GenericLogger {
                 dialog.dismiss()
                 mangaList!!.clear()
                 mangaList!!.addAll(items.map { manga -> TextListItem(manga, {
-                                                    Boss.readingOffline(false)
                                                     Boss.currentManga = manga
                                                     startActivity<ChapterActivity>()
                                                 }) })

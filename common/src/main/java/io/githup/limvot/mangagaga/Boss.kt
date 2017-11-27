@@ -20,54 +20,25 @@ import java.io.FileWriter
     private val chapterHistory = loadHistory()
     private val favoriteManga = loadFavorites()
 
-    var isOffline: Boolean = false
+    var currentSource = ""
     var currentManga: String = ""
     var currentChapter: String = ""
-
-    var currentChapterList : List<String> = listOf()
-
     var currentPage = 0
-    private var numChapPages = -1
-    private val chapterPageMap = mutableMapOf<Int, String>()
 
     var codePrequel = ""
-    var currentSource = 0
-    val scriptList = mutableListOf<Script>()
+    var scripts = mapOf<String, Script>()
 
     fun init() {
-        scriptList.clear()
-
         val scriptDir = File(SettingsManager.mangagagaPath, "Scripts/")
         codePrequel = File(scriptDir, "script_prequel.js").readText()
 
-        for ((index, script) in scriptDir.listFiles().filter { it.name.endsWith(".js") }.withIndex()) {
-          scriptList.add(Script(script.getName(), File(script.getAbsolutePath()).readText(), index))
-        }
+        scripts = scriptDir.listFiles().filter { it.name.endsWith(".js") }.map {
+          it.name to Script(it.name, File(it.absolutePath).readText())
+        }.toMap()
     }
 
-    fun numSources() = scriptList.size
-    fun getScript(position:Int): Script? = if (position >= 0 && position < numSources())
-                                            scriptList[position]
-                                         else null
-    fun getCurrentSource(): Script = getScript(currentSource)!!
+    fun getCurrentSource(): Script = scripts[currentSource]!!
 
-    fun setCurrentSource(src : String) : Boolean {
-      //TODO(marcus): should we error if we can't find the script?
-      var i = currentSource
-      var ret = false
-      for ((index, s) in scriptList.withIndex()) {
-          if (s.name == src) {
-              ret = true
-              i = index
-              break
-          }
-      }
-      currentSource = i
-      return ret
-    }
-
-    fun readingOffline(isOffline: Boolean) { this.isOffline = isOffline }
-    
     private fun  loadHistory(): ArrayList<Request> {
         return try {
           gson.fromJson(File(SettingsManager.mangagagaPath, "History.json").readText(),
@@ -98,7 +69,7 @@ import java.io.FileWriter
         }
     }
 
-    private fun  loadFavorites(): ArrayList<Request> {
+    private fun loadFavorites(): ArrayList<Request> {
         return try {
           gson.fromJson(File(SettingsManager.mangagagaPath, "Favorites.json").readText(),
                         object : TypeToken<ArrayList<Request>>() {}.type)
@@ -109,7 +80,6 @@ import java.io.FileWriter
     }
 
     fun getFavoriteList(): ArrayList<Request> = favoriteManga
-    //TODO(marcus): get a .equals method for request
     fun isFavorite(manga: Request): Boolean = favoriteManga.contains(manga)
 
     fun setFavorite(manga: Request, add: Boolean) {
@@ -162,54 +132,23 @@ import java.io.FileWriter
     }
 
     fun removeSaved(req: Request) {
-        //TODO(marcus): will we only ever call this method on chapters of the current manga?
         val savedDir = File(SettingsManager.mangagagaPath + "/Downloaded/" + req.manga + "/" + req.chapter)
         if (savedDir.exists())
           Utilities.deleteFolder(savedDir)
     }
 
     fun downloadChaptersAsync(toDownload: List<Request>) {
-        //TODO(marcus): implement this
-        // Notification
-        val notificationID = 0
         val notification = notify("Downloading chapter...")
-        /*
-          for (chapter in toDownload) {
-            val parentManga = chapter.parentManga
-            initManga(parentManga)
+        for (req in toDownload) {
             val savedDir = File(SettingsManager.mangagagaPath, "Downloaded/")
-            val mangaDir = File(savedDir, parentManga.getTitle())
-            val chapterDir = File(mangaDir, chapter.getTitle())
+            val mangaDir = File(savedDir, req.manga)
+            val chapterDir = File(mangaDir, req.chapter)
             mangaDir.mkdir()
             chapterDir.mkdir()
-
-            // Save the Manga object and the Chapter object
-            try {
-              val mangaJson = File(mangaDir, "manga.json")
-              if (!mangaJson.exists()) {
-                mangaJson.createNewFile();
-                val fw = FileWriter(mangaJson.getAbsoluteFile())
-                val bw = BufferedWriter(fw)
-                bw.write(gson.toJson(parentManga))
-                bw.close()
-              }
-
-              val chapterJson = File(chapterDir, "chapter.json")
-              if (!chapterJson.exists()) {
-                chapterJson.createNewFile()
-                val fw = FileWriter(chapterJson.getAbsoluteFile())
-                val bw = BufferedWriter(fw)
-                bw.write(gson.toJson(chapter))
-                bw.close()
-              }
-            } catch (e: Exception) {
-              info("SAVE_CHAPTER_MANgA_chapter - problem/exception $e")
-            }
-
-            val numPages = getNumPages(parentManga, chapter)
+            val numPages = getNumPages(req.manga, req.chapter)
             for (i in 0 until numPages) {
               notification.text = "Downloading page " + (i+1) + "/" + (numPages) + "."
-              val fromFile = ScriptManager.getCurrentSource().downloadPage(parentManga, chapter, i)
+              val fromFile = getCurrentSource().makeRequest(req.copy(page = i.toString()))[0]
               try {
                 val filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."))
                 File(chapterDir, filename).writeBytes(File(fromFile).readBytes())
@@ -218,78 +157,51 @@ import java.io.FileWriter
                 error("Save Chapter ERROR $fromFile e: $e")
               }
             }
-          }*/
-
+          }
           notification.title = "Done!"
     }
     fun getSavedManga(): List<Request> {
-        val list = mutableListOf<Request>()
-        val savedDir = File(SettingsManager.mangagagaPath, "Downloaded/")
-        for (dir in savedDir.list()) {
-            val mangaDir = File(savedDir, dir)
-            list.add(Request())
-        }
-        return list
+        return File(SettingsManager.mangagagaPath, "Downloaded/").list().map { Request(source = "downloaded", manga = it)}
     }
     // THESE LOOK BACKWARDS
     // But they're not. Or they are. (Because Chapter 1 is at the 'end' of the list.)
     // Make this script decidable later
-    fun previousChapter(): Boolean {
-        val nextIndex = currentChapterList.indexOf(currentChapter)+1
-        if (nextIndex < currentChapterList.size)
-          setCurrentChapterImpl(currentChapterList[nextIndex])
-        else
-          return false
-        return true
-    }
-
-    fun nextChapter(): Boolean {
-        val nextIndex = currentChapterList.indexOf(currentChapter)-1
-        if (nextIndex > 0)
-          setCurrentChapterImpl(currentChapterList[nextIndex])
-        else
-          return false
-        return true
-    }
+    fun previousChapter() = setCurrentChapterImpl(1)
+    fun nextChapter() = setCurrentChapterImpl(-1)
     
-    private fun setCurrentChapterImpl(chapter : String) {
-        // delete all of our cached pages before clearing the cache if we're reading online
-        if (!isOffline)
-          for (pair in chapterPageMap)
-            File(pair.value).delete()
-        chapterPageMap.clear()
-        currentChapter = chapter
-        val req = Request(source = getCurrentSource().name, manga = currentManga, chapter = chapter)
+    private fun setCurrentChapterImpl(delta: Int): Boolean {
+        val chapterList = getCurrentSource().makeRequest(Request(source = currentSource, manga = currentManga))
+        val oldIdx = chapterList.indexOf(currentChapter)
+        val newIdx = maxOf(0, minOf(chapterList.size -1, oldIdx + delta))
+        if (oldIdx == newIdx)
+            return false
+        currentChapter = chapterList[newIdx]
+
+        val req = Request(source = getCurrentSource().name, manga = currentManga, chapter = currentChapter)
         chapterHistory.add(0, req)
         for (i in SettingsManager.getHistorySize() until chapterHistory.size)
           chapterHistory.removeAt(i)
         saveHistory()
+        return true
     }
-    fun getNumPages(): Int {
-        if(numChapPages <= 0) {
-            val req = Request(manga = Boss.currentManga, chapter = Boss.currentChapter)
-            val script = getCurrentSource()
-            val num_page_list = script.makeRequest(req)
-            numChapPages = num_page_list[0].toInt()
-        }
-        return numChapPages
+
+    fun getNumPages(manga: String = Boss.currentManga, chapter: String = Boss.currentChapter): Int {
+        return getCurrentSource().makeRequest(Request(manga = manga, chapter = chapter))[0].toInt()
     }
+
     fun move(forwards: Boolean) {
         if(forwards) {
             if(currentPage < getNumPages()-1) {
                 currentPage++
             } else {
-                println("Moving to next chapter...")
-                println(nextChapter())
+                nextChapter()
                 currentPage = 0
-                numChapPages = -1
             }
         } else {
             if(currentPage > 0) {
                 currentPage--
             } else {
                 previousChapter()
-                numChapPages = -1
                 currentPage = getNumPages() - 1
             }
         }

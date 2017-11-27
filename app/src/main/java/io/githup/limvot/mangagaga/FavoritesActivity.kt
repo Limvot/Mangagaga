@@ -13,9 +13,8 @@ class FavoritesActivity : Activity(), GenericLogger {
             listView {
                 val listItems = Boss.getFavoriteList().map { manga ->
                                             TextListItem(manga.manga, {
-                                                Boss.readingOffline(false)
+                                                Boss.currentSource = manga.source
                                                 Boss.currentManga = manga.manga
-                                                Boss.setCurrentSource(manga.source)
                                                 startActivity<ChapterActivity>()
                                             }) }
                 adapter = SimpleListAdaptor(ctx, listItems)

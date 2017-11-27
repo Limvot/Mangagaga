@@ -34,7 +34,6 @@ class ChapterActivity : Activity(), GenericLogger {
             uiThread {
                 description!!.text = description_chapter_list[0]
                 val items = description_chapter_list.subList(1,description_chapter_list.size)
-                Boss.currentChapterList = items
 
                 chapterList.clear()
                 chapterList.addAll(items.map { chapter -> TextListItem(chapter, {

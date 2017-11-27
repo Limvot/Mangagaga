@@ -2,7 +2,7 @@ package io.githup.limvot.mangagaga;
 
 import org.mozilla.javascript.*
 
-class Script(val name : String, val code : String, val scriptNumber : Int) : GenericLogger {
+class Script(val name : String, val code : String) : GenericLogger {
 
     private var scriptScope: Scriptable? = null
     init {

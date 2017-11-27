@@ -12,10 +12,10 @@ class DownloadedActivity : Activity(), GenericLogger {
 
         verticalLayout {
             listView {
-                val listItems = Boss.getSavedManga().map { manga ->
-                                                TextListItem(manga.manga, {
-                                                    Boss.readingOffline(true)
-                                                    Boss.currentManga = manga.manga
+                val listItems = Boss.getSavedManga().map { req ->
+                                                TextListItem(req.manga, {
+                                                    Boss.currentSource = req.source // this is "downloaded"
+                                                    Boss.currentManga = req.manga
                                                     startActivity<ChapterActivity>()
                                                 }) }
                 adapter = SimpleListAdaptor(ctx, listItems)

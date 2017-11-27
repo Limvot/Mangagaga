@@ -15,8 +15,7 @@ class HistoryActivity : Activity() {
             listView {
                 val listItems = Boss.getChapterHistoryList().map { chapter ->
                                                 TextListItem(chapter.chapter, {
-                                                    Boss.readingOffline(false)
-                                                    Boss.setCurrentSource(chapter.source)
+                                                    Boss.currentSource = chapter.source
                                                     Boss.currentManga = chapter.manga
                                                     Boss.currentChapter = chapter.chapter
                                                     Boss.currentPage = 0
