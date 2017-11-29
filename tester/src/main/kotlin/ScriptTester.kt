@@ -34,20 +34,13 @@ object ScriptTester {
     var list = script.makeRequest(Request(source = script.name, filter = mangaListType))
 
     while (true) {
-      printMangaList(list)
-      println("Back (b), Quit (q), or Manga Number:")
-      val ln = readLine()!!
-      if (ln[0] == 'q') {
-        exitTester()
-      } else if (ln[0] == 'b') {
-        break
-      } else {
-        var num = ln.toInt()
-        var index = num
-        println("you chose the manga "+list[index])
-        Boss.currentManga = list[index]
-        chapterLoop()
-      }
+      printList(list, false)
+      val ln = printPrompt("Back (b), Quit (q), or Manga Number:")
+      if (ln[0] == 'b') break
+      var index = ln.toInt()
+      println("you chose the manga "+list[index])
+      Boss.currentManga = list[index]
+      chapterLoop()
     }
   }
 
@@ -56,22 +49,15 @@ object ScriptTester {
 
     println("Description: "+list[0])
     while (true){
-      printChapterList(list)
-      println("Back (b), Quit (q), or Chapter Number:")
-      val ln = readLine()!!
-      if (ln[0] == 'q') {
-          exitTester()
-      } else if (ln[0] == 'b') {
-        break
-      } else {
-        var num = ln.toInt()
-        println("you chose the chapter "+list[num+1])
-        Boss.currentChapter = list[num+1]
-        Boss.currentPage = 0
-        println("Debug String 1")
-        imageLoop()
-        return
-      }
+      printList(list,true)
+      val ln = printPrompt("Back (b), Quit (q), or Chapter Number:")
+      if (ln[0] == 'b') break
+      var num = ln.toInt()
+      println("you chose the chapter "+list[num+1])
+      Boss.currentChapter = list[num+1]
+      Boss.currentPage = 0
+      imageLoop()
+      return
     }
   }
   
@@ -86,7 +72,6 @@ object ScriptTester {
     req = req.copy(page = "0")
     var page = script.makeRequest(req)
     var current = Boss.getCurrentPagePath();
-    var total = num_page_list[0].toInt()
 
     val frame = JFrame()
     frame.layout = FlowLayout()
@@ -97,17 +82,13 @@ object ScriptTester {
 
     while (true) {
       val img = ImageIO.read(File(current))
-      val icon = ImageIcon(img)
-      lbl.icon = icon
+      lbl.icon = ImageIcon(img)
       frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
-      println("Back (b), Quit (q), Next image (n), Previous Image (p):")
-      val ln = readLine()!!
-      if (ln[0] == 'q') {
-          exitTester()
-      } else if (ln[0] == 'b') {
-          break
-      } else if (ln[0] == 'n') {
+      val ln = printPrompt("Back (b), Quit (q), Next image (n), Previous Image (p):")
+      if (ln[0] == 'b') break
+
+      if (ln[0] == 'n') {
         //get next image!
         Boss.move(true)
         current = Boss.getCurrentPagePath();
@@ -157,28 +138,25 @@ object ScriptTester {
     mangaListType = types[readLine()!!.toInt()]
     println("You chose $mangaListType")
   }
-  
-  fun printMangaList(list : List<String>) {
-      var count = 0
-      for (entry in list) {
+
+  fun printList(list : List<String>, skip_description : Boolean) {
+      var l = list
+      if(skip_description) {
+          l = list.subList(1,list.size)
+      }
+      for ((count, entry) in l.withIndex()) {
           println("$count: ${entry}")
-          count += 1
       }
   }
-  
-  fun printChapterList(list : List<String>) {
-    var count = 0
-    var skip_descr = 0
-    for (i in list) {
-        if(skip_descr == 0) {
-            skip_descr = 1
-            continue
-        }
-        println("$count: ${i}")
-        count += 1
-    }
-  }
 
+  fun printPrompt(msg : String) : String {
+      println(msg)
+      val ln = readLine()!!
+      if (ln[0] == 'q') {
+          exitTester()
+      }
+      return ln
+  }
   fun exitTester() {
       println("Exiting!!")
       System.exit(0)
