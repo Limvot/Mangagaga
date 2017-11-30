@@ -61,7 +61,6 @@ object Utilities : GenericLogger {
     }
 
     fun DownloadSource(source : String, referer: String) : Pair<String, MutableMap<String,List<String>>> {
-        var filename : String = ""
         var resultingPath : String = ""
         var resultingHeaders : MutableMap<String,List<String>>? = null
         info("DownloadSource: $source")
@@ -76,14 +75,14 @@ object Utilities : GenericLogger {
             info("user agent is ${urlcon.getRequestProperty("User-Agent")}")
             urlcon.setInstanceFollowRedirects(true)
             info("TYPE IS... ${urlcon.getContentType()}")       
-            filename = source.substring((source.lastIndexOf('/') + 1))
-            if (referer.isNotEmpty()) {
+            var filename : String = if (referer.isNotEmpty()) {
               info("Using referer instead: $referer")
-              filename = referer.substring((source.lastIndexOf('/') + 1))
+              referer.substring((source.lastIndexOf('/') + 1))
+            } else {
+                source.substring((source.lastIndexOf('/') + 1))
             }
 
-            if (filename.contains("?"))
-                filename = filename.replace('?', '_')
+            filename = filename.replace('?', '_')
             info("filename: $filename")
 
             val dest = SettingsManager.mangagagaPath + "/Cache/"
@@ -118,8 +117,7 @@ object Utilities : GenericLogger {
             return Pair("Error 2 info with reader writer", resultingHeaders!!)
         }
         finally {
-          if (urlcon != null)
-            urlcon.disconnect()
+            urlcon?.disconnect()
         }
 
         return Pair(resultingPath, resultingHeaders!!)
