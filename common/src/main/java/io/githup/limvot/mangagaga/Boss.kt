@@ -7,6 +7,8 @@ import java.util.concurrent.Semaphore
 import java.io.BufferedWriter
 import java.io.File
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken
 
 import java.io.FileWriter
@@ -16,7 +18,7 @@ import java.io.FileWriter
  */
  object Boss : GenericLogger {
     private val chapterDownloadMutex = Semaphore(1)
-    private val gson = Utilities.getGson()
+    private val gson = GsonBuilder().setPrettyPrinting().create()
     private val chapterHistory = loadHistory()
     private val favoriteManga = loadFavorites()
 
@@ -38,6 +40,8 @@ import java.io.FileWriter
           it.name to Script(it.name, File(it.absolutePath).readText())
         }.toMap()
     }
+
+    fun getGson() = gson
 
     fun getCurrentSource(): Script = scripts[currentSource]!!
     fun getCurrentPagePath(): String {

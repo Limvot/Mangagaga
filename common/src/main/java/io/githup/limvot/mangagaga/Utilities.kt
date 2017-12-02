@@ -4,9 +4,6 @@ package io.githup.limvot.mangagaga;
  * Created by marcus on 12/17/14. (redone in Kotlin later by Nathan :D)
  */
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.net.HttpURLConnection;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -22,14 +19,6 @@ object Utilities : GenericLogger {
 
     init {
         CookieHandler.setDefault(CookieManager())
-    }
-
-    // Change to lazy?
-    private var gson_bac : Gson? = null
-    fun getGson() : Gson {
-        if (gson_bac == null)
-            gson_bac = GsonBuilder().setPrettyPrinting().create()
-        return gson_bac!!
     }
 
     var id = 0
