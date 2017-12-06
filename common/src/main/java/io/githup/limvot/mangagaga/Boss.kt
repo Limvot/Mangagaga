@@ -215,7 +215,8 @@ import java.io.FileWriter
     private fun chapterDelta(source: String, manga: String, chapter: String, delta: Int): String {
         val chapterList = getCurrentSource().makeRequest(Request(source = source, manga = manga))
         val oldIdx = chapterList.indexOf(chapter)
-        val newIdx = maxOf(0, minOf(chapterList.size -1, oldIdx + delta))
+        // 1 min because of description
+        val newIdx = maxOf(1, minOf(chapterList.size -1, oldIdx + delta))
         if (oldIdx == newIdx)
             return chapter
         return chapterList[newIdx]
