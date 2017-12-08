@@ -92,16 +92,15 @@ object ScriptTester {
         il_frame.add(il_lbl)
         il_frame.setVisible(true)
         il_frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        il_lbl.icon = ImageIcon(ImageIO.read(File(current)))
 
         while (true) {
+            il_lbl.icon = ImageIcon(ImageIO.read(File(current)))
             val ln = printPrompt("Back (b), Quit (q), Next image (n), Previous Image (p):")
             when (ln[0]) {
                 'b'    -> return "chapter"
                 'n','p'-> {
                     Boss.move((ln[0] == 'n'))
                     current = Boss.getCurrentPagePath();
-                    il_lbl.icon = ImageIcon(ImageIO.read(File(current)))
                 }
                 else   -> println("Error, unrecognized command!")
             }
