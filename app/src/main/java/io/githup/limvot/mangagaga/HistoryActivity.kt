@@ -13,7 +13,7 @@ class HistoryActivity : Activity() {
 
         verticalLayout {
             listView {
-                val listItems = Boss.getChapterHistoryList().map { chapter ->
+                val listItems = Boss.chapterHistory.map { chapter ->
                                                 TextListItem(chapter.chapter, {
                                                     Boss.currentSource = chapter.source
                                                     Boss.currentManga = chapter.manga

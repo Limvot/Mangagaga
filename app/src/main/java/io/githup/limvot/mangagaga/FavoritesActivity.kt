@@ -11,7 +11,7 @@ class FavoritesActivity : Activity(), GenericLogger {
 
         verticalLayout{
             listView {
-                val listItems = Boss.getFavoriteList().map { manga ->
+                val listItems = Boss.favoriteManga.map { manga ->
                                             TextListItem(manga.manga, {
                                                 Boss.currentSource = manga.source
                                                 Boss.currentManga = manga.manga

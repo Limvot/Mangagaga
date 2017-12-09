@@ -17,7 +17,6 @@ class SourceActivity : Activity(), GenericLogger {
     private var mangaListAdapter: SimpleListAdaptor? = null
     private var srcButton: Button? = null
     private var listTypeButton: Button? = null
-    private var mangaListType = "All"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,24 +40,23 @@ class SourceActivity : Activity(), GenericLogger {
         doSourcePopup()
     }
     private fun doSourcePopup() {
-        selector("Source", Boss.scripts.keys.sorted()) { _, i ->
-            Boss.currentSource = Boss.scripts.keys.sorted()[i]
-            srcButton!!.text = Boss.scripts.keys.sorted()[i]
-            updateMangaList()
+        selector("Source", Boss.getScriptList()) { _, i ->
+            Boss.currentSource = Boss.getScriptList()[i]
+            srcButton!!.text   = Boss.getScriptList()[i]
+            doTypePopup()
         }
     }
     private fun doTypePopup() {
-        selector("Sorted", Boss.getCurrentSource().getMangaListTypes()) { _, i ->
-            mangaListType = Boss.getCurrentSource().getMangaListTypes()[i]
-            listTypeButton!!.text = mangaListType
+        selector("Sorted", Boss.getFilterTypes()) { _, i ->
+            Boss.currentFilter = Boss.getFilterTypes()[i]
+            listTypeButton!!.text = Boss.currentFilter
             updateMangaList()
         }
     }
     private fun updateMangaList() {
         val dialog = indeterminateProgressDialog(title = "Loading manga list from source", message = "(may take 5 seconds to get through CloudFlare or something)")
         doAsync {
-            val req = Request(source = Boss.getCurrentSource().name, filter = mangaListType);
-            val items = Boss.getCurrentSource().makeRequest(req)
+            val items = Boss.getMangaList()
             uiThread {
                 dialog.dismiss()
                 mangaList!!.clear()

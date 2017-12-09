@@ -8,9 +8,6 @@ import javax.swing.JFrame
 import javax.swing.JLabel
 
 object ScriptTester {
-    var mangaListType = "unset"
-    var script: Script? = null
-
     @JvmStatic
     fun main(vararg args : String) {
         SettingsManager.mangagagaPath = "Mangagaga"
@@ -41,21 +38,20 @@ object ScriptTester {
     }
 
     fun sourceLoop() : String {
-        val script_options = Boss.scripts.keys.sorted()
+        val script_options = Boss.getScriptList()
         printList(script_options)
         println("\nSelect a source")
         Boss.currentSource = script_options[readLine()!!.toInt()]
-        script = Boss.getCurrentSource()
 
-        val types = Boss.getCurrentSource().getMangaListTypes()
+        val types = Boss.getFilterTypes()
         printList(types)
         println("\nSelect a type")
-        mangaListType = types[readLine()!!.toInt()]
+        Boss.currentFilter = types[readLine()!!.toInt()]
         return "manga"
     }
 
     fun mangaLoop() : String {
-        val ml_list = script!!.makeRequest(Request(source = script!!.name, filter = mangaListType))
+        val ml_list = Boss.getMangaList()
         printList(ml_list)
         val ln = printPrompt("Back (b), Quit (q), or Manga Number:")
         if (ln[0] == 'b') return "source"
@@ -64,9 +60,9 @@ object ScriptTester {
     }
 
     fun chapterLoop() : String {
-        val cl_list = script!!.makeRequest(Request(manga = Boss.currentManga))
-        println("Description: "+cl_list[0])
-        printList(cl_list.drop(1))
+        println("Description: ${Boss.getMangaDescription()}")
+        val cl_list = Boss.getChapterList()
+        printList(cl_list)
         val ln = printPrompt("Back (b), Quit (q), or Chapter Number:")
         if (ln[0] == 'b') return "manga"
         Boss.currentChapter = cl_list[ln.toInt()+1]
@@ -78,12 +74,11 @@ object ScriptTester {
 
     fun imageLoop(): String {
         //request number of pages
-        var num_page_list = script!!.makeRequest(Request(manga = Boss.currentManga, chapter = Boss.currentChapter))
-        println("Num Pages ${num_page_list[0]}")
+        println("Num Pages ${Boss.getNumPages()}")
 
         //request first page
-        script!!.makeRequest(Request(manga = Boss.currentManga, chapter = Boss.currentChapter, page = "0"))
-        var current = Boss.getCurrentPagePath();
+        Boss.currentPage = 0
+        var current = Boss.getPagePath()
 
         val il_frame = JFrame()
         il_frame.layout = FlowLayout()
@@ -100,7 +95,7 @@ object ScriptTester {
                 'b'    -> return "chapter"
                 'n','p'-> {
                     Boss.move((ln[0] == 'n'))
-                    current = Boss.getCurrentPagePath();
+                    current = Boss.getPagePath();
                 }
                 else   -> println("Error, unrecognized command!")
             }

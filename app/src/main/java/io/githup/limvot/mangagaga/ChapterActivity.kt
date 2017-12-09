@@ -11,13 +11,13 @@ import android.widget.CheckBox
 class ChapterActivity : Activity(), GenericLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val thisReq = Request(source = Boss.getCurrentSource().name, manga = Boss.currentManga)
         var description: TextView? = null
         var favoriteBox: CheckBox? = null
         val chapterList = mutableListOf<TextListItem>()
         val chapterListAdapter = SimpleListAdaptor(ctx, chapterList)
         getActionBar().title = "${Boss.currentManga}:"
 
+        val thisReq = Request(source = Boss.currentSource, filter = Boss.currentFilter, manga = Boss.currentManga)
         verticalLayout {
             favoriteBox = checkBox("Favorite") { onClick {
                     Boss.setFavorite(thisReq, favoriteBox!!.isChecked())
@@ -27,16 +27,12 @@ class ChapterActivity : Activity(), GenericLogger {
         }
         favoriteBox!!.setChecked(Boss.isFavorite(thisReq))
         val dialog = indeterminateProgressDialog(title = "Initing Manga", message = "(may take a little bit if script sets up pages)")
-        val currentSource = Boss.getCurrentSource().name
         doAsync {
-            val req = Request(source = currentSource, manga = Boss.currentManga)
-            val description_chapter_list = Boss.getCurrentSource().makeRequest(req)
+            val chapter_list = Boss.getChapterList()
             uiThread {
-                description!!.text = description_chapter_list[0]
-                val items = description_chapter_list.subList(1,description_chapter_list.size)
-
+                description!!.text = Boss.getMangaDescription()
                 chapterList.clear()
-                chapterList.addAll(items.map { chapter -> TextListItem(chapter, {
+                chapterList.addAll(chapter_list.map { chapter -> TextListItem(chapter, {
                                                     Boss.currentChapter = chapter
                                                     Boss.currentPage = 0
                                                     startActivity<ImageViewerActivity>()
@@ -50,7 +46,7 @@ class ChapterActivity : Activity(), GenericLogger {
                                                 }) })
                 chapterListAdapter.notifyDataSetChanged()
                 dialog.dismiss()
-                toast("there are ${items.size} chapters")
+                toast("there are ${chapter_list.size} chapters")
             }
         }
     }

@@ -33,11 +33,11 @@ object SettingsManager : GenericLogger {
         val settingsFile  = File(mangagagaPath, "Settings.json");
         if (!settingsFile.exists())
           saveSettings()
-        settingsMan = Boss.getGson().fromJson(File(settingsFile.getAbsolutePath()).readText(),
+        settingsMan = Boss.gson.fromJson(File(settingsFile.getAbsolutePath()).readText(),
                                                    SettingsManager::class.java);
     }
 
     private fun saveSettings() {
-        File(mangagagaPath, "Settings.json").writeText(Boss.getGson().toJson(settingsMan))
+        File(mangagagaPath, "Settings.json").writeText(Boss.gson.toJson(settingsMan))
     }
 }
