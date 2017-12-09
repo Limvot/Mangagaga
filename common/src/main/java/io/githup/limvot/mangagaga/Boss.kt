@@ -74,15 +74,32 @@ import java.io.FileWriter
         return makeCachedRequest(Request(source = source, filter = filter))
     }
     fun getMangaDescription(source: String = currentSource, filter: String = currentFilter, manga: String = currentManga): String {
+        if (source == "downloaded")
+            return "Downloaded"
         return makeCachedRequest(Request(source = source, filter = filter, manga = manga))[0]
     }
     fun getChapterList(source: String = currentSource, filter: String = currentFilter, manga: String = currentManga): List<String> {
+        if (source == "downloaded")
+            return File(SettingsManager.mangagagaPath + "/Downloaded/", manga).list().sorted().reversed()
         return makeCachedRequest(Request(source = source, filter = filter, manga = manga)).drop(1)
     }
     fun getNumPages(source: String = currentSource, filter: String = currentFilter, manga: String = currentManga, chapter: String = currentChapter): Int {
+        if (source == "downloaded")
+            return File(SettingsManager.mangagagaPath + "/Downloaded/" + manga, chapter).list().size
         return makeCachedRequest(Request(source = source, filter = filter, manga = manga, chapter = chapter))[0].toInt()
     }
     fun getPagePath(source: String = currentSource, filter: String = currentFilter, manga: String = currentManga, chapter: String = currentChapter, page: Int = currentPage): String {
+        // Ensure top history is this
+        val req = Request(source = currentSource, filter = currentFilter, manga = currentManga, chapter = currentChapter)
+        if (chapterHistory.size == 0 || chapterHistory[0] != req) {
+            chapterHistory.add(0, req)
+            for (i in SettingsManager.getHistorySize() until chapterHistory.size)
+                chapterHistory.removeAt(i)
+            saveHistory()
+        }
+
+        if (source == "downloaded")
+            return SettingsManager.mangagagaPath + "/Downloaded/" + manga + "/" + chapter + "/" + page
         val to_ret = makeCachedRequest(Request(source = source, filter = filter, manga = manga, chapter = chapter, page = page.toString()))[0]
         thread {
             var cacheChapter = chapter
@@ -127,14 +144,8 @@ import java.io.FileWriter
     private fun moveChapter(delta: Int): Boolean {
         val newChapter = chapterDelta(currentSource, currentFilter, currentManga, currentChapter, delta)
         if (newChapter == currentChapter)
-        return false
+            return false
         currentChapter = newChapter
-
-        val req = Request(source = currentSource, manga = currentManga, chapter = currentChapter)
-        chapterHistory.add(0, req)
-        for (i in SettingsManager.getHistorySize() until chapterHistory.size)
-        chapterHistory.removeAt(i)
-        saveHistory()
         return true
     }
 
@@ -149,7 +160,7 @@ import java.io.FileWriter
     }
 
     fun getSavedManga(): List<Request> {
-        return File(SettingsManager.mangagagaPath, "Downloaded/").list().map { Request(source = "downloaded", manga = it)}
+        return File(SettingsManager.mangagagaPath, "Downloaded/").list().map { Request(source = "downloaded", filter = "downloaded", manga = it)}
     }
 
     fun clearSaved() {
@@ -187,7 +198,7 @@ import java.io.FileWriter
                 notification.text = "Downloading page " + (i+1) + "/" + (numPages) + "."
                 val fromFile = makeCachedRequest(req.copy(page = i.toString()))[0]
                 try {
-                    val filename = Integer.toString(i) + fromFile.substring(fromFile.lastIndexOf("."))
+                    val filename = Integer.toString(i)
                     File(chapterDir, filename).writeBytes(File(fromFile).readBytes())
                 } catch (e: Exception) {
                     error("Save Chapter ERROR $fromFile e: $e")

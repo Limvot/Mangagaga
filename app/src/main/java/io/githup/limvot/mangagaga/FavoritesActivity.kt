@@ -14,6 +14,7 @@ class FavoritesActivity : Activity(), GenericLogger {
                 val listItems = Boss.favoriteManga.map { manga ->
                                             TextListItem(manga.manga, {
                                                 Boss.currentSource = manga.source
+                                                Boss.currentFilter = manga.filter
                                                 Boss.currentManga = manga.manga
                                                 startActivity<ChapterActivity>()
                                             }) }

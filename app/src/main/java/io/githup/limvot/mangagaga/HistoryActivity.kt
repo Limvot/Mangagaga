@@ -16,6 +16,7 @@ class HistoryActivity : Activity() {
                 val listItems = Boss.chapterHistory.map { chapter ->
                                                 TextListItem(chapter.chapter, {
                                                     Boss.currentSource = chapter.source
+                                                    Boss.currentFilter = chapter.filter
                                                     Boss.currentManga = chapter.manga
                                                     Boss.currentChapter = chapter.chapter
                                                     Boss.currentPage = 0
