@@ -17,8 +17,10 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 
 object Utilities : GenericLogger {
 
+    var cm = CookieManager()
     init {
-        CookieHandler.setDefault(CookieManager())
+        CookieHandler.setDefault(cm)
+        /*CookieHandler.setDefault(CookieManager())*/
     }
 
     var id = 0
@@ -57,11 +59,16 @@ object Utilities : GenericLogger {
         try {
             info("DownloadSource: URL is: $source")
             urlcon = URL(source).openConnection() as HttpURLConnection
-            urlcon.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0");
+            /*urlcon.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0");*/
+            /*urlcon.setRequestProperty("User-Agent", "Mangagaga");*/
+            urlcon.setRequestProperty("User-Agent", "HackThePlanet");
+            urlcon.setRequestProperty("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
+            /*urlcon.setRequestProperty("Accept-Encoding", "gzip, deflate");*/
             if (referer.isNotEmpty())
               urlcon.setRequestProperty("Referer", referer);
-            //urlcon.setRequestProperty("User-Agent", "Mangagaga");
             info("user agent is ${urlcon.getRequestProperty("User-Agent")}")
+            info("all properties are is ${urlcon.getRequestProperties()}")
+            info("all cookies are is ${cm.cookieStore.cookies}")
             urlcon.setInstanceFollowRedirects(true)
             info("TYPE IS... ${urlcon.getContentType()}")       
             var filename : String = if (referer.isNotEmpty()) {
