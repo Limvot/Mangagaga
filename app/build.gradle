@@ -18,8 +18,8 @@ android {
     lintOptions {
         abortOnError false
     }
-    compileSdkVersion 21
-    buildToolsVersion "25.0.1"
+    compileSdkVersion 26
+    buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "io.githup.limvot.mangagaga"
         minSdkVersion 15
